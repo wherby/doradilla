@@ -11,6 +11,9 @@
   <logger name="com.example" level="debug" additivity="false">
     <appender-ref ref="console" />
   </logger>
+  <logger name="doradilla" level="debug" additivity="false">
+    <appender-ref ref="console" />
+  </logger>
 
   <logger name="akka" level="info" additivity="false">
     <appender-ref ref="console" />
