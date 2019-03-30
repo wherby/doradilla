@@ -3,9 +3,9 @@ package doradilla.fsm
 import akka.actor.{ActorLogging, ActorRef, FSM}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor._
-import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskStatus, WorkerInfo}
+import doradilla.msg.TaskMsg._
 import doradilla.queue.QueueActor
-import doradilla.queue.QueueActor.{FetchTask, RequestList}
+import doradilla.queue.QueueActor.{ RequestList}
 import doradilla.util.DeployService
 
 import scala.concurrent.duration._
@@ -63,6 +63,12 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
     case Event(workerInfo: WorkerInfo,_) =>
       childActor = DeployService.tryToInstanceDeployActor(workerInfo,context)
       stay()
+    case Event(translatedTask: TranslatedTask,_)=>{
+      if(childActor != None){
+        childActor.get ! translatedTask.task
+      }
+      stay()
+    }
   }
 
 

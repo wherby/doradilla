@@ -20,6 +20,8 @@ object TaskMsg {
 
   case class WorkerInfo(actorName: String, config: Option[String])
 
+  case class TranslatedTask(task:Any)
+
   case class TranslationError(info: Option[String])
 
   object TaskStatus extends Enumeration {

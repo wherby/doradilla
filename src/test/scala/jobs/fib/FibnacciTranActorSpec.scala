@@ -4,7 +4,7 @@ import `var`.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.TaskMsg.{RequestMsg, TaskMsg, TranslationError, WorkerInfo}
+import doradilla.msg.TaskMsg._
 import jobs.fib.FibnacciTranActor.{FibInit, FibRequest}
 import play.api.libs.json.Json
 
@@ -25,7 +25,7 @@ class FibnacciTranActorSpec extends  ActorTestClass  {
         case workerInfo: WorkerInfo=> workerInfo.actorName should be (classOf[FibWorkActor].getName)
       }
       proxy.expectMsgPF(){
-        case init:FibInit => println(init)
+        case init:TranslatedTask => println(init)
       }
     }
     "Receive a wrong operation should return translation error" in {
