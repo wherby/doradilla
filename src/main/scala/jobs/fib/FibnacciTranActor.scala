@@ -2,7 +2,7 @@ package jobs.fib
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.msg.TaskMsg.{RequestMsg, TaskMsg, TranslationError, WorkerInfo}
+import doradilla.msg.TaskMsg._
 import jobs.fib.FibnacciTranActor._
 import play.api.libs.json.Json
 

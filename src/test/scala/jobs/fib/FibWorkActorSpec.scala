@@ -3,6 +3,7 @@ package jobs.fib
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
+import doradilla.msg.TaskMsg.TaskResult
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
 import play.api.libs.json.Json
 
@@ -18,7 +19,8 @@ class FibWorkActorSpec extends  ActorTestClass  {
       val fibTranActor = system.actorOf(Props(new FibWorkActor(Json.toJson( FibRequest(10)).toString)), "FibnacciWorker")
       fibTranActor.tell(FibInit(FibAdd(1,1,0),proxy.ref),proxy.ref)
       proxy.expectMsgPF(){
-        case fibResult: FibResult=>fibResult.fa should be(55)
+        case taskResult: TaskResult=> val fibResult=Json.parse(taskResult.result).as[FibResult]
+          fibResult.fa should be(55)
           fibResult.a should be(10)
       }
     }

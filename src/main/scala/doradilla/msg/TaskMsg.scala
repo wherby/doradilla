@@ -14,17 +14,23 @@ object TaskMsg {
 
   case class RequestMsg(taskMsg: TaskMsg, replyTo: ActorRef, tranActor: ActorRef)
 
+  case class EndRequest(requestMsg: RequestMsg)
+
+  case class TaskResult(result: String)
+
   case class WorkerInfo(actorName: String, config: Option[String])
 
   case class TranslationError(info: Option[String])
 
   object TaskStatus extends Enumeration {
     type TaskStatus = Value
-    val Queued, Working, Finished, TimeOut, Failed, Unknown = Value
+    val Queued, Scheduled,  Working, Finished, TimeOut, Failed, Unknown = Value
 
     def withDefaultName(name: String): Value = {
       values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
     }
   }
+
+  trait ChildActorMsg
 
 }

@@ -4,7 +4,7 @@ import `var`.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.TaskMsg.{RequestMsg, TaskMsg, TaskStatus}
+import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskMsg, TaskStatus}
 import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
@@ -27,6 +27,29 @@ class ProxyActorSpec extends  ActorTestClass  {
       proxyActor.tell(QueryProxy(),proxy.ref)
       proxy.expectMsgPF(){
         case proxyTaskResult: ProxyTaskResult => proxyTaskResult.status should be(TaskStatus.Queued)
+      }
+    }
+    "ProxyActor will send EndRequest messsage when received Finish message" in{
+      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
+      proxyActor! TaskStatus.Finished
+      proxy.expectMsgPF(){
+        case endRequest: EndRequest =>println(endRequest)
+      }
+    }
+
+    "ProxyActor will send EndRequest message when received Failed Message" in{
+      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
+      proxyActor ! TaskStatus.Failed
+      proxy.expectMsgPF(){
+        case endRequest: EndRequest =>println(endRequest)
+      }
+    }
+
+    "ProxyActor will send EndRequest message when received TimeOut Message" in{
+      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
+      proxyActor ! TaskStatus.TimeOut
+      proxy.expectMsgPF(){
+        case endRequest: EndRequest =>println(endRequest)
       }
     }
   }

@@ -1,9 +1,13 @@
 package doradilla.fsm
 
-import akka.actor.{ActorLogging, FSM}
+import akka.actor.{ActorLogging, ActorRef, FSM}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor._
-import doradilla.msg.TaskMsg.RequestMsg
+import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskStatus, WorkerInfo}
+import doradilla.queue.QueueActor
+import doradilla.queue.QueueActor.{FetchTask, RequestList}
+import doradilla.util.DeployService
+
 import scala.concurrent.duration._
 
 /**
@@ -12,24 +16,52 @@ import scala.concurrent.duration._
   */
 class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
   startWith(Idle,Uninitialized)
+  var driverActor :ActorRef = null
+  var childActor :Option[ActorRef] = None
 
-  when(Idle){
-    case Event(requestItem: RequestMsg ,Uninitialized) =>
-      requestItem.replyTo ! requestItem
-      goto(Active) using(Task(requestItem))
-  }
-
-  onTransition{
-    case Active->Idle  =>{
-      stateData match {
-        case Task(requestItem) => log.info( s"To process $requestItem")
-        case Uninitialized =>
+  def hundleRequestList(requestList: RequestList)={
+    if(requestList.requests.length >0){
+      requestList.requests.map{
+        request => request.tranActor ! request
+          request.replyTo ! TaskStatus.Scheduled
       }
     }
   }
 
-  when(Active, stateTimeout = 1 second) {
-    case Event( StateTimeout, ex) =>
+  when(Idle, stateTimeout = 1 second){
+    case Event(requestItem: RequestMsg ,Uninitialized) =>
+      val requestList = QueueActor.RequestList(Seq(requestItem))
+      hundleRequestList(requestList)
+      goto(Active) using(Task(requestList))
+    case Event(setDriver: SetDriver,Uninitialized) =>{
+      driverActor = setDriver.ref
+      stay()
+    }
+    case Event(StateTimeout, Uninitialized) =>{
+      if(driverActor != null){
+        driverActor ! FetchJob()
+      }
+      stay()
+    }
+  }
+
+  onTransition{
+    case Active->Idle  =>{
+      childActor = None
+    }
+  }
+
+  when(Active) {
+    case Event(endRequest: EndRequest, task: Task) =>
+      val remainTask = task.requestList.requests.filter(request => endRequest.requestMsg != request)
+      if(remainTask.length >0){
+        stay() using(Task(RequestList(remainTask)))
+      }else{
+        driverActor ! FetchJob()
+        goto(Idle) using(Uninitialized)
+      }
+    case Event(workerInfo: WorkerInfo,_) =>
+      childActor = DeployService.tryToInstanceDeployActor(workerInfo,context)
       stay()
   }
 
@@ -52,7 +84,9 @@ object FsmActor{
 
   sealed  trait Data
   case object Uninitialized extends Data
-  final  case class Task(requestItem: RequestMsg )extends Data
+  final  case class Task(requestList: RequestList)extends Data
 
   case class QueryState()
+  case class SetDriver(ref:ActorRef)
+  case class FetchJob()
 }
