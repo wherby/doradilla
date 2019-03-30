@@ -1,7 +1,7 @@
 package doradilla.queue
 
 import doradilla.base.BaseActor
-import doradilla.msg.TaskMsg.RequestItem
+import doradilla.msg.TaskMsg.RequestMsg
 import doradilla.queue.QueueActor.{FetchTask, RequestList}
 
 /**
@@ -9,9 +9,9 @@ import doradilla.queue.QueueActor.{FetchTask, RequestList}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
 class QueueActor extends BaseActor{
-  var taskQueue:Seq[RequestItem]  = Seq()
+  var taskQueue:Seq[RequestMsg]  = Seq()
 
-  def insert(item: RequestItem)={
+  def insert(item: RequestMsg)={
     taskQueue = item +: taskQueue
   }
 
@@ -22,12 +22,12 @@ class QueueActor extends BaseActor{
   }
 
   override def receive: Receive = {
-    case item:RequestItem=> insert(item)
+    case item:RequestMsg=> insert(item)
     case FetchTask(num) => sender()! RequestList(fetch(num))
   }
 }
 
 object QueueActor{
   case class FetchTask(num: Int =1)
-  case class RequestList(requests : Seq[RequestItem])
+  case class RequestList(requests : Seq[RequestMsg])
 }

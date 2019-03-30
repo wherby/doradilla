@@ -3,7 +3,7 @@ package doradilla.fsm
 import akka.actor.{ActorLogging, FSM}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor._
-import doradilla.msg.TaskMsg.RequestItem
+import doradilla.msg.TaskMsg.RequestMsg
 import scala.concurrent.duration._
 
 /**
@@ -14,8 +14,8 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
   startWith(Idle,Uninitialized)
 
   when(Idle){
-    case Event(requestItem: RequestItem ,Uninitialized) =>
-      requestItem.actorRef ! requestItem
+    case Event(requestItem: RequestMsg ,Uninitialized) =>
+      requestItem.replyTo ! requestItem
       goto(Active) using(Task(requestItem))
   }
 
@@ -52,7 +52,7 @@ object FsmActor{
 
   sealed  trait Data
   case object Uninitialized extends Data
-  final  case class Task(requestItem: RequestItem )extends Data
+  final  case class Task(requestItem: RequestMsg )extends Data
 
   case class QueryState()
 }

@@ -1,10 +1,10 @@
 package doradilla.fsm
 
-import akka.actor.{ Props}
+import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.fsm.FsmActor.{QueryState, Uninitialized}
-import doradilla.msg.TaskMsg.{RequestItem, RequestMsg}
+import doradilla.fsm.FsmActor.{QueryState, Task, Uninitialized}
+import doradilla.msg.TaskMsg.{RequestMsg, TaskMsg}
 
 /**
   * For doradilla.fsm in doradilla
@@ -20,13 +20,17 @@ class FsmActorSpec  extends  ActorTestClass {
         case res =>
           res should be(Uninitialized)
       }
-      proxy.send(fsmActor, RequestItem(RequestMsg("add", "test",None),proxy.ref))
-      proxy.send(fsmActor,QueryState())
-
+      proxy.send(fsmActor, RequestMsg(TaskMsg("add", "test",None),proxy.ref,proxy.ref))
       proxy.expectMsgPF(){
         case res =>
           println(res)
-          res shouldBe a [RequestItem]
+          res shouldBe a [RequestMsg]
+      }
+      proxy.send(fsmActor,QueryState())
+      proxy.expectMsgPF(){
+        case res =>
+          println(res)
+          res shouldBe a [Task]
       }
     }
   }

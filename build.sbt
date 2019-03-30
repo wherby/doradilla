@@ -20,11 +20,14 @@ libraryDependencies ++= Seq (
   "com.typesafe.akka" %% "akka-slf4j"   % akka,
   "com.typesafe.akka" %% "akka-cluster" % akka,
   "com.typesafe.akka" %% "akka-testkit" % akka % "test"
-
 )
 
 // https://mvnrepository.com/artifact/org.scalatest/scalatest
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test
+
+// https://mvnrepository.com/artifact/com.typesafe.play/play-json
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.13"
+
 
 maintainer := "wherby <187225577@qq.com>"
 

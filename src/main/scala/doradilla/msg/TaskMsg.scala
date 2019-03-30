@@ -7,7 +7,24 @@ import akka.actor.ActorRef
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
 object TaskMsg {
+
   case class TaskControl(timeout: Int, retry: Int)
-  case class RequestMsg(operation: String, data:String, taskControl: Option[TaskControl])
-  case class RequestItem(requestMsg: RequestMsg,actorRef: ActorRef)
+
+  case class TaskMsg(operation: String, data: String, taskControl: Option[TaskControl] = None)
+
+  case class RequestMsg(taskMsg: TaskMsg, replyTo: ActorRef, tranActor: ActorRef)
+
+  case class WorkerInfo(actorName: String, config: Option[String])
+
+  case class TranslationError(info: Option[String])
+
+  object TaskStatus extends Enumeration {
+    type TaskStatus = Value
+    val Queued, Working, Finished, TimeOut, Failed, Unknown = Value
+
+    def withDefaultName(name: String): Value = {
+      values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
+    }
+  }
+
 }
