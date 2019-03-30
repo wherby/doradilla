@@ -13,12 +13,13 @@ import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 class ProxyActor(queueActor: ActorRef) extends BaseActor {
   var status: TaskStatus = TaskStatus.Unknown
   var replyTo: ActorRef = null
-  var requestMsg: RequestMsg = null
+  var requestMsgBk: RequestMsg = null
   var fsmActor: ActorRef =null
   var result: Option[String] = None
 
   def doRequestMsg(requestMsg: RequestMsg): Unit = {
     replyTo = requestMsg.replyTo
+    requestMsgBk =requestMsg
     queueActor ! RequestMsg(requestMsg.taskMsg, self, requestMsg.tranActor)
     status = TaskStatus.Queued
   }
@@ -26,12 +27,14 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
   override def receive: Receive = {
     case requestMsg: RequestMsg => doRequestMsg(requestMsg)
     case taskResult:TaskResult => result = Some(taskResult.result)
+      replyTo ! taskResult
       self ! TaskStatus.Finished
     case TaskStatus.Scheduled => fsmActor = sender()
       status =TaskStatus.Scheduled
-    case TaskStatus.Finished | TaskStatus.Failed | TaskStatus.TimeOut => fsmActor ! EndRequest(requestMsg)
+    case TaskStatus.Finished | TaskStatus.Failed | TaskStatus.TimeOut =>
+      fsmActor ! EndRequest(requestMsgBk)
     case msg: TaskStatus => status = msg
-    case query: QueryProxy => sender() ! ProxyTaskResult(requestMsg, status, result)
+    case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result)
   }
 }
 

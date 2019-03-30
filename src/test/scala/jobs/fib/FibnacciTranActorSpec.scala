@@ -1,6 +1,6 @@
 package jobs.fib
 
-import `var`.ConstVar
+import vars.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass

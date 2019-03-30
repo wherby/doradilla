@@ -1,6 +1,7 @@
 package doradilla.msg
 
 import akka.actor.ActorRef
+import doradilla.msg.TaskMsg.TaskStatus.TaskStatus
 
 /**
   * For doradilla.msg in doradilla
@@ -16,7 +17,7 @@ object TaskMsg {
 
   case class EndRequest(requestMsg: RequestMsg)
 
-  case class TaskResult(result: String)
+  case class TaskResult(taskStatus: TaskStatus,result: String)
 
   case class WorkerInfo(actorName: String, config: Option[String])
 

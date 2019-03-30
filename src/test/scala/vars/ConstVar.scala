@@ -1,4 +1,4 @@
-package `var`
+package vars
 
 import doradilla.msg.TaskMsg.TaskMsg
 import jobs.fib.FibnacciTranActor.FibRequest

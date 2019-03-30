@@ -3,7 +3,7 @@ package doradilla.driver
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor
-import doradilla.fsm.FsmActor.FetchJob
+import doradilla.fsm.FsmActor.{FetchJob, SetDriver}
 import doradilla.msg.TaskMsg.RequestMsg
 import doradilla.proxy.ProxyActor
 import doradilla.queue.QueueActor
@@ -19,6 +19,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
     case _=>context.actorOf(DriverActor.queueProps)
   }
   val fsmActor : ActorRef = context.actorOf(DriverActor.fsmProps)
+  fsmActor ! SetDriver(self)
 
   def createProxy():ActorRef={
     context.actorOf(DriverActor.proxyProps(queueActor))
@@ -30,6 +31,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
   }
 
   def hundleFetchJob()={
+    println("FETCHing.........")
     queueActor ! FetchTask(1)
   }
 

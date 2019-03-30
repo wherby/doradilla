@@ -29,6 +29,10 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
   }
 
   when(Idle, stateTimeout = 1 second){
+    case Event(requestList: RequestList,Uninitialized) =>{
+      hundleRequestList(requestList)
+      goto(Active) using(Task(requestList))
+    }
     case Event(requestItem: RequestMsg ,Uninitialized) =>
       val requestList = QueueActor.RequestList(Seq(requestItem))
       hundleRequestList(requestList)
@@ -45,23 +49,20 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
     }
   }
 
-  onTransition{
-    case Active->Idle  =>{
-      childActor = None
-    }
-  }
 
   when(Active) {
     case Event(endRequest: EndRequest, task: Task) =>
-      val remainTask = task.requestList.requests.filter(request => endRequest.requestMsg != request)
+      val remainTask = task.requestList.requests.filter(request => endRequest.requestMsg.taskMsg != request.taskMsg)
       if(remainTask.length >0){
         stay() using(Task(RequestList(remainTask)))
       }else{
         driverActor ! FetchJob()
+        childActor = None
         goto(Idle) using(Uninitialized)
       }
     case Event(workerInfo: WorkerInfo,_) =>
       childActor = DeployService.tryToInstanceDeployActor(workerInfo,context)
+
       stay()
     case Event(translatedTask: TranslatedTask,_)=>{
       if(childActor != None){
