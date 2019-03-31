@@ -17,7 +17,7 @@ class FibnacciTranActor extends BaseActor {
       case FibOperation.FibReq =>
         Json.parse(requestItem.taskMsg.data).asOpt[FibRequest] match {
           case Some(fibRequest) =>
-            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(requestItem.taskMsg.data))
+            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(requestItem.taskMsg.data), Some(requestItem.replyTo))
             sender ! TranslatedTask(FibInit(FibAdd(1,1,0),requestItem.replyTo))
           case _ => sender ! TranslationError(Some(s"Request data failed to process: ${requestItem.taskMsg.data}"))
         }

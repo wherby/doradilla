@@ -62,7 +62,9 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
       }
     case Event(workerInfo: WorkerInfo,_) =>
       childActor = DeployService.tryToInstanceDeployActor(workerInfo,context)
-
+      if(childActor !=None && workerInfo.replyTo != None){
+        workerInfo.replyTo.get ! TranslatedActor(childActor.get)
+      }
       stay()
     case Event(translatedTask: TranslatedTask,_)=>{
       if(childActor != None){
@@ -93,7 +95,12 @@ object FsmActor{
   case object Uninitialized extends Data
   final  case class Task(requestList: RequestList)extends Data
 
+  //Query fsm status
   case class QueryState()
+  //Set driver ref in fsm
   case class SetDriver(ref:ActorRef)
+  // Trigger Driver to fetch Job
   case class FetchJob()
+  // SendBack child Actor to TranslationActor
+  case class TranslatedActor(child: ActorRef)
 }

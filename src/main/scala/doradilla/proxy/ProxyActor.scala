@@ -2,6 +2,7 @@ package doradilla.proxy
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
+import doradilla.fsm.FsmActor.TranslatedActor
 import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskResult, TaskStatus}
 import doradilla.msg.TaskMsg.TaskStatus.TaskStatus
 import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
@@ -16,6 +17,7 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
   var requestMsgBk: RequestMsg = null
   var fsmActor: ActorRef =null
   var result: Option[String] = None
+  var translatedActorSeq :Seq[ActorRef] =Seq()
 
   def doRequestMsg(requestMsg: RequestMsg): Unit = {
     replyTo = requestMsg.replyTo
@@ -34,7 +36,8 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
     case TaskStatus.Finished | TaskStatus.Failed | TaskStatus.TimeOut =>
       fsmActor ! EndRequest(requestMsgBk)
     case msg: TaskStatus => status = msg
-    case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result)
+    case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result, translatedActorSeq, fsmActor )
+    case translatedActor: TranslatedActor =>translatedActorSeq = translatedActorSeq :+ translatedActor.child
   }
 }
 
@@ -42,6 +45,6 @@ object ProxyActor {
 
   case class QueryProxy()
 
-  case class ProxyTaskResult(requestMsg: RequestMsg, status: TaskStatus, result: Option[String])
+  case class ProxyTaskResult(requestMsg: RequestMsg, status: TaskStatus, result: Option[String], translatedActorSeq: Seq[ActorRef] ,fsmActor: ActorRef)
 
 }

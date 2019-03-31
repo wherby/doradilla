@@ -19,7 +19,7 @@ object TaskMsg {
 
   case class TaskResult(taskStatus: TaskStatus,result: String)
 
-  case class WorkerInfo(actorName: String, config: Option[String])
+  case class WorkerInfo(actorName: String, config: Option[String], replyTo: Option[ActorRef])
 
   case class TranslatedTask(task:Any)
 
@@ -33,7 +33,4 @@ object TaskMsg {
       values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
     }
   }
-
-  trait ChildActorMsg
-
 }
