@@ -3,7 +3,6 @@ package doradilla.fsm
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.driver.DriverActor
 import doradilla.fsm.FsmActor._
 import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskMsg}
 

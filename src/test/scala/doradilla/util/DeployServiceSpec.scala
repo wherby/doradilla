@@ -31,7 +31,7 @@ class DeployServiceSpec extends  ActorTestClass  {
     "Deploy a correct workerInfo without parameter should return actorRef " in{
       testActor.tell(WorkerInfo("doradilla.queue.QueueActor",None),proxy.ref)
       proxy.expectMsgPF(){
-        case res => res shouldBe a [Some[ActorRef]]
+        case res => res shouldBe a [Some[_]]
       }
     }
     "Deploy a correct workerInfo with  parameter should return actorRef " in{

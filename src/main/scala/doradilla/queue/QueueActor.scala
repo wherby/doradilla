@@ -12,7 +12,7 @@ class QueueActor extends BaseActor{
   var taskQueue:Seq[RequestMsg]  = Seq()
 
   def insert(item: RequestMsg)={
-    taskQueue = item +: taskQueue
+    taskQueue = taskQueue :+ item
   }
 
   def fetch(num : Int) = {

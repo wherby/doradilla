@@ -5,7 +5,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.msg.TaskMsg._
-import jobs.fib.FibnacciTranActor.{FibInit, FibRequest}
+import jobs.fib.FibnacciTranActor.{FibRequest}
 import play.api.libs.json.Json
 
 

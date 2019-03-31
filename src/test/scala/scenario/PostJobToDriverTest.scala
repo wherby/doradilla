@@ -6,8 +6,8 @@ import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.driver.DriverActor
 import doradilla.msg.TaskMsg.RequestMsg
-import doradilla.proxy.ProxyActor.QueryProxy
 import jobs.fib.FibnacciTranActor
+import org.scalatest.time.Second
 
 /**
   * For scenario in doradilla
@@ -18,32 +18,20 @@ class PostJobToDriverTest extends  ActorTestClass  {
     val fibTran = system.actorOf(Props(new FibnacciTranActor))
     val driver = system.actorOf(Props(new DriverActor()))
     val probe = TestProbe()
-    val request = RequestMsg(ConstVar.fibTask,probe.ref,fibTran)
-    "driver actor will handle RequestNsg " in{
-        driver.tell(request,probe.ref)
-       probe.expectMsgPF(){
-        case proxy:ActorRef =>
-          proxy
-      }
+
+    "driver actor will handle RequestMsg " in{
+       for(i <- 0 to 20 ){
+         val request = RequestMsg(ConstVar.fibTaskN(i),probe.ref,fibTran)
+         driver ! request
+       }
+      for(i <- 0 to 20 ){
       probe.expectMsgPF(){
         case msg=> println(msg)
       }
-      driver.tell(request,probe.ref)
-      probe.expectMsgPF(){
-        case proxy:ActorRef =>
-          proxy
       }
-      probe.expectMsgPF(){
-        case msg=> println(msg)
-      }
-      driver.tell(request,probe.ref)
-      probe.expectMsgPF(){
-        case proxy:ActorRef =>
-          proxy
-      }
-      probe.expectMsgPF(){
-        case msg=> println(msg)
-      }
+
+      val msgs = receiveN(21)
+      msgs.map(println)
     }
   }
 }

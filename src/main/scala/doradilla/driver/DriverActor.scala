@@ -8,12 +8,13 @@ import doradilla.msg.TaskMsg.RequestMsg
 import doradilla.proxy.ProxyActor
 import doradilla.queue.QueueActor
 import doradilla.queue.QueueActor.{FetchTask, RequestList}
-
+import akka.event.LoggingReceive
 /**
   * For doradilla.driver in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
+
   val queueActor = queue match {
     case Some(queue) => queue
     case _=>context.actorOf(DriverActor.queueProps)
@@ -31,7 +32,6 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
   }
 
   def hundleFetchJob()={
-    println("FETCHing.........")
     queueActor ! FetchTask(1)
   }
 
@@ -41,7 +41,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
     }
   }
 
-  override def receive: Receive = {
+  override def receive: Receive = LoggingReceive{
     case requestMsg: RequestMsg => handleRequest(requestMsg)
     case fetchJob: FetchJob =>hundleFetchJob()
     case requestList: RequestList => hundleRequestList(requestList)

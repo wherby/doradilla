@@ -17,7 +17,6 @@ class ProxyActorSpec extends  ActorTestClass  {
   "ProxyActor " must{
     val proxy = TestProbe()
     val proxyActor = system.actorOf(Props(new ProxyActor(proxy.ref)), "proxyActor")
-    val requestItem = RequestMsg(TaskMsg("fibreq", Json.toJson(FibRequest(10)).toString),proxy.ref,proxy.ref)
     "Receive a requestMsg will put the message to queue" in{
       val requestMsg = RequestMsg(ConstVar.fibTask,proxy.ref,proxy.ref)
       proxyActor ! requestMsg

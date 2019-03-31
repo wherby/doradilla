@@ -21,7 +21,7 @@ class FibWorkActor(config: String) extends BaseActor {
     fibAdd.a match {
       case a if a < endWith => self ! FibAdd(fibAdd.a + 1, fibAdd.fa + fibAdd.fam1, fibAdd.fa)
       case a if a == endWith => replyTo ! TaskResult(TaskStatus.Finished ,Json.toJson(FibResult(a, fibAdd.fa)).toString())
-      case _ => replyTo ! FibResult(0, 0)
+      case _ => replyTo ! TaskResult(TaskStatus.Finished ,Json.toJson(FibResult(0, 0)).toString())
     }
 
   }

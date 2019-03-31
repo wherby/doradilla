@@ -10,4 +10,5 @@ import play.api.libs.json.Json
   */
 object ConstVar {
   val fibTask = TaskMsg("fibreq", Json.toJson(FibRequest(10)).toString)
+  def fibTaskN(n:Int) = TaskMsg("fibreq", Json.toJson(FibRequest(n)).toString)
 }
