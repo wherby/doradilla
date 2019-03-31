@@ -1,16 +1,17 @@
-package jobs.fib
+package fib
 
-import vars.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.msg.TaskMsg._
-import jobs.fib.FibnacciTranActor.{FibRequest}
+import jobs.fib.{FibWorkActor, FibnacciTranActor}
+import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
+import vars.ConstVar
 
 
 /**
-  * For jobs.fib in doradilla
+  * For jobs.jobs.fib in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 class FibnacciTranActorSpec extends  ActorTestClass  {

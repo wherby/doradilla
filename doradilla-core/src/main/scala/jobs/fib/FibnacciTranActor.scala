@@ -3,11 +3,11 @@ package jobs.fib
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
 import doradilla.msg.TaskMsg._
-import jobs.fib.FibnacciTranActor._
+import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibOperation, FibRequest}
 import play.api.libs.json.Json
 
 /**
-  * For jobs.fib in doradilla
+  * For jobs.jobs.fib in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 class FibnacciTranActor extends BaseActor {

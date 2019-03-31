@@ -1,3 +1,5 @@
+package doradilla
+
 import akka.actor.ActorSystem
 
 /**
@@ -6,7 +8,7 @@ import akka.actor.ActorSystem
   *
   * Create a "Singleton" test system. while test start in sequence, then the isolation of the resource will be OK.
   */
-package object ActorSystemTest {
+ object ActorSystemTest {
   var actorSystem:Option[ActorSystem] = None
   var count = 0
   def  getActorSystem()={

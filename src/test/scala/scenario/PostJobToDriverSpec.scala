@@ -1,19 +1,18 @@
 package scenario
 
-import vars.ConstVar
-import akka.actor.{ActorRef, Props}
+import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.driver.DriverActor
 import doradilla.msg.TaskMsg.RequestMsg
 import jobs.fib.FibnacciTranActor
-import org.scalatest.time.Second
+import vars.ConstVar
 
 /**
   * For scenario in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/31
   */
-class PostJobToDriverTest extends  ActorTestClass  {
+class PostJobToDriverSpec extends  ActorTestClass  {
   "Post FibJob to Driver will start Fib task" must{
     val fibTran = system.actorOf(Props(new FibnacciTranActor))
     val driver = system.actorOf(Props(new DriverActor()))
