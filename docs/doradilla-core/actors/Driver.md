@@ -6,7 +6,7 @@ Driver
 
 ### RequestMsg
 
-RequestMsg is the initial workflow message. DriverActor get the message, will create a ProxyActor to "handle" the request. The ProxyActor will not process the RequestMsg, but put the RequestMsg to QueueActor to process the RequestMsg. The ProxyActor will collect the result of the RequestMsg.
+RequestMsg is the initial workflow message. DriverActor get the message, will create a ProxyActor to "handle" the requesgt. The ProxyActor will not process the RequestMsg, but put the RequestMsg to QueueActor to process the RequestMsg. The ProxyActor will collect the result of the RequestMsg.
 
 ### FetchJob
 
