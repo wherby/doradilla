@@ -15,12 +15,31 @@ dockerRepository := Some("wherby")
 dockerBaseImage := "java"
 
 
+
+
 lazy val doradillaCore = (project in file("doradilla-core"))
   .settings(commonSettings: _*)
   .enablePlugins(JavaAppPackaging)
   .settings(
     name := "Doradilla-core",
     publishArtifact := true,
+    licenses := Seq("Apache License 2.0" -> url("https://github.com/wherby/doradilla/blob/master/LICENSE")),
+    useGpg := true,
+    homepage := Some(url("https://github.com/wherby/doradilla")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/wherby/doradilla.git"),
+        "scm:git@github.com:wherby/doradilla.git"
+      )
+      ),
+      developers := List(
+      Developer(
+        id    = "wherby",
+        name  = "Tao Zhou",
+        email = "187225577@qq.com",
+        url   = url("https://github.com/wherby")
+      )
+      ),
     publishTo := {
       val nexus = "https://oss.sonatype.org/"
       if (version.value.contains("SNAPSHOT"))
