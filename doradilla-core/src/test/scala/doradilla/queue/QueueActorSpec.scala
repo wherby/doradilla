@@ -3,7 +3,7 @@ package doradilla.queue
 import akka.actor.{ Props}
 import akka.testkit.{ TestProbe}
 import doradilla.{ActorTestClass}
-import doradilla.msg.TaskMsg.{RequestMsg, TaskMsg}
+import doradilla.msg.Job.{JobRequest, JobMsg}
 import doradilla.queue.QueueActor.{FetchTask, RequestList}
 
 
@@ -17,7 +17,7 @@ class QueueActorSpec extends  ActorTestClass  {
     "receive RequestItem and fetch number of task" in {
       val proxy = TestProbe()
       val queueActor = system.actorOf(Props(new QueueActor), "queueActor")
-      queueActor ! RequestMsg(TaskMsg("add", "test",None),proxy.ref,proxy.ref)
+      queueActor ! JobRequest(JobMsg("add", "test",None),proxy.ref,proxy.ref)
       proxy.send(queueActor,FetchTask(2))
       proxy.expectMsgPF(){
         case RequestList(reqs) => reqs.length should be (1)

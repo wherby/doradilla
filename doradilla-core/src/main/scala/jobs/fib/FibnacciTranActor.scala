@@ -2,7 +2,7 @@ package jobs.fib
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.msg.TaskMsg._
+import doradilla.msg.Job._
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibOperation, FibRequest}
 import play.api.libs.json.Json
 
@@ -12,21 +12,21 @@ import play.api.libs.json.Json
   */
 class FibnacciTranActor extends BaseActor {
   implicit val FibRequestFormat = Json.format[FibRequest]
-  def translateFibRequest(requestItem: RequestMsg, sender: ActorRef): Unit = {
-    FibOperation.withDefaultName(requestItem.taskMsg.operation) match {
+  def translateFibRequest(jobRequest: JobRequest, sender: ActorRef): Unit = {
+    FibOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case FibOperation.FibReq =>
-        Json.parse(requestItem.taskMsg.data).asOpt[FibRequest] match {
+        Json.parse(jobRequest.taskMsg.data).asOpt[FibRequest] match {
           case Some(fibRequest) =>
-            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(requestItem.taskMsg.data), Some(requestItem.replyTo))
-            sender ! TranslatedTask(FibInit(FibAdd(1,1,0),requestItem.replyTo))
-          case _ => sender ! TranslationError(Some(s"Request data failed to process: ${requestItem.taskMsg.data}"))
+            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(jobRequest.taskMsg.data), Some(jobRequest.replyTo))
+            sender ! TranslatedTask(FibInit(FibAdd(1,1,0),jobRequest.replyTo))
+          case _ => sender ! TranslationError(Some(s"Request data failed to process: ${jobRequest.taskMsg.data}"))
         }
-      case _ => sender ! TranslationError(Some(s"Operation name failed to process: ${requestItem.taskMsg.operation}"))
+      case _ => sender ! TranslationError(Some(s"Operation name failed to process: ${jobRequest.taskMsg.operation}"))
     }
   }
 
   override def receive: Receive = {
-    case requestitem: RequestMsg => translateFibRequest(requestitem, sender())
+    case requestitem: JobRequest => translateFibRequest(requestitem, sender())
   }
 
 }

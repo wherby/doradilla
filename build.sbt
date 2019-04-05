@@ -55,7 +55,7 @@ lazy val root = (project in file("."))
   .aggregate(doradillaCore)
   .settings(
     name := "Doradilla",
-    libraryDependencies ++= Seq("io.github.wherby" %% "doradilla-core" % "0.1.0-SNAPSHOT"),
+    libraryDependencies ++= Seq("io.github.wherby" %% "doradilla-core" % "0.2.0-SNAPSHOT"),
     publishArtifact := false,
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
   )

@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.base.BaseActor
-import doradilla.msg.TaskMsg.WorkerInfo
+import doradilla.msg.Job.WorkerInfo
 
 /**
   * For doradilla.util in doradilla

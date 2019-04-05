@@ -2,7 +2,7 @@ package jobs.fib
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.msg.TaskMsg.{TaskResult, TaskStatus}
+import doradilla.msg.Job.{JobResult, JobStatus}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
 import play.api.libs.json.Json
 
@@ -20,8 +20,8 @@ class FibWorkActor(config: String) extends BaseActor {
   def handle(fibAdd: FibAdd) = {
     fibAdd.a match {
       case a if a < endWith => self ! FibAdd(fibAdd.a + 1, fibAdd.fa + fibAdd.fam1, fibAdd.fa)
-      case a if a == endWith => replyTo ! TaskResult(TaskStatus.Finished ,Json.toJson(FibResult(a, fibAdd.fa)).toString())
-      case _ => replyTo ! TaskResult(TaskStatus.Finished ,Json.toJson(FibResult(0, 0)).toString())
+      case a if a == endWith => replyTo ! JobResult(JobStatus.Finished ,Json.toJson(FibResult(a, fibAdd.fa)).toString())
+      case _ => replyTo ! JobResult(JobStatus.Finished ,Json.toJson(FibResult(0, 0)).toString())
     }
 
   }

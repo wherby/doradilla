@@ -1,23 +1,23 @@
 package doradilla.msg
 
 import akka.actor.ActorRef
-import doradilla.msg.TaskMsg.TaskStatus.TaskStatus
+import doradilla.msg.Job.JobStatus.JobStatus
 
 /**
   * For doradilla.msg in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
-object TaskMsg {
+object Job {
 
-  case class TaskControl(timeout: Int, retry: Int)
+  case class JobControl(timeout: Int, retry: Int)
 
-  case class TaskMsg(operation: String, data: String, taskControl: Option[TaskControl] = None)
+  case class JobMsg(operation: String, data: String, taskControl: Option[JobControl] = None)
 
-  case class RequestMsg(taskMsg: TaskMsg, replyTo: ActorRef, tranActor: ActorRef)
+  case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef)
 
-  case class EndRequest(requestMsg: RequestMsg)
+  case class JobEnd(requestMsg: JobRequest)
 
-  case class TaskResult(taskStatus: TaskStatus,result: String)
+  case class JobResult(taskStatus: JobStatus, result: String)
 
   case class WorkerInfo(actorName: String, config: Option[String], replyTo: Option[ActorRef])
 
@@ -25,8 +25,8 @@ object TaskMsg {
 
   case class TranslationError(info: Option[String])
 
-  object TaskStatus extends Enumeration {
-    type TaskStatus = Value
+  object JobStatus extends Enumeration {
+    type JobStatus = Value
     val Queued, Scheduled,  Working, Finished, TimeOut, Failed, Unknown = Value
 
     def withDefaultName(name: String): Value = {

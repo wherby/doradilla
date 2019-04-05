@@ -3,8 +3,8 @@ package doradilla.proxy
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor.TranslatedActor
-import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskResult, TaskStatus}
-import doradilla.msg.TaskMsg.TaskStatus.TaskStatus
+import doradilla.msg.Job.{JobEnd, JobRequest, JobResult, JobStatus}
+import doradilla.msg.Job.JobStatus.JobStatus
 import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 
 /**
@@ -12,30 +12,30 @@ import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 class ProxyActor(queueActor: ActorRef) extends BaseActor {
-  var status: TaskStatus = TaskStatus.Unknown
+  var status: JobStatus = JobStatus.Unknown
   var replyTo: ActorRef = null
-  var requestMsgBk: RequestMsg = null
+  var requestMsgBk: JobRequest = null
   var fsmActor: ActorRef =null
   var result: Option[String] = None
   var translatedActorSeq :Seq[ActorRef] =Seq()
 
-  def doRequestMsg(requestMsg: RequestMsg): Unit = {
+  def handleJobRequest(requestMsg: JobRequest): Unit = {
     replyTo = requestMsg.replyTo
     requestMsgBk =requestMsg
-    queueActor ! RequestMsg(requestMsg.taskMsg, self, requestMsg.tranActor)
-    status = TaskStatus.Queued
+    queueActor ! JobRequest(requestMsg.taskMsg, self, requestMsg.tranActor)
+    status = JobStatus.Queued
   }
 
   override def receive: Receive = {
-    case requestMsg: RequestMsg => doRequestMsg(requestMsg)
-    case taskResult:TaskResult => result = Some(taskResult.result)
-      replyTo ! taskResult
-      self ! TaskStatus.Finished
-    case TaskStatus.Scheduled => fsmActor = sender()
-      status =TaskStatus.Scheduled
-    case TaskStatus.Finished | TaskStatus.Failed | TaskStatus.TimeOut =>
-      fsmActor ! EndRequest(requestMsgBk)
-    case msg: TaskStatus => status = msg
+    case jobRequest: JobRequest => handleJobRequest(jobRequest)
+    case jobResult:JobResult => result = Some(jobResult.result)
+      replyTo ! jobResult
+      self ! JobStatus.Finished
+    case JobStatus.Scheduled => fsmActor = sender()
+      status =JobStatus.Scheduled
+    case JobStatus.Finished | JobStatus.Failed | JobStatus.TimeOut =>
+      fsmActor ! JobEnd(requestMsgBk)
+    case msg: JobStatus => status = msg
     case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result, translatedActorSeq, fsmActor )
     case translatedActor: TranslatedActor =>translatedActorSeq = translatedActorSeq :+ translatedActor.child
   }
@@ -45,6 +45,6 @@ object ProxyActor {
 
   case class QueryProxy()
 
-  case class ProxyTaskResult(requestMsg: RequestMsg, status: TaskStatus, result: Option[String], translatedActorSeq: Seq[ActorRef] ,fsmActor: ActorRef)
+  case class ProxyTaskResult(requestMsg: JobRequest, status: JobStatus, result: Option[String], translatedActorSeq: Seq[ActorRef], fsmActor: ActorRef)
 
 }

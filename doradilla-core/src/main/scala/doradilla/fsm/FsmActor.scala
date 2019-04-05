@@ -3,7 +3,7 @@ package doradilla.fsm
 import akka.actor.{ActorLogging, ActorRef, FSM}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor._
-import doradilla.msg.TaskMsg._
+import doradilla.msg.Job._
 import doradilla.queue.QueueActor
 import doradilla.queue.QueueActor.{ RequestList}
 import doradilla.util.DeployService
@@ -23,7 +23,7 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
     if(requestList.requests.length >0){
       requestList.requests.map{
         request => request.tranActor ! request
-          request.replyTo ! TaskStatus.Scheduled
+          request.replyTo ! JobStatus.Scheduled
       }
     }
   }
@@ -33,7 +33,7 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
       hundleRequestList(requestList)
       goto(Active) using(Task(requestList))
     }
-    case Event(requestItem: RequestMsg ,Uninitialized) =>
+    case Event(requestItem: JobRequest ,Uninitialized) =>
       val requestList = QueueActor.RequestList(Seq(requestItem))
       hundleRequestList(requestList)
       goto(Active) using(Task(requestList))
@@ -51,7 +51,7 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
 
 
   when(Active) {
-    case Event(endRequest: EndRequest, task: Task) =>
+    case Event(endRequest: JobEnd, task: Task) =>
       val remainTask = task.requestList.requests.filter(request => endRequest.requestMsg.taskMsg != request.taskMsg)
       if(remainTask.length >0){
         stay() using(Task(RequestList(remainTask)))

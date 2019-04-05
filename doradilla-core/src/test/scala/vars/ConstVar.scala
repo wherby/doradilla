@@ -1,6 +1,6 @@
 package vars
 
-import doradilla.msg.TaskMsg.TaskMsg
+import doradilla.msg.Job.JobMsg
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 
@@ -9,6 +9,6 @@ import play.api.libs.json.Json
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 object ConstVar {
-  val fibTask = TaskMsg("fibreq", Json.toJson(FibRequest(10)).toString)
-  def fibTaskN(n:Int) = TaskMsg("fibreq", Json.toJson(FibRequest(n)).toString)
+  val fibTask = JobMsg("fibreq", Json.toJson(FibRequest(10)).toString)
+  def fibTaskN(n:Int) = JobMsg("fibreq", Json.toJson(FibRequest(n)).toString)
 }

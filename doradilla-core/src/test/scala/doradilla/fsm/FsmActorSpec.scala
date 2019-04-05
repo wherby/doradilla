@@ -4,7 +4,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.fsm.FsmActor._
-import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskMsg}
+import doradilla.msg.Job.{JobEnd, JobRequest, JobMsg}
 
 /**
   * For doradilla.fsm in doradilla
@@ -22,12 +22,12 @@ class FsmActorSpec  extends  ActorTestClass {
         case res =>
           res should be(Uninitialized)
       }
-      val requestMsg = RequestMsg(TaskMsg("add", "test",None),proxy2.ref,proxy.ref)
+      val requestMsg = JobRequest(JobMsg("add", "test",None),proxy2.ref,proxy.ref)
       proxy.send(fsmActor,requestMsg)
       proxy.expectMsgPF(){
         case res =>
           println(res)
-          res shouldBe a [RequestMsg]
+          res shouldBe a [JobRequest]
       }
       proxy.send(fsmActor,QueryState())
       proxy.expectMsgPF(){
@@ -36,7 +36,7 @@ class FsmActorSpec  extends  ActorTestClass {
           res shouldBe a [Task]
       }
 
-      fsmActor ! EndRequest(requestMsg)
+      fsmActor ! JobEnd(requestMsg)
       proxy.expectMsgPF(){
         case res:FetchJob => println(res)
       }

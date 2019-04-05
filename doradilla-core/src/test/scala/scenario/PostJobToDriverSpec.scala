@@ -4,7 +4,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.driver.DriverActor
-import doradilla.msg.TaskMsg.RequestMsg
+import doradilla.msg.Job.JobRequest
 import jobs.fib.FibnacciTranActor
 import vars.ConstVar
 
@@ -20,7 +20,7 @@ class PostJobToDriverSpec extends  ActorTestClass  {
 
     "driver actor will handle RequestMsg " in{
        for(i <- 0 to 20 ){
-         val request = RequestMsg(ConstVar.fibTaskN(i),probe.ref,fibTran)
+         val request = JobRequest(ConstVar.fibTaskN(i),probe.ref,fibTran)
          driver ! request
        }
       for(i <- 0 to 20 ){

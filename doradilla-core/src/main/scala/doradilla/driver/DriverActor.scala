@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.fsm.FsmActor
 import doradilla.fsm.FsmActor.{FetchJob, SetDriver}
-import doradilla.msg.TaskMsg.RequestMsg
+import doradilla.msg.Job.JobRequest
 import doradilla.proxy.ProxyActor
 import doradilla.queue.QueueActor
 import doradilla.queue.QueueActor.{FetchTask, RequestList}
@@ -25,7 +25,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
   def createProxy():ActorRef={
     context.actorOf(DriverActor.proxyProps(queueActor))
   }
-  def handleRequest(requestMsg: RequestMsg)={
+  def handleRequest(requestMsg: JobRequest)={
     val proxyActor = createProxy()
     proxyActor ! requestMsg
     sender()! proxyActor
@@ -42,7 +42,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
   }
 
   override def receive: Receive = LoggingReceive{
-    case requestMsg: RequestMsg => handleRequest(requestMsg)
+    case requestMsg: JobRequest => handleRequest(requestMsg)
     case fetchJob: FetchJob =>hundleFetchJob()
     case requestList: RequestList => hundleRequestList(requestList)
   }

@@ -4,7 +4,7 @@ import vars.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.TaskMsg.{EndRequest, RequestMsg, TaskMsg, TaskStatus}
+import doradilla.msg.Job.{JobEnd, JobRequest, JobMsg, JobStatus}
 import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
@@ -18,37 +18,37 @@ class ProxyActorSpec extends  ActorTestClass  {
     val proxy = TestProbe()
     val proxyActor = system.actorOf(Props(new ProxyActor(proxy.ref)), "proxyActor")
     "Receive a requestMsg will put the message to queue" in{
-      val requestMsg = RequestMsg(ConstVar.fibTask,proxy.ref,proxy.ref)
+      val requestMsg = JobRequest(ConstVar.fibTask,proxy.ref,proxy.ref)
       proxyActor ! requestMsg
       proxy.expectMsgPF(){
-        case requestMsg: RequestMsg => requestMsg.replyTo should be(proxyActor)
+        case requestMsg: JobRequest => requestMsg.replyTo should be(proxyActor)
       }
       proxyActor.tell(QueryProxy(),proxy.ref)
       proxy.expectMsgPF(){
-        case proxyTaskResult: ProxyTaskResult => proxyTaskResult.status should be(TaskStatus.Queued)
+        case proxyTaskResult: ProxyTaskResult => proxyTaskResult.status should be(JobStatus.Queued)
       }
     }
     "ProxyActor will send EndRequest messsage when received Finish message" in{
-      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
-      proxyActor! TaskStatus.Finished
+      proxyActor.tell(JobStatus.Scheduled,proxy.ref)
+      proxyActor! JobStatus.Finished
       proxy.expectMsgPF(){
-        case endRequest: EndRequest =>println(endRequest)
+        case endRequest: JobEnd =>println(endRequest)
       }
     }
 
     "ProxyActor will send EndRequest message when received Failed Message" in{
-      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
-      proxyActor ! TaskStatus.Failed
+      proxyActor.tell(JobStatus.Scheduled,proxy.ref)
+      proxyActor ! JobStatus.Failed
       proxy.expectMsgPF(){
-        case endRequest: EndRequest =>println(endRequest)
+        case endRequest: JobEnd =>println(endRequest)
       }
     }
 
     "ProxyActor will send EndRequest message when received TimeOut Message" in{
-      proxyActor.tell(TaskStatus.Scheduled,proxy.ref)
-      proxyActor ! TaskStatus.TimeOut
+      proxyActor.tell(JobStatus.Scheduled,proxy.ref)
+      proxyActor ! JobStatus.TimeOut
       proxy.expectMsgPF(){
-        case endRequest: EndRequest =>println(endRequest)
+        case endRequest: JobEnd =>println(endRequest)
       }
     }
   }
