@@ -1,7 +1,7 @@
-package doradilla.msg
+package doradilla.core.msg
 
 import akka.actor.ActorRef
-import doradilla.msg.Job.JobStatus.JobStatus
+import Job.JobStatus.JobStatus
 
 /**
   * For doradilla.msg in doradilla

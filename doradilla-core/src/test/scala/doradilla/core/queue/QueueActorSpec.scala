@@ -1,10 +1,10 @@
-package doradilla.queue
+package doradilla.core.queue
 
-import akka.actor.{ Props}
-import akka.testkit.{ TestProbe}
-import doradilla.{ActorTestClass}
-import doradilla.msg.Job.{JobRequest, JobMsg}
-import doradilla.queue.QueueActor.{FetchTask, RequestList}
+import akka.actor.Props
+import akka.testkit.TestProbe
+import doradilla.ActorTestClass
+import doradilla.core.msg.Job.{JobMsg, JobRequest}
+import doradilla.core.queue.QueueActor.{FetchTask, RequestList}
 
 
 /**

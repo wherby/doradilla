@@ -2,7 +2,7 @@ package jobs.fib
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.msg.Job.{JobResult, JobStatus}
+import doradilla.core.msg.Job.{JobResult, JobStatus}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
 import play.api.libs.json.Json
 

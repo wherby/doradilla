@@ -2,7 +2,7 @@ package doradilla.util
 
 import akka.actor.{ActorContext, ActorRef, Props}
 import akka.event.slf4j.Logger
-import doradilla.msg.Job.WorkerInfo
+import doradilla.core.msg.Job.WorkerInfo
 
 /**
   * For doradilla.util in doradilla

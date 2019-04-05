@@ -1,10 +1,10 @@
-package doradilla.fsm
+package doradilla.core.fsm
 
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.fsm.FsmActor._
-import doradilla.msg.Job.{JobEnd, JobRequest, JobMsg}
+import doradilla.core.fsm.FsmActor._
+import doradilla.core.msg.Job.{JobEnd, JobMsg, JobRequest}
 
 /**
   * For doradilla.fsm in doradilla

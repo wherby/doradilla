@@ -1,13 +1,11 @@
-package doradilla.proxy
+package doradilla.core.proxy
 
 import vars.ConstVar
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.Job.{JobEnd, JobRequest, JobMsg, JobStatus}
-import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
-import jobs.fib.FibnacciTranActor.FibRequest
-import play.api.libs.json.Json
+import doradilla.core.msg.Job._
+import doradilla.core.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 
 /**
   * For doradilla.proxy in doradilla

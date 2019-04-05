@@ -1,14 +1,14 @@
-package doradilla.driver
+package doradilla.core.driver
 
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
-import doradilla.fsm.FsmActor
-import doradilla.fsm.FsmActor.{FetchJob, SetDriver}
-import doradilla.msg.Job.JobRequest
-import doradilla.proxy.ProxyActor
-import doradilla.queue.QueueActor
-import doradilla.queue.QueueActor.{FetchTask, RequestList}
 import akka.event.LoggingReceive
+import doradilla.core.fsm.FsmActor
+import doradilla.core.fsm.FsmActor.{FetchJob, SetDriver}
+import doradilla.core.msg.Job.JobRequest
+import doradilla.core.proxy.ProxyActor
+import doradilla.core.queue.QueueActor
+import doradilla.core.queue.QueueActor.{FetchTask, RequestList}
 /**
   * For doradilla.driver in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30

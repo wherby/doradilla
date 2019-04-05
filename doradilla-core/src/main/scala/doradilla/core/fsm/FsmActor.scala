@@ -1,11 +1,11 @@
-package doradilla.fsm
+package doradilla.core.fsm
 
 import akka.actor.{ActorLogging, ActorRef, FSM}
 import doradilla.base.BaseActor
-import doradilla.fsm.FsmActor._
-import doradilla.msg.Job._
-import doradilla.queue.QueueActor
-import doradilla.queue.QueueActor.{ RequestList}
+import doradilla.core.fsm.FsmActor._
+import doradilla.core.msg.Job._
+import doradilla.core.queue.QueueActor
+import doradilla.core.queue.QueueActor.RequestList
 import doradilla.util.DeployService
 
 import scala.concurrent.duration._

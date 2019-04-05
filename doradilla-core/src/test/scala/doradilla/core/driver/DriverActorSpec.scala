@@ -1,9 +1,10 @@
-package doradilla.driver
+package doradilla.core.driver
 
 import akka.actor.{ActorRef, Props}
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.Job.{JobRequest, JobMsg}
+import doradilla.core.driver.DriverActor
+import doradilla.core.msg.Job.{JobMsg, JobRequest}
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 

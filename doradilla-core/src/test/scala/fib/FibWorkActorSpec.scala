@@ -3,7 +3,7 @@ package fib
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.msg.Job.JobResult
+import doradilla.core.msg.Job.JobResult
 import jobs.fib.FibWorkActor
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
 import play.api.libs.json.Json

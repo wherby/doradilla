@@ -1,8 +1,8 @@
-package doradilla.queue
+package doradilla.core.queue
 
 import doradilla.base.BaseActor
-import doradilla.msg.Job.JobRequest
-import doradilla.queue.QueueActor.{FetchTask, RequestList}
+import doradilla.core.msg.Job.JobRequest
+import QueueActor.{FetchTask, RequestList}
 
 /**
   * For doradilla.queue in doradilla

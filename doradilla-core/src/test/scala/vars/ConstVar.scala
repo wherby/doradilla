@@ -1,6 +1,6 @@
 package vars
 
-import doradilla.msg.Job.JobMsg
+import doradilla.core.msg.Job.JobMsg
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 

@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.base.BaseActor
-import doradilla.msg.Job.WorkerInfo
+import doradilla.core.msg.Job.WorkerInfo
 
 /**
   * For doradilla.util in doradilla
@@ -29,7 +29,7 @@ class DeployServiceSpec extends  ActorTestClass  {
     val proxy = TestProbe()
     val testActor = system.actorOf(Props(new TestActor()))
     "Deploy a correct workerInfo without parameter should return actorRef " in{
-      testActor.tell(WorkerInfo("doradilla.queue.QueueActor",None,None),proxy.ref)
+      testActor.tell(WorkerInfo("doradilla.core.queue.QueueActor",None,None),proxy.ref)
       proxy.expectMsgPF(){
         case res => res shouldBe a [Some[_]]
       }

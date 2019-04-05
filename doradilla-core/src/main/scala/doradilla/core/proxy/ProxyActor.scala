@@ -1,11 +1,11 @@
-package doradilla.proxy
+package doradilla.core.proxy
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.fsm.FsmActor.TranslatedActor
-import doradilla.msg.Job.{JobEnd, JobRequest, JobResult, JobStatus}
-import doradilla.msg.Job.JobStatus.JobStatus
-import doradilla.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
+import doradilla.core.fsm.FsmActor.TranslatedActor
+import doradilla.core.msg.Job.JobStatus.JobStatus
+import doradilla.core.msg.Job.{JobEnd, JobRequest, JobResult, JobStatus}
+import doradilla.core.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 
 /**
   * For doradilla.proxy in doradilla

@@ -3,8 +3,8 @@ package scenario
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.driver.DriverActor
-import doradilla.msg.Job.JobRequest
+import doradilla.core.driver.DriverActor
+import doradilla.core.msg.Job.JobRequest
 import jobs.fib.FibnacciTranActor
 import vars.ConstVar
 
