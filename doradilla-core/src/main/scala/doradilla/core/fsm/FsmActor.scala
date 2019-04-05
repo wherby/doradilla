@@ -2,6 +2,7 @@ package doradilla.core.fsm
 
 import akka.actor.{ActorLogging, ActorRef, FSM}
 import doradilla.base.BaseActor
+import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.core.fsm.FsmActor._
 import doradilla.core.msg.Job._
 import doradilla.core.queue.QueueActor
@@ -76,10 +77,15 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
 
 
   whenUnhandled{
+    case Event(queryChild: QueryChild,_) => val childInfo = ChildInfo(context.self.path.toString,getChildren(),System.currentTimeMillis()/1000)
+      queryChild.actorRef ! childInfo
+      this.context.children.map{ child=>
+        child ! queryChild
+      }
+      stay()
     case Event(QueryState(),data)=>
-      log.info(s"Not hundle : $data")
       sender() !data
-      log.info(s"Send back: $data" )
+      log.info(s"QueryState: $data" )
       stay
   }
 

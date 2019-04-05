@@ -1,10 +1,9 @@
 package doradilla.base
 
-import akka.actor.{ Props}
-import akka.testkit.{ TestProbe}
+import akka.actor.Props
+import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.base.BaseActor.NotHandleMessage
-import doradilla.base.query.QueryActor.{ChildInfo, QueryChild}
+import doradilla.base.query.QueryTrait.{ChildInfo, NotHandleMessage, QueryChild}
 
 
 /**
