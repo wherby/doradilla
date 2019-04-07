@@ -6,7 +6,6 @@ import doradilla.ActorTestClass
 import doradilla.base.query.QueryTrait.ChildInfo
 import doradilla.core.driver.DriverActor
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
-import jobs.fib.FibnacciTranActor
 
 /**
   * For doradilla.tool.query in Doradilla
@@ -33,6 +32,17 @@ class QueryActorSpec extends  ActorTestClass  {
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
           rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[ChildInfo]]
+      }
+    }
+
+    "return queried root actor when GetRoot with not existed path " in {
+      queryActor ! QueryRoot(driver)
+      Thread.sleep(100)
+      queryActor.tell(GetRoot(Some("akka://AkkaQuickstartSpec/user/NotExist")),probe.ref)
+      probe.expectMsgPF(){
+        case rootResult: RootResult => println(rootResult)
+          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe(None)
+          rootResult.rootMap.keys.toSeq.length should be (0)
       }
     }
   }
