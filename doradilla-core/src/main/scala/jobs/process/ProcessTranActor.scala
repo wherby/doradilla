@@ -44,7 +44,7 @@ object ProcessTranActor{
     }
   }
 
-  case class ProcessRequest(cmd : List[String], paras: Option[String] = None)
+  case class ProcessRequest(cmdWin : List[String],cmdLinux : List[String])
 
   case class SimpleProcessInit(processRequest: ProcessRequest, replyTo: ActorRef)
 }

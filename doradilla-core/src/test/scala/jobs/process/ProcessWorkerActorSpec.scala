@@ -7,6 +7,7 @@ import doradilla.core.msg.Job.JobResult
 import doradilla.util.ProcessService.ExecuteResult
 import jobs.process.ProcessTranActor.{ProcessRequest, SimpleProcessInit}
 import play.api.libs.json.Json
+import vars.ConstVar
 
 /**
   * For jobs.process in Doradilla
@@ -17,7 +18,7 @@ class ProcessWorkerActorSpec extends ActorTestClass{
     val probe = TestProbe()
     "Return result when finish process" in {
       val processWorker = system.actorOf(Props(new ProcessWorkerActor()), "ProcessWorkerActorSpecWorker")
-      val processRequest = SimpleProcessInit( ProcessRequest(List("ping 127.0.0.1 -n 1")),probe.ref)
+      val processRequest = SimpleProcessInit( ConstVar.processRequest,probe.ref)
       processWorker ! processRequest
       probe.expectMsgPF(){
         case jobResult: JobResult=>println(jobResult)

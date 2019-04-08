@@ -15,10 +15,10 @@ object ProcessService {
   implicit val ExecuteResultFormat = Json.format[ExecuteResult]
   case class ExecuteResult(exitValue:Int, stdout:String, stderr:String)
   lazy val osString = System.getProperty("os.name")
-  def runProcess(cmd:List[String],executor : ExecutionContext =scala.concurrent.ExecutionContext.Implicits.global) :Future[ExecuteResult]={
+  def runProcess(cmdWin:List[String],cmdLinux:List[String],executor : ExecutionContext =scala.concurrent.ExecutionContext.Implicits.global) :Future[ExecuteResult]={
     val cmdProcess =osString.toLowerCase() match {
-      case osStr if osStr.startsWith("win") => "cmd.exe" :: "/c" :: cmd
-      case _=> "bash" :: "-c" :: cmd
+      case osStr if osStr.startsWith("win") => "cmd.exe" :: "/c" :: cmdWin
+      case _=> "bash" :: "-c" :: cmdLinux
     }
     Future(try{
       val stdoutStream = new ByteArrayOutputStream

@@ -24,7 +24,8 @@ class ProcessWorkerActor extends BaseActor{
   val tickTime = 100 milliseconds
 
   def handleProcessInit(simpleProcessInit: SimpleProcessInit)={
-    futureRusult = ProcessService.runProcess(simpleProcessInit.processRequest.cmd, dispatcherToUse)
+    futureRusult = ProcessService.runProcess(simpleProcessInit.processRequest.cmdWin,
+      simpleProcessInit.processRequest.cmdLinux, dispatcherToUse)
     replayToOpt = Some(simpleProcessInit.replyTo)
     cancelableSchedulerOpt = Some(context.system.scheduler.schedule(tickTime,tickTime,this.self,TickMsg()))
   }
