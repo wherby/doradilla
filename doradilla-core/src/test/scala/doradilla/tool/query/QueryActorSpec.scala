@@ -3,7 +3,6 @@ package doradilla.tool.query
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.base.query.QueryTrait.ChildInfo
 import doradilla.core.driver.DriverActor
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
 
@@ -22,7 +21,7 @@ class QueryActorSpec extends  ActorTestClass  {
       queryActor.tell(GetRoot(None),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[ChildInfo]]
+          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[_]]
       }
     }
     "return queried root actor when GetRoot with path " in {
@@ -31,7 +30,7 @@ class QueryActorSpec extends  ActorTestClass  {
       queryActor.tell(GetRoot(Some("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver")),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[ChildInfo]]
+          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[_]]
       }
     }
 

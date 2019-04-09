@@ -1,0 +1,22 @@
+package doradilla.api
+
+import akka.actor.ActorSystem
+import doradilla.ActorTestClass
+
+/**
+  * For doradilla.api in Doradilla
+  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/9
+  */
+class SystemApiSpec extends ActorTestClass{
+  "SystemApi" must{
+    "Return a new actorSytem with doradillaSystem prefix " in {
+      val system = new SystemApi()
+      system.actorSystem.name should startWith ("diradilla")
+    }
+    "Return a existed actorSystem when system pass in " in {
+      val system = ActorSystem("SystemApiSpecTest")
+      val systemApi = new SystemApi(Some(system))
+      systemApi.actorSystem.name should startWith("SystemApiSpecTest")
+    }
+  }
+}

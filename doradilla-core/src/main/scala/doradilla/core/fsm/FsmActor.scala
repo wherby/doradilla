@@ -18,7 +18,7 @@ import scala.concurrent.duration._
 class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
   startWith(Idle,Uninitialized)
   var driverActor :ActorRef = null
-  var childActor :Option[ActorRef] = None
+  var childActorOpt :Option[ActorRef] = None
 
   def hundleRequestList(requestList: RequestList)={
     if(requestList.requests.length >0){
@@ -27,6 +27,13 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
           request.replyTo ! JobStatus.Scheduled
       }
     }
+  }
+
+  def endChildActor() ={
+    childActorOpt.map{
+      childActor => context.stop(childActor)
+    }
+    childActorOpt = None
   }
 
   when(Idle, stateTimeout = 1 second){
@@ -58,18 +65,18 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
         stay() using(Task(RequestList(remainTask)))
       }else{
         driverActor ! FetchJob()
-        childActor = None
+        endChildActor()
         goto(Idle) using(Uninitialized)
       }
     case Event(workerInfo: WorkerInfo,_) =>
-      childActor = DeployService.tryToInstanceDeployActor(workerInfo,context)
-      if(childActor !=None && workerInfo.replyTo != None){
-        workerInfo.replyTo.get ! TranslatedActor(childActor.get)
+      childActorOpt = DeployService.tryToInstanceDeployActor(workerInfo,context)
+      if(childActorOpt !=None && workerInfo.replyTo != None){
+        workerInfo.replyTo.get ! TranslatedActor(childActorOpt.get)
       }
       stay()
     case Event(translatedTask: TranslatedTask,_)=>{
-      if(childActor != None){
-        childActor.get ! translatedTask.task
+      if(childActorOpt != None){
+        childActorOpt.get ! translatedTask.task
       }
       stay()
     }
