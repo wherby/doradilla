@@ -18,10 +18,8 @@ implicit val commandRequestFormat = Json.format[CommandRequest]
       case CommandOperation.SimpleCommand =>
         Json.parse(jobRequest.taskMsg.data).asOpt[CommandRequest] match {
           case Some(commandRequest) =>
-            println(s"Receive $jobRequest")
             sender() ! WorkerInfo(classOf[CommandWorkerActor].getName,None,Some(jobRequest.replyTo))
             sender() ! TranslatedTask(SimpleCommandInit(commandRequest,jobRequest.replyTo))
-            println(s"sending ${TranslatedTask(SimpleCommandInit(commandRequest,jobRequest.replyTo))}")
           case _=> sender() ! TranslationDataError(Some(s" ${jobRequest.taskMsg.data}"))
         }
       case _=> sender() ! TranslationOperationError(Some(jobRequest.taskMsg.operation))

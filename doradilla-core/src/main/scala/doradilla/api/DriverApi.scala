@@ -11,11 +11,13 @@ import doradilla.util.ConfigService
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/9
   */
 trait DriverApi { this: SystemApi =>
-  def createDriver(queueActorOpt: Option[ActorRef], driverNameOpt:Option[String]): ActorRef = {
+  def createDriver(queueActorOpt: Option[ActorRef]=None, driverNameOpt:Option[String]=None): ActorRef = {
     val driverName = driverNameOpt match {
       case Some(driverName) => driverName
       case _=> ConfigService.getStringOpt(doradillaConfig, "driverPrefix").getOrElse("driver") +  UUID.randomUUID().toString
     }
     actorSystem.actorOf(Props(new DriverActor(queueActorOpt)),driverName)
   }
+
+  var driver = createDriver()
 }

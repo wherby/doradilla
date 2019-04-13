@@ -28,7 +28,9 @@ class BaseActorSpec extends  ActorTestClass  {
         case ChildInfo(root,child,_)=> root should be ("akka://AkkaQuickstartSpec/user/test")
       }
       proxy.send(testActor,"test")
-      proxy.expectMsg(NotHandleMessage("test"))
+      proxy.expectMsgPF(){
+        case notHandleMessage: NotHandleMessage =>println(notHandleMessage)
+      }
     }
   }
 }

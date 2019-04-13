@@ -1,6 +1,6 @@
 package doradilla.core.fsm
 
-import akka.actor.{ActorLogging, ActorRef, FSM}
+import akka.actor.{ActorLogging, ActorRef, FSM, PoisonPill}
 import doradilla.base.BaseActor
 import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.core.fsm.FsmActor._
@@ -32,7 +32,7 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
 
   def endChildActor() ={
     childActorOpt.map{
-      childActor => context.stop(childActor)
+      childActor => childActor ! PoisonPill
     }
     childActorOpt = None
   }

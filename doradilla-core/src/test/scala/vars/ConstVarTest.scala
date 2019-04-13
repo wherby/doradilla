@@ -24,6 +24,7 @@ object ConstVarTest {
   val processRequest = ProcessRequest(cmdWin, cmdLinux)
   val processJob = JobMsg("SimpleProcess", Json.toJson(processRequest).toString)
   val timeout100m = 100 milliseconds
+  val timeout10S = 100 second
 
   val osString = System.getProperty("os.name")
   val command = osString.toLowerCase() match {
