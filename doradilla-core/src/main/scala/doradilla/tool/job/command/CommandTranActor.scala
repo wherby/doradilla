@@ -3,7 +3,7 @@ package doradilla.tool.job.command
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobRequest, WorkerInfo}
-import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationError, TranslationOperationError}
+import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationOperationError}
 import doradilla.tool.job.command.CommandTranActor.{CommandOperation, CommandRequest, SimpleCommandInit}
 import play.api.libs.json.Json
 
@@ -11,39 +11,42 @@ import play.api.libs.json.Json
   * For doradilla.tool.job.command in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/13
   */
-class CommandTranActor extends BaseActor{
-implicit val commandRequestFormat = Json.format[CommandRequest]
-  def translateCommandRequest(jobRequest: JobRequest)={
+class CommandTranActor extends BaseActor {
+  implicit val commandRequestFormat = Json.format[CommandRequest]
+
+  def translateCommandRequest(jobRequest: JobRequest) = {
     CommandOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case CommandOperation.SimpleCommand =>
         Json.parse(jobRequest.taskMsg.data).asOpt[CommandRequest] match {
           case Some(commandRequest) =>
-            sender() ! WorkerInfo(classOf[CommandWorkerActor].getName,None,Some(jobRequest.replyTo))
-            sender() ! TranslatedTask(SimpleCommandInit(commandRequest,jobRequest.replyTo))
-          case _=> sender() ! TranslationDataError(Some(s" ${jobRequest.taskMsg.data}"))
+            sender() ! WorkerInfo(classOf[CommandWorkerActor].getName, None, Some(jobRequest.replyTo))
+            sender() ! TranslatedTask(SimpleCommandInit(commandRequest, jobRequest.replyTo))
+          case _ => sender() ! TranslationDataError(Some(s" ${jobRequest.taskMsg.data}"))
         }
-      case _=> sender() ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
+      case _ => sender() ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
     }
   }
 
   override def receive: Receive = {
-    case jobRequest: JobRequest=> translateCommandRequest(jobRequest)
+    case jobRequest: JobRequest => translateCommandRequest(jobRequest)
   }
 }
 
-object CommandTranActor{
+object CommandTranActor {
   implicit val commandRequestFormat = Json.format[CommandRequest]
-  object CommandOperation extends Enumeration{
+
+  object CommandOperation extends Enumeration {
     type CommandOperation = Value
 
-    val SimpleCommand, Unknown =Value
+    val SimpleCommand, Unknown = Value
 
-    def withDefaultName(name:String) :Value={
-      values.find(_.toString.toLowerCase ==name.toLowerCase).getOrElse(Unknown)
+    def withDefaultName(name: String): Value = {
+      values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
     }
   }
 
-  case class CommandRequest(command:List[String])
+  case class CommandRequest(command: List[String])
 
-  case class SimpleCommandInit(commandRequest: CommandRequest, repleyTo:ActorRef)
+  case class SimpleCommandInit(commandRequest: CommandRequest, repleyTo: ActorRef)
+
 }

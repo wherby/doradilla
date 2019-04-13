@@ -8,7 +8,7 @@ import akka.event.LoggingReceive
 import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.fsm.FsmActor
 import doradilla.core.fsm.FsmActor.{FetchJob, SetDriver}
-import doradilla.core.msg.Job.{JobMsg, JobRequest}
+import doradilla.core.msg.Job.{ JobRequest}
 import doradilla.core.proxy.ProxyActor
 import doradilla.core.queue.QueueActor
 import doradilla.core.queue.QueueActor.{FetchTask, RequestList}

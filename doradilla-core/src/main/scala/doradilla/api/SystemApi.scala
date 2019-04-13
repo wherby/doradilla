@@ -2,7 +2,7 @@ package doradilla.api
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorSystem}
 import com.typesafe.config.ConfigFactory
 import doradilla.util.ConfigService
 
