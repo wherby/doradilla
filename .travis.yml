@@ -3,5 +3,9 @@ scala:
 - 2.12.7
 jdk:
 - oraclejdk8
+
 script:
-- sbt ++$TRAVIS_SCALA_VERSION test
+- sbt clean coverage test coverageReport
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
