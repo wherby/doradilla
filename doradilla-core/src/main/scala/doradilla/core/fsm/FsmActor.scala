@@ -5,6 +5,7 @@ import doradilla.base.BaseActor
 import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.core.fsm.FsmActor._
 import doradilla.core.msg.Job._
+import doradilla.core.msg.TranslationMSG.TranslatedTask
 import doradilla.core.queue.QueueActor
 import doradilla.core.queue.QueueActor.RequestList
 import doradilla.util.DeployService
@@ -59,8 +60,8 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
 
 
   when(Active) {
-    case Event(endRequest: JobEnd, task: Task) =>
-      val remainTask = task.requestList.requests.filter(request => endRequest.requestMsg.taskMsg != request.taskMsg)
+    case Event(jobEnd: JobEnd, task: Task) =>
+      val remainTask = task.requestList.requests.filter(request => jobEnd.requestMsg.taskMsg != request.taskMsg)
       if(remainTask.length >0){
         stay() using(Task(RequestList(remainTask)))
       }else{
@@ -75,8 +76,8 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
       }
       stay()
     case Event(translatedTask: TranslatedTask,_)=>{
-      if(childActorOpt != None){
-        childActorOpt.get ! translatedTask.task
+      childActorOpt.map{
+        childActor=> childActor ! translatedTask.task
       }
       stay()
     }
@@ -94,6 +95,9 @@ class FsmActor extends FSM[State,Data] with BaseActor with ActorLogging{
       sender() !data
       log.info(s"QueryState: $data" )
       stay
+    case Event(e,_)=>
+      log.warning(s"Unhandle $e from $sender() in $stateName with $stateData")
+      stay()
   }
 
 }

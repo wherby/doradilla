@@ -1,5 +1,7 @@
 package doradilla.core.driver
 
+import java.util.UUID
+
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import akka.event.LoggingReceive
@@ -17,17 +19,17 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
 
   val queueActor = queue match {
     case Some(queue) => queue
-    case _=>context.actorOf(DriverActor.queueProps)
+    case _=>context.actorOf(DriverActor.queueProps,"queueActor" + UUID.randomUUID().toString)
   }
-  val fsmActor : ActorRef = context.actorOf(DriverActor.fsmProps)
+  val fsmActor : ActorRef = context.actorOf(DriverActor.fsmProps ,"fsmActor" + UUID.randomUUID().toString)
   fsmActor ! SetDriver(self)
 
   def createProxy():ActorRef={
     context.actorOf(DriverActor.proxyProps(queueActor))
   }
-  def handleRequest(requestMsg: JobRequest)={
+  def handleRequest(jobRequest: JobRequest)={
     val proxyActor = createProxy()
-    proxyActor ! requestMsg
+    proxyActor ! jobRequest
     sender()! proxyActor
   }
 
@@ -42,7 +44,7 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor{
   }
 
   override def receive: Receive = LoggingReceive{
-    case requestMsg: JobRequest => handleRequest(requestMsg)
+    case jobRequest: JobRequest => handleRequest(jobRequest)
     case fetchJob: FetchJob =>hundleFetchJob()
     case requestList: RequestList => hundleRequestList(requestList)
   }

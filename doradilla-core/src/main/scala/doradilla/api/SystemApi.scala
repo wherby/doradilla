@@ -15,7 +15,6 @@ import doradilla.util.ConfigService
 class SystemApi(systemOpt: Option[ActorSystem] = None) {
   def getConfig()={
     val config = ConfigFactory.load()
-   // ConfigService.getConfigOpt(config,"doradilla").withFallback(config).resolve()
     ConfigFactory.load("doradilla").withFallback(config).resolve()
   }
   lazy val doradillaConfig =getConfig()

@@ -6,7 +6,7 @@ import doradilla.ActorTestClass
 import doradilla.base.query.QueryTrait.NotHandleMessage
 import doradilla.core.driver.DriverActor
 import doradilla.tool.control.ControlActor.ControlMsg
-import vars.ConstVar
+import vars.ConstVarTest
 
 /**
   * For doradilla.tool.control in Doradilla
@@ -29,7 +29,7 @@ class ControlActorSpec  extends  ActorTestClass  {
       val probe = TestProbe()
       val controlMsg = ControlMsg("../Notexisted","TEST")
       controlActor.tell(controlMsg,probe.ref)
-      probe.expectNoMessage(ConstVar.timeout100m)
+      probe.expectNoMessage(ConstVarTest.timeout100m)
     }
   }
 }

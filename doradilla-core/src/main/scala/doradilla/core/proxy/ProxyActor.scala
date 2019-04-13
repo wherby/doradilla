@@ -26,6 +26,10 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
     status = JobStatus.Queued
   }
 
+  def finishTask()={
+    fsmActor ! JobEnd(requestMsgBk)
+  }
+
   override def receive: Receive = {
     case jobRequest: JobRequest => handleJobRequest(jobRequest)
     case jobResult:JobResult => result = Some(jobResult.result)
@@ -34,7 +38,7 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
     case JobStatus.Scheduled => fsmActor = sender()
       status =JobStatus.Scheduled
     case JobStatus.Finished | JobStatus.Failed | JobStatus.TimeOut =>
-      fsmActor ! JobEnd(requestMsgBk)
+      finishTask()
     case msg: JobStatus => status = msg
     case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result, translatedActorSeq, fsmActor )
     case translatedActor: TranslatedActor =>translatedActorSeq = translatedActorSeq :+ translatedActor.child

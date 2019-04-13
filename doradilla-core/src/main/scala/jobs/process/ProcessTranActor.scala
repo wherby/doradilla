@@ -2,7 +2,8 @@ package jobs.process
 
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
-import doradilla.core.msg.Job.{JobRequest, TranslatedTask, TranslationError, WorkerInfo}
+import doradilla.core.msg.Job.{JobRequest, WorkerInfo}
+import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationError, TranslationOperationError}
 import jobs.process.ProcessTranActor.{ProcessOperation, ProcessRequest, SimpleProcessInit}
 import play.api.libs.json.Json
 
@@ -20,9 +21,9 @@ class ProcessTranActor extends BaseActor{
             println(WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo)))
             sender()! WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo))
             sender()! TranslatedTask(SimpleProcessInit(processRequest,jobRequest.replyTo))
-          case _=> sender() ! TranslationError(Some(s"Request data failed to process: ${jobRequest.taskMsg.data}"))
+          case _=> sender() ! TranslationDataError(Some(jobRequest.taskMsg.data))
         }
-      case _=> sender() ! TranslationError(Some(s"Operation name failed to process: ${jobRequest.taskMsg.operation}"))
+      case _=> sender() ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
     }
   }
 

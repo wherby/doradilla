@@ -1,5 +1,7 @@
 package doradilla.util
 
+import java.util.UUID
+
 import akka.actor.{ActorContext, ActorRef, Props}
 import akka.event.slf4j.Logger
 import doradilla.core.msg.Job.WorkerInfo
@@ -12,9 +14,10 @@ object DeployService {
   def tryToInstanceDeployActor(workerInfo: WorkerInfo, context:ActorContext ): Option[ActorRef] = {
     try {
       val clazz = Class.forName(workerInfo.actorName)
+      val actorName = clazz.getSimpleName+ UUID.randomUUID().toString
       val actorRef= workerInfo.config match {
-        case Some(conf) =>   context.actorOf(Props(clazz,conf))
-        case _=>context.actorOf(Props(clazz))
+        case Some(conf) =>   context.actorOf(Props(clazz,conf),actorName)
+        case _=>context.actorOf(Props(clazz),actorName)
       }
       Some(actorRef)
     } catch {

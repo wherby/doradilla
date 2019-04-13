@@ -21,16 +21,13 @@ object Job {
 
   case class WorkerInfo(actorName: String, config: Option[String], replyTo: Option[ActorRef])
 
-  case class TranslatedTask(task:Any)
-
-  case class TranslationError(info: Option[String])
-
   object JobStatus extends Enumeration {
     type JobStatus = Value
-    val Queued, Scheduled,  Working, Finished, TimeOut, Failed, Unknown = Value
+    val Queued, Scheduled, Working, Finished, TimeOut, Failed, Unknown = Value
 
     def withDefaultName(name: String): Value = {
       values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
     }
   }
+
 }

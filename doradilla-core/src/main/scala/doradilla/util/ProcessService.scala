@@ -13,14 +13,21 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 object ProcessService {
   implicit val ExecuteResultFormat = Json.format[ExecuteResult]
-  case class ExecuteResult(exitValue:Int, stdout:String, stderr:String)
+
+  case class ExecuteResult(exitValue: Int, stdout: String, stderr: String)
+
   lazy val osString = System.getProperty("os.name")
-  def runProcess(cmdWin:List[String],cmdLinux:List[String],executor : ExecutionContext =scala.concurrent.ExecutionContext.Implicits.global) :Future[ExecuteResult]={
-    val cmdProcess =osString.toLowerCase() match {
+
+  def runProcess(cmdWin: List[String], cmdLinux: List[String], executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
+    val cmdProcess = osString.toLowerCase() match {
       case osStr if osStr.startsWith("win") => "cmd.exe" :: "/c" :: cmdWin
-      case _=> "bash" :: "-c" :: cmdLinux
+      case _ => "bash" :: "-c" :: cmdLinux
     }
-    Future(try{
+    runCommand(cmdProcess, executor)
+  }
+
+  def runCommand(cmdProcess: List[String], executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
+    Future(try {
       val stdoutStream = new ByteArrayOutputStream
       val stderrStream = new ByteArrayOutputStream
       val stdoutWriter = new PrintWriter(stdoutStream)
@@ -29,8 +36,8 @@ object ProcessService {
       stdoutWriter.close()
       stderrWriter.close()
       ExecuteResult(exitValue, stdoutStream.toString, stderrStream.toString)
-    }catch {
-      case e:Exception =>ExecuteResult(-1, "",s"Exception is throwing: ${e.getCause.getMessage}")
+    } catch {
+      case e: Exception => ExecuteResult(-1, "", s"Exception is throwing: ${e.getCause.getMessage}")
     })(executor)
   }
 }

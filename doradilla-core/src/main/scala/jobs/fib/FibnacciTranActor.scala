@@ -3,6 +3,7 @@ package jobs.fib
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job._
+import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationError, TranslationOperationError}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibOperation, FibRequest}
 import play.api.libs.json.Json
 
@@ -19,9 +20,9 @@ class FibnacciTranActor extends BaseActor {
           case Some(fibRequest) =>
             sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(jobRequest.taskMsg.data), Some(jobRequest.replyTo))
             sender ! TranslatedTask(FibInit(FibAdd(1,1,0),jobRequest.replyTo))
-          case _ => sender ! TranslationError(Some(s"Request data failed to process: ${jobRequest.taskMsg.data}"))
+          case _ => sender ! TranslationDataError(Some(jobRequest.taskMsg.data))
         }
-      case _ => sender ! TranslationError(Some(s"Operation name failed to process: ${jobRequest.taskMsg.operation}"))
+      case _ => sender ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
     }
   }
 

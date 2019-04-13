@@ -1,6 +1,6 @@
 package doradilla.core.proxy
 
-import vars.ConstVar
+import vars.ConstVarTest
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
@@ -16,7 +16,7 @@ class ProxyActorSpec extends  ActorTestClass  {
     val proxy = TestProbe()
     val proxyActor = system.actorOf(Props(new ProxyActor(proxy.ref)), "proxyActor")
     "Receive a requestMsg will put the message to queue" in{
-      val requestMsg = JobRequest(ConstVar.fibTask,proxy.ref,proxy.ref)
+      val requestMsg = JobRequest(ConstVarTest.fibTask,proxy.ref,proxy.ref)
       proxyActor ! requestMsg
       proxy.expectMsgPF(){
         case requestMsg: JobRequest => requestMsg.replyTo should be(proxyActor)

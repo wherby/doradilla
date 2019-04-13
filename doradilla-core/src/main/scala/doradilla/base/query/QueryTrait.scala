@@ -20,7 +20,7 @@ trait QueryTrait extends Actor with ActorLogging{
         child ! queryChild
       }
     case e=>
-      log.debug(s"Not Handled $e")
+      log.debug(s"Not Handled $e  from $sender()")
       sender() ! NotHandleMessage(e)
   }
 }

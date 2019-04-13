@@ -4,9 +4,10 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job._
+import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationError}
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
-import vars.ConstVar
+import vars.ConstVarTest
 
 
 /**
@@ -19,7 +20,7 @@ class FibnacciTranActorSpec extends  ActorTestClass  {
     val probe = TestProbe()
     val fibTranActor = system.actorOf(Props(new FibnacciTranActor), "FibnacciTran")
     "Receive a normal request "in{
-      val requestItem = JobRequest(ConstVar.fibTask,probe.ref,probe.ref)
+      val requestItem = JobRequest(ConstVarTest.fibTask,probe.ref,probe.ref)
       fibTranActor.tell(requestItem,probe.ref)
       probe.expectMsgPF(){
         case workerInfo: WorkerInfo=> workerInfo.actorName should be (classOf[FibWorkActor].getName)
