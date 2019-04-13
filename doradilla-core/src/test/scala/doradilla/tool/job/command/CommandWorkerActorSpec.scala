@@ -25,7 +25,7 @@ class CommandWorkerActorSpec extends ActorTestClass {
         case jobResult: JobResult => println(jobResult)
           val result = Json.parse(jobResult.result).asOpt[ExecuteResult]
           result shouldBe a[Some[_]]
-          result.get.exitValue shouldBe (0)
+          result.get.exitValue should (be (0) or be(127))
       }
     }
   }
