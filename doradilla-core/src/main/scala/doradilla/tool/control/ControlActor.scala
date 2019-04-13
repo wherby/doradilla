@@ -3,8 +3,7 @@ package doradilla.tool.control
 import akka.actor.ActorRef
 import doradilla.base.BaseActor
 import doradilla.tool.control.ControlActor.ControlMsg
-
-import scala.concurrent.duration._
+import doradilla.vars.ConstVars
 import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * For doradilla.tool.control in Doradilla
@@ -12,9 +11,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class ControlActor extends BaseActor{
   def handleControlMsg(controlMsg: ControlMsg, sender:ActorRef) ={
-    log.info(s"Handle control msg: $controlMsg")
     val actorSelect = context.actorSelection(controlMsg.actorPath)
-    actorSelect.resolveOne( 100 milliseconds).map{
+    actorSelect.resolveOne( ConstVars.timeout1S).map{
       actor =>
         log.info(actor.toString())
         log.info(s"Handled control msg: $controlMsg")

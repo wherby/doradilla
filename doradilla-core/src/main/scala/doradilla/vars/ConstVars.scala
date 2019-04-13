@@ -8,5 +8,6 @@ import scala.concurrent.duration._
   */
 object ConstVars {
   val tickTime = 100 milliseconds
+  val timeout1S = 1 second
   val longTimeOut = 600 second
 }
