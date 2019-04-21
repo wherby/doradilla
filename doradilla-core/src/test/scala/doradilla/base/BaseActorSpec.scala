@@ -30,7 +30,7 @@ class BaseActorSpec extends  ActorTestClass  {
 
 class TestActor extends  BaseActor{
   override def receive = {
-    case "init" ⇒
+    case "init" =>
       Some("Up and running")
   }
 }
