@@ -17,24 +17,22 @@ class TestActor2(config:String) extends  BaseActor{
 }
 
 class DeployServiceSpec extends  ActorTestClass  {
-  class TestActor extends  BaseActor{
-    override def receive = {
-      case workerInfo: WorkerInfo ⇒
-        sender()! DeployService.tryToInstanceDeployActor(workerInfo,context)
-    }
-  }
+
 
 
   "DeployService" must{
-    val proxy = TestProbe()
-    val testActor = system.actorOf(TestActor.testActorProps)
+
     "Deploy a correct workerInfo without parameter should return actorRef " in{
+      val proxy = TestProbe()
+      val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
       testActor.tell(WorkerInfo("doradilla.core.queue.QueueActor",None,None),proxy.ref)
       proxy.expectMsgPF(){
         case res => res shouldBe a [Some[_]]
       }
     }
     "Deploy a correct workerInfo with  parameter should return actorRef " in{
+      val proxy = TestProbe()
+      val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
       testActor.tell(WorkerInfo("doradilla.util.TestActor2",Some("test2"),None),proxy.ref)
       val ref = proxy.expectMsgPF(){
         case Some(res:ActorRef) =>
@@ -47,4 +45,16 @@ class DeployServiceSpec extends  ActorTestClass  {
       }
     }
   }
+}
+
+
+class DeployTestActor extends  BaseActor{
+  override def receive = {
+    case workerInfo: WorkerInfo ⇒
+      sender()! DeployService.tryToInstanceDeployActor(workerInfo,context)
+  }
+}
+
+object DeployTestActor{
+  val deployTestActorProps = Props(new DeployTestActor())
 }
