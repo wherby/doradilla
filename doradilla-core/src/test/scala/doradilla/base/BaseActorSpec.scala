@@ -12,17 +12,10 @@ import doradilla.base.query.QueryTrait.{ChildInfo, NotHandleMessage, QueryChild}
   */
 class BaseActorSpec extends  ActorTestClass  {
 
-  class TestActor extends  BaseActor{
-     override def receive = {
-      case "init" ⇒
-       Some("Up and running")
-    }
-  }
-
   "An actor extends queryActor " must{
     "return child info response" in{
       val proxy = TestProbe()
-      val testActor = system.actorOf(Props(new TestActor),"test")
+      val testActor = system.actorOf(TestActor.testActorProps,"test")
       testActor ! QueryChild(proxy.ref)
       proxy.expectMsgPF(){
         case ChildInfo(root,child,_)=> root should be ("akka://AkkaQuickstartSpec/user/test")
@@ -33,4 +26,15 @@ class BaseActorSpec extends  ActorTestClass  {
       }
     }
   }
+}
+
+class TestActor extends  BaseActor{
+  override def receive = {
+    case "init" ⇒
+      Some("Up and running")
+  }
+}
+
+object TestActor{
+  val testActorProps = Props(new TestActor())
 }
