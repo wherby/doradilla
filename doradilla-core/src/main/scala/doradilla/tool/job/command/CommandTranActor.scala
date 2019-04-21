@@ -1,9 +1,9 @@
 package doradilla.tool.job.command
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobRequest, WorkerInfo}
-import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationOperationError}
+import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
 import doradilla.tool.job.command.CommandTranActor.{CommandOperation, CommandRequest, SimpleCommandInit}
 import play.api.libs.json.Json
 
@@ -33,6 +33,8 @@ class CommandTranActor extends BaseActor {
 }
 
 object CommandTranActor {
+  def commandTranProps = Props(new CommandTranActor())
+
   implicit val commandRequestFormat = Json.format[CommandRequest]
 
   object CommandOperation extends Enumeration {

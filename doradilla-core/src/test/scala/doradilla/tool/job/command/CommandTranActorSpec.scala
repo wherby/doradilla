@@ -14,8 +14,8 @@ import vars.ConstVarTest
 class CommandTranActorSpec extends ActorTestClass{
   "Command Tran Actor" must{
     val probe = TestProbe()
-    val commandTran = system.actorOf(Props(new CommandTranActor()),"CommandTranActorSpecTran")
-    val driver = system.actorOf(Props(new DriverActor()),"CommandTranActorDriver")
+    val commandTran = system.actorOf(CommandTranActor.commandTranProps,"CommandTranActorSpecTran")
+    val driver = system.actorOf(DriverActor.driverActorProps(),"CommandTranActorDriver")
     "Schedule a processs and return the process result to proxy" in {
       val commandRequest = JobRequest(ConstVarTest.commandJob, probe.ref, commandTran)
       driver ! commandRequest

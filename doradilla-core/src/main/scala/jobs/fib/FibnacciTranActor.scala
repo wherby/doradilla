@@ -1,9 +1,9 @@
 package jobs.fib
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job._
-import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationError, TranslationOperationError}
+import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibOperation, FibRequest}
 import play.api.libs.json.Json
 
@@ -13,13 +13,14 @@ import play.api.libs.json.Json
   */
 class FibnacciTranActor extends BaseActor {
   implicit val FibRequestFormat = Json.format[FibRequest]
+
   def translateFibRequest(jobRequest: JobRequest, sender: ActorRef): Unit = {
     FibOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case FibOperation.FibReq =>
         Json.parse(jobRequest.taskMsg.data).asOpt[FibRequest] match {
           case Some(fibRequest) =>
             sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(jobRequest.taskMsg.data), Some(jobRequest.replyTo))
-            sender ! TranslatedTask(FibInit(FibAdd(1,1,0),jobRequest.replyTo))
+            sender ! TranslatedTask(FibInit(FibAdd(1, 1, 0), jobRequest.replyTo))
           case _ => sender ! TranslationDataError(Some(jobRequest.taskMsg.data))
         }
       case _ => sender ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
@@ -34,6 +35,7 @@ class FibnacciTranActor extends BaseActor {
 
 
 object FibnacciTranActor {
+  val fibnacciTranActorProps = Props(new FibnacciTranActor())
   implicit val FibRequestFormat = Json.format[FibRequest]
   implicit val FibAddFormat = Json.format[FibAdd]
   implicit val FibResultFormat = Json.format[FibResult]
@@ -52,6 +54,6 @@ object FibnacciTranActor {
 
   case class FibResult(a: Int, fa: Int)
 
-  case class FibInit(fibadd:FibAdd, replyTo:ActorRef)
+  case class FibInit(fibadd: FibAdd, replyTo: ActorRef)
 
 }

@@ -4,7 +4,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job._
-import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationError}
+import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationError}
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 import vars.ConstVarTest
@@ -18,7 +18,7 @@ class FibnacciTranActorSpec extends  ActorTestClass  {
   implicit val FibRequestFormat = Json.format[FibRequest]
   "Fibnacci translation actor " must{
     val probe = TestProbe()
-    val fibTranActor = system.actorOf(Props(new FibnacciTranActor), "FibnacciTran")
+    val fibTranActor = system.actorOf(FibnacciTranActor.fibnacciTranActorProps, "FibnacciTran")
     "Receive a normal request "in{
       val requestItem = JobRequest(ConstVarTest.fibTask,probe.ref,probe.ref)
       fibTranActor.tell(requestItem,probe.ref)

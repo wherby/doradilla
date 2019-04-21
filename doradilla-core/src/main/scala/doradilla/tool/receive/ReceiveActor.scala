@@ -1,6 +1,6 @@
 package doradilla.tool.receive
 
-import akka.actor.{ActorRef, PoisonPill}
+import akka.actor.{ActorRef, PoisonPill, Props}
 import doradilla.base.BaseActor
 import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.msg.Job.JobResult
@@ -56,6 +56,7 @@ class ReceiveActor extends BaseActor{
 }
 
 object ReceiveActor{
+  val receiveActorProps = Props(new ReceiveActor())
   case class FetchResult()
   case class StopProxy()
   case class ProxyControlMsg(proxyControlMsg: Any)

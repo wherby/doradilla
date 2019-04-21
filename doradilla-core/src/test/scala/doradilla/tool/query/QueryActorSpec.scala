@@ -4,6 +4,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor
+import doradilla.core.queue.QueueActor
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
 
 /**
@@ -12,9 +13,10 @@ import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
   */
 class QueryActorSpec extends  ActorTestClass  {
   "QueryActor " must {
-    val driver = system.actorOf(Props(new DriverActor()), "QueryActorSpecDriver")
+    val driver = system.actorOf(DriverActor.driverActorProps(), "QueryActorSpecDriver")
     val probe = TestProbe("QueryActorProbe")
-    val queryActor = system.actorOf(Props(new QueryActor()),"QueryActorSpecQueryActor")
+    val queryActor = system.actorOf(QueryActor.queryActorProps,"QueryActorSpecQueryActor")
+    Thread.sleep(400)
     "return queried root actor when GetRoot with None " in {
       queryActor ! QueryRoot(driver)
       Thread.sleep(100)

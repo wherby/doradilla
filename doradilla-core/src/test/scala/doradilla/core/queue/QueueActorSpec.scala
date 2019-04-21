@@ -16,7 +16,7 @@ class QueueActorSpec extends  ActorTestClass  {
   "QueueActor " must {
     "receive RequestItem and fetch number of task" in {
       val proxy = TestProbe()
-      val queueActor = system.actorOf(Props(new QueueActor), "queueActor")
+      val queueActor = system.actorOf(QueueActor.queueActorProps, "queueActor")
       queueActor ! JobRequest(JobMsg("add", "test",None),proxy.ref,proxy.ref)
       proxy.send(queueActor,FetchTask(2))
       proxy.expectMsgPF(){

@@ -14,7 +14,7 @@ import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, StopPr
 class ReceiveActorSpec extends ActorTestClass{
   "Receive Actor " must{
     "Send back resut when jobResult receive later" in{
-      val receiveActor = system.actorOf(Props(new ReceiveActor))
+      val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       probe.send(receiveActor,FetchResult())
       receiveActor ! JobResult(JobStatus.Finished,"finished")
@@ -24,7 +24,7 @@ class ReceiveActorSpec extends ActorTestClass{
     }
 
     "Send back resut when jobResult receive earlier" in{
-      val receiveActor = system.actorOf(Props(new ReceiveActor))
+      val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       receiveActor ! JobResult(JobStatus.Finished,"finished")
       probe.send(receiveActor,FetchResult())
@@ -34,7 +34,7 @@ class ReceiveActorSpec extends ActorTestClass{
     }
 
     "Send Proxy control msg to  proxy" in{
-      val receiveActor = system.actorOf(Props(new ReceiveActor))
+      val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       receiveActor ! ProxyActorMsg(probe.ref)
       receiveActor ! ProxyControlMsg("test")
