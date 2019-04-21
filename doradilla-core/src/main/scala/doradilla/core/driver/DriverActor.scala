@@ -1,13 +1,16 @@
 package doradilla.core.driver
 
 import java.util.UUID
+
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import akka.event.LoggingReceive
 import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.fsm.FsmActor
 import doradilla.core.fsm.FsmActor.{FetchJob, SetDriver}
-import doradilla.core.msg.Job.{JobRequest}
+import doradilla.core.msg.Job.{JobRequest, JobSetting}
+import doradilla.core.msg.JobControlMsg
+import doradilla.core.msg.JobControlMsg.ResetFsm
 import doradilla.core.proxy.ProxyActor
 import doradilla.core.queue.QueueActor
 import doradilla.core.queue.QueueActor.{FetchTask, RequestList}
@@ -20,7 +23,8 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor {
   val driverUUID = UUID.randomUUID().toString
   val queueActor = queue match {
     case Some(queue) => queue
-    case _ => context.actorOf(QueueActor.queueActorProps, "queueActor" + driverUUID)
+    case _ =>
+      context.actorOf(QueueActor.queueActorProps, "queueActor" + driverUUID)
   }
   val fsmActor: ActorRef = context.actorOf(DriverActor.fsmProps, "fsmActor" + driverUUID)
   fsmActor ! SetDriver(self)
@@ -45,15 +49,23 @@ class DriverActor(queue: Option[ActorRef] = None) extends BaseActor {
     }
   }
 
+  def handleResetDriver()={
+    log.info(s"Reset docker by ${sender()}")
+    fsmActor ! ResetFsm()
+  }
+
   override def receive: Receive = LoggingReceive {
     case jobRequest: JobRequest => handleRequest(jobRequest)
     case fetchJob: FetchJob => hundleFetchJob()
     case requestList: RequestList => hundleRequestList(requestList)
+    case jobControlMsg: JobControlMsg.ResetDriver => handleResetDriver()
   }
 }
 
 object DriverActor {
-  def driverActorProps(queue: Option[ActorRef] = None) = Props(new DriverActor(queue))
+  def driverActorProps(queue: Option[ActorRef] = None) = {
+    Props(new DriverActor(queue))
+  }
 
   def fsmProps: Props = Props(new FsmActor)
 

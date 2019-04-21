@@ -1,6 +1,7 @@
 package doradilla.tool.query
 
 import akka.actor.{ActorRef, Props}
+import akka.event.LoggingReceive
 import doradilla.base.BaseActor
 import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
@@ -31,7 +32,7 @@ class QueryActor extends BaseActor {
     }
   }
 
-  override def receive: Receive = {
+  override def receive: Receive = LoggingReceive{
     case queryRoot: QueryRoot =>
       queryRoot.rootActor ! QueryChild(this.self)
     case childInfo: ChildInfo => hundleChildInfo(childInfo)

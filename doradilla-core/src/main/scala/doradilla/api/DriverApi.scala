@@ -22,5 +22,5 @@ trait DriverApi {
 
   var queueActorSet:Option[ActorRef] = None
 
-  lazy val defaultDriver: ActorRef = createDriver(queueActorSet)
+  lazy val defaultDriver: ActorRef =createDriver(queueActorSet)
 }

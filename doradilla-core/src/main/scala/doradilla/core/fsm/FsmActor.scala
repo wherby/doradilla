@@ -5,7 +5,8 @@ import doradilla.base.BaseActor
 import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.core.fsm.FsmActor._
 import doradilla.core.msg.Job._
-import doradilla.core.msg.TranslationMSG.TranslatedTask
+import doradilla.core.msg.JobControlMsg.ResetFsm
+import doradilla.core.msg.TranslationMsg.TranslatedTask
 import doradilla.core.queue.QueueActor
 import doradilla.core.queue.QueueActor.RequestList
 import doradilla.util.DeployService
@@ -59,17 +60,22 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
     }
   }
 
+  onTransition {
+    case Active -> Idle =>
+      endChildActor()
+      driverActor ! FetchJob()
+  }
 
   when(Active) {
+    case Event(resetFsm: ResetFsm, _)=>
+      goto(Idle) using (Uninitialized)
     case Event(jobEnd: JobEnd, task: Task) =>
-      val remainTask = task.requestList.requests.filter(request => jobEnd.requestMsg.taskMsg != request.taskMsg)
-      if (remainTask.length > 0) {
-        stay() using (Task(RequestList(remainTask)))
-      } else {
-        driverActor ! FetchJob()
-        endChildActor()
+//      val remainTask = task.requestList.requests.filter(request => jobEnd.requestMsg.taskMsg != request.taskMsg)
+//      if (remainTask.length > 0) {
+//        stay() using (Task(RequestList(remainTask)))
+//      } else {
         goto(Idle) using (Uninitialized)
-      }
+//      }
     case Event(workerInfo: WorkerInfo, _) =>
       childActorOpt = DeployService.tryToInstanceDeployActor(workerInfo, context)
       if (childActorOpt != None && workerInfo.replyTo != None) {

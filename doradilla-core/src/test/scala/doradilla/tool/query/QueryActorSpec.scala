@@ -16,6 +16,7 @@ class QueryActorSpec extends  ActorTestClass  {
     val driver = system.actorOf(DriverActor.driverActorProps(), "QueryActorSpecDriver")
     val probe = TestProbe("QueryActorProbe")
     val queryActor = system.actorOf(QueryActor.queryActorProps,"QueryActorSpecQueryActor")
+    Thread.sleep(400)
     "return queried root actor when GetRoot with None " in {
       queryActor ! QueryRoot(driver)
       Thread.sleep(100)

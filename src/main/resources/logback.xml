@@ -23,7 +23,7 @@
   <!-- Set a specific actor to DEBUG -->
   <logger name="actors.*" level="DEBUG" />
 
-  <root level="warn">
+  <root level="DEBUG">
     <appender-ref ref="console"/>
   </root>
 

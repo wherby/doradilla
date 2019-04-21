@@ -3,7 +3,7 @@ package jobs.process
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobRequest, WorkerInfo}
-import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationOperationError}
+import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
 import jobs.process.ProcessTranActor.{ProcessOperation, ProcessRequest, SimpleProcessInit}
 import play.api.libs.json.Json
 
