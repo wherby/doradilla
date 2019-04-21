@@ -1,5 +1,6 @@
 package jobs.process
 
+import akka.actor.Props
 import doradilla.core.msg.WorkerMsg.TickMsg
 import doradilla.tool.job.worker.WorkerActor
 import doradilla.util.ProcessService
@@ -22,5 +23,9 @@ class ProcessWorkerActor extends WorkerActor{
   override def receive: Receive =  super.receive orElse {
     case simpleProcessInit: SimpleProcessInit => handleProcessInit(simpleProcessInit)
   }
+}
+
+object ProcessWorkerActor{
+  val processWorkerActorProps = Props(new ProcessWorkerActor())
 }
 

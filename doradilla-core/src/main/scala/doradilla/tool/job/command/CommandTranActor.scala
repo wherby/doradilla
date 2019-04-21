@@ -1,6 +1,6 @@
 package doradilla.tool.job.command
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobRequest, WorkerInfo}
 import doradilla.core.msg.TranslationMSG.{TranslatedTask, TranslationDataError, TranslationOperationError}
@@ -33,6 +33,8 @@ class CommandTranActor extends BaseActor {
 }
 
 object CommandTranActor {
+  def commandTranProps = Props(new CommandTranActor())
+
   implicit val commandRequestFormat = Json.format[CommandRequest]
 
   object CommandOperation extends Enumeration {

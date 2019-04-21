@@ -15,7 +15,7 @@ class FsmActorSpec  extends  ActorTestClass {
     "can be query state and if Finish the task will return to Idle status" in{
       val proxy = TestProbe()
       val proxy2 = TestProbe()
-      val fsmActor = system.actorOf(Props(new FsmActor), "fsmtest")
+      val fsmActor = system.actorOf(FsmActor.fsmActorProps, "fsmtest")
       fsmActor ! SetDriver(proxy.ref)
       proxy.send(fsmActor,QueryState())
       proxy.expectMsgPF(){
@@ -49,7 +49,7 @@ class FsmActorSpec  extends  ActorTestClass {
     }
     "Will receive Fetch message when idle timeout " in {
       val proxy2 = TestProbe()
-      val fsmActor2 = system.actorOf(Props(new FsmActor), "fsmtest2")
+      val fsmActor2 = system.actorOf(FsmActor.fsmActorProps, "fsmtest2")
       fsmActor2 ! SetDriver(proxy2.ref)
       proxy2.expectMsgPF(){
         case res: FetchJob => println(res)

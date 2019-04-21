@@ -15,8 +15,8 @@ import vars.ConstVarTest
 class ControlActorSpec  extends  ActorTestClass  {
   "ControlActor" must{
     "send a control msg to a existed actor" in {
-      val driverActor = system.actorOf(Props(new DriverActor), "ControlActorSpecDriver")
-      val controlActor = system.actorOf(Props(new ControlActor), "ControlActorSpecControl")
+      val driverActor = system.actorOf(DriverActor.driverActorProps(), "ControlActorSpecDriver")
+      val controlActor = system.actorOf(ControlActor.controlActorProps, "ControlActorSpecControl")
       val probe = TestProbe()
       val controlMsg = ControlMsg(driverActor.path.toString,"TEST")
       controlActor.tell(controlMsg,probe.ref)
@@ -25,7 +25,7 @@ class ControlActorSpec  extends  ActorTestClass  {
       }
     }
     "Send a control msg to not Existed actor " in {
-      val controlActor = system.actorOf(Props(new ControlActor), "ControlActorSpecControl2")
+      val controlActor = system.actorOf(ControlActor.controlActorProps, "ControlActorSpecControl2")
       val probe = TestProbe()
       val controlMsg = ControlMsg("../Notexisted","TEST")
       controlActor.tell(controlMsg,probe.ref)

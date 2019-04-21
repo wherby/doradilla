@@ -1,6 +1,7 @@
 package doradilla.api
 
 import doradilla.ActorTestClass
+import doradilla.core.queue.QueueActor
 
 /**
   * For doradilla.api in Doradilla
@@ -10,7 +11,12 @@ class DriverApiSpec extends ActorTestClass{
   "Driver Api" must{
     "Return driver actor " in{
       val system = new SystemApi()with DriverApi
-      system.driver.toString() should include ("driver")
+      system.defaultDriver.toString() should include ("driver")
+    }
+
+    "Driver Api will use specified queue when queueActor is set" in {
+      val systemApi = new SystemApi()with DriverApi
+      val queueActor = system.actorOf(QueueActor.queueActorProps,"DriverApiSpecQueue1")
     }
   }
 }

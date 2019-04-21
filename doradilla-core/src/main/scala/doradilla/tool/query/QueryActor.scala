@@ -1,6 +1,6 @@
 package doradilla.tool.query
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
@@ -40,6 +40,7 @@ class QueryActor extends BaseActor {
 }
 
 object QueryActor {
+  val queryActorProps = Props(new QueryActor())
 
   case class QueryRoot(rootActor: ActorRef)
 

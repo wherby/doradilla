@@ -17,7 +17,7 @@ class CommandWorkerActorSpec extends ActorTestClass {
   "Command Worker" must {
     val probe = TestProbe()
     "Return result when finish command " in {
-      val commandWorkerActor = system.actorOf(Props(new CommandWorkerActor()), "CommandWorkerActorSpecWoker")
+      val commandWorkerActor = system.actorOf(CommandWorkerActor.commandWorkerProps, "CommandWorkerActorSpecWoker")
       val commandRequest = SimpleCommandInit(ConstVarTest.commandRequest, probe.ref)
       println(commandRequest)
       commandWorkerActor ! commandRequest

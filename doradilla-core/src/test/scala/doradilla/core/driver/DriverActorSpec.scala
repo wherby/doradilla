@@ -16,7 +16,7 @@ import play.api.libs.json.Json
 class DriverActorSpec extends  ActorTestClass  {
   "DriverActor " must{
     val proxy = TestProbe()
-    val driverActor = system.actorOf(Props(new DriverActor), "driverActor")
+    val driverActor = system.actorOf(DriverActor.driverActorProps(), "driverActor")
     val requestItem = JobRequest(JobMsg("fibreq", Json.toJson(FibRequest(10)).toString),proxy.ref,proxy.ref)
     "Receive a request message will return a ProxyActorMsg with proxy actor ref" in {
       driverActor.tell(requestItem,proxy.ref)

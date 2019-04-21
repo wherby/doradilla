@@ -1,6 +1,6 @@
 package doradilla.core.proxy
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.fsm.FsmActor.TranslatedActor
 import doradilla.core.msg.Job.JobStatus.JobStatus
@@ -46,6 +46,7 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
 }
 
 object ProxyActor {
+  def proxyProps(queue: ActorRef): Props = Props(new ProxyActor(queue))
 
   case class QueryProxy()
 

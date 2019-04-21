@@ -1,6 +1,6 @@
 package jobs.fib
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobResult, JobStatus}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
@@ -31,4 +31,8 @@ class FibWorkActor(config: String) extends BaseActor {
     case fibInit: FibInit => replyTo = fibInit.replyTo
       self ! fibInit.fibadd
   }
+}
+
+object  FibWorkActor{
+  def fibWorkActorProps(config: String) = Props(new FibWorkActor(config))
 }

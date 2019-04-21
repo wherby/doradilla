@@ -1,7 +1,6 @@
 package doradilla.core.proxy
 
 import vars.ConstVarTest
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job._
@@ -14,7 +13,7 @@ import doradilla.core.proxy.ProxyActor.{ProxyTaskResult, QueryProxy}
 class ProxyActorSpec extends  ActorTestClass  {
   "ProxyActor " must{
     val proxy = TestProbe()
-    val proxyActor = system.actorOf(Props(new ProxyActor(proxy.ref)), "proxyActor")
+    val proxyActor = system.actorOf(ProxyActor.proxyProps(proxy.ref), "proxyActor")
     "Receive a requestMsg will put the message to queue" in{
       val requestMsg = JobRequest(ConstVarTest.fibTask,proxy.ref,proxy.ref)
       proxyActor ! requestMsg

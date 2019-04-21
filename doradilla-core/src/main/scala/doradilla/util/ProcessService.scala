@@ -1,9 +1,7 @@
 package doradilla.util
 
 import java.io.{ByteArrayOutputStream, PrintWriter}
-
 import play.api.libs.json.Json
-
 import scala.sys.process._
 import scala.concurrent.{ExecutionContext, Future}
 
