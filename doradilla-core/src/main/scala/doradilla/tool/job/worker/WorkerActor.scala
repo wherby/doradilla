@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Cancellable}
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.{JobResult, JobStatus}
 import doradilla.core.msg.WorkerMsg.TickMsg
-import doradilla.util.ProcessService.ExecuteResult
+import doradilla.util.CommandService.ExecuteResult
 import doradilla.vars.ConstVars
 import play.api.libs.json.Json
 import scala.concurrent.Future
