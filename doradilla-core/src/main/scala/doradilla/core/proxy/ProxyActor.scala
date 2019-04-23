@@ -16,7 +16,7 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
   var replyTo: ActorRef = null
   var requestMsgBk: JobRequest = null
   var fsmActor: ActorRef =null
-  var result: Option[String] = None
+  var result: Option[Any] = None
   var translatedActorSeq :Seq[ActorRef] =Seq()
 
   def handleJobRequest(requestMsg: JobRequest): Unit = {
@@ -50,6 +50,6 @@ object ProxyActor {
 
   case class QueryProxy()
 
-  case class ProxyTaskResult(requestMsg: JobRequest, status: JobStatus, result: Option[String], translatedActorSeq: Seq[ActorRef], fsmActor: ActorRef)
+  case class ProxyTaskResult(requestMsg: JobRequest, status: JobStatus, result: Option[Any], translatedActorSeq: Seq[ActorRef], fsmActor: ActorRef)
 
 }

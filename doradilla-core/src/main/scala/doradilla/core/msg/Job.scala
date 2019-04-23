@@ -11,13 +11,13 @@ object Job {
 
   case class JobSetting(timeout: Int, retry: Int)
 
-  case class JobMsg(operation: String, data: String, taskControl: Option[JobSetting] = None)
+  case class JobMsg(operation: String, data: Any, taskControl: Option[JobSetting] = None)
 
   case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef)
 
   case class JobEnd(requestMsg: JobRequest)
 
-  case class JobResult(taskStatus: JobStatus, result: String)
+  case class JobResult(taskStatus: JobStatus, result: Any)
 
   case class WorkerInfo(actorName: String, config: Option[String], replyTo: Option[ActorRef])
 

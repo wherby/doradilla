@@ -19,7 +19,7 @@ class FibWorkActorSpec extends ActorTestClass {
       val fibWorkerActor = system.actorOf(FibWorkActor.fibWorkActorProps(config), "FibnacciWorker")
       fibWorkerActor.tell(FibInit(FibAdd(1, 1, 0), proxy.ref), proxy.ref)
       proxy.expectMsgPF() {
-        case taskResult: JobResult => val fibResult = Json.parse(taskResult.result).as[FibResult]
+        case taskResult: JobResult => val fibResult = Json.parse(taskResult.result.toString).as[FibResult]
           fibResult.fa should be(55)
           fibResult.a should be(10)
       }

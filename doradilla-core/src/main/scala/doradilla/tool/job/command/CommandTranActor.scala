@@ -17,7 +17,7 @@ class CommandTranActor extends BaseActor {
   def translateCommandRequest(jobRequest: JobRequest) = {
     CommandOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case CommandOperation.SimpleCommand =>
-        Json.parse(jobRequest.taskMsg.data).asOpt[CommandRequest] match {
+        Json.parse(jobRequest.taskMsg.data.toString).asOpt[CommandRequest] match {
           case Some(commandRequest) =>
             sender() ! WorkerInfo(classOf[CommandWorkerActor].getName, None, Some(jobRequest.replyTo))
             sender() ! TranslatedTask(SimpleCommandInit(commandRequest, jobRequest.replyTo))

@@ -17,9 +17,9 @@ class FibnacciTranActor extends BaseActor {
   def translateFibRequest(jobRequest: JobRequest, sender: ActorRef): Unit = {
     FibOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case FibOperation.FibReq =>
-        Json.parse(jobRequest.taskMsg.data).asOpt[FibRequest] match {
+        Json.parse(jobRequest.taskMsg.data.toString).asOpt[FibRequest] match {
           case Some(fibRequest) =>
-            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(jobRequest.taskMsg.data), Some(jobRequest.replyTo))
+            sender ! WorkerInfo(classOf[FibWorkActor].getName, Some(jobRequest.taskMsg.data.toString), Some(jobRequest.replyTo))
             sender ! TranslatedTask(FibInit(FibAdd(1, 1, 0), jobRequest.replyTo))
           case _ => sender ! TranslationDataError(Some(jobRequest.taskMsg.data))
         }

@@ -1,6 +1,5 @@
 package jobs.fib
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job._

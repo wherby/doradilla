@@ -16,7 +16,7 @@ class CommandTranActorSpec extends ActorTestClass{
     val probe = TestProbe()
     val commandTran = system.actorOf(CommandTranActor.commandTranProps,"CommandTranActorSpecTran")
     val driver = system.actorOf(DriverActor.driverActorProps(),"CommandTranActorDriver")
-    "Schedule a processs and return the process result to proxy" in {
+    "Schedule a command and return the command result to proxy" in {
       val commandRequest = JobRequest(ConstVarTest.commandJob, probe.ref, commandTran)
       driver ! commandRequest
       probe.expectMsgPF() {

@@ -2,8 +2,8 @@ package vars
 
 import doradilla.core.msg.Job.JobMsg
 import doradilla.tool.job.command.CommandTranActor.CommandRequest
+import doradilla.util.ProcessService.ProcessCallMsg
 import jobs.fib.FibnacciTranActor.FibRequest
-import jobs.process.ProcessTranActor.ProcessRequest
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
@@ -21,8 +21,6 @@ object ConstVarTest {
   val cmdLinux = List("ping 127.0.0.1 -c 1")
   val commandWin = List("cmd.exe", "/c", "ping 127.0.0.1 -n 1")
   val commandLinux = List("bash", " -c", " ping 127.0.0.1 -c 1")
-  val processRequest = ProcessRequest(cmdWin, cmdLinux)
-  val processJob = JobMsg("SimpleProcess", Json.toJson(processRequest).toString)
   val timeout100m = 100 milliseconds
   val timeout10S = 100 second
 
@@ -33,4 +31,9 @@ object ConstVarTest {
   }
   val commandRequest = CommandRequest(command)
   val commandJob = JobMsg("SimpleCommand", Json.toJson(commandRequest).toString())
+
+//process test
+  val paras = Array(ConstVarTest.command.asInstanceOf[AnyRef])
+  val processCallMsgTest = ProcessCallMsg("doradilla.util.CommandService","runCommandSync",paras)
+  val processJob = JobMsg("SimpleProcess",processCallMsgTest)
 }

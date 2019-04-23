@@ -12,6 +12,6 @@ object TranslationMsg {
 
   case class TranslationOperationError(operation: Option[String]) extends TranslationError
 
-  case class TranslationDataError(data: Option[String]) extends TranslationError
+  case class TranslationDataError(data: Option[Any]) extends TranslationError
 
 }

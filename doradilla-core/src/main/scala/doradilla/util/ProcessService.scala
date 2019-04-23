@@ -1,41 +1,50 @@
 package doradilla.util
 
-import java.io.{ByteArrayOutputStream, PrintWriter}
-import play.api.libs.json.Json
-import scala.sys.process._
+import java.util.concurrent.Executors
+
+import doradilla.util.CommandService.ExecuteResult
+
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * For doradilla.util in Doradilla
-  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/7
+  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/22
   */
 object ProcessService {
-  implicit val ExecuteResultFormat = Json.format[ExecuteResult]
-
-  case class ExecuteResult(exitValue: Int, stdout: String, stderr: String)
-
-  lazy val osString = System.getProperty("os.name")
-
-  def runProcess(cmdWin: List[String], cmdLinux: List[String], executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
-    val cmdProcess = osString.toLowerCase() match {
-      case osStr if osStr.startsWith("win") => "cmd.exe" :: "/c" :: cmdWin
-      case _ => "bash" :: "-c" :: cmdLinux
-    }
-    runCommand(cmdProcess, executor)
-  }
-
-  def runCommand(cmdProcess: List[String], executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
-    Future(try {
-      val stdoutStream = new ByteArrayOutputStream
-      val stderrStream = new ByteArrayOutputStream
-      val stdoutWriter = new PrintWriter(stdoutStream)
-      val stderrWriter = new PrintWriter(stderrStream)
-      val exitValue = cmdProcess.!(ProcessLogger(stdoutWriter.println, stderrWriter.println))
-      stdoutWriter.close()
-      stderrWriter.close()
-      ExecuteResult(exitValue, stdoutStream.toString, stderrStream.toString)
+  def callProcess(processCallMsg: ProcessCallMsg) = {
+    //Call reflection will takes time
+    // get runtime universe
+    val ru = scala.reflect.runtime.universe
+    // get runtime mirror
+    val rm = ru.runtimeMirror(getClass.getClassLoader)
+    //val instanceMirror = rm.reflectClass(Class.)
+    try {
+      val a = Class.forName(processCallMsg.clazzName)
+      val instance = a.newInstance()
+      val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
+      methodOpt match {
+        case Some(method) => Right(method.invoke(instance, processCallMsg.paras: _*))
+        case _ => Left("No such method")
+      }
     } catch {
-      case e: Exception => ExecuteResult(-1, "", s"Exception is throwing: ${e.getCause.getMessage}")
-    })(executor)
+      case e: Throwable => println(e)
+        Left("Remote call failed")
+    }
   }
+
+  def callProcessResult(processCallMsg: ProcessCallMsg)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
+    Future{callProcessResultSync(processCallMsg)}(executor)
+  }
+
+  private def callProcessResultSync(processCallMsg: ProcessCallMsg): ExecuteResult = {
+    callProcess(processCallMsg) match {
+      case Right(x) => try {
+        x.asInstanceOf[ExecuteResult]
+      } catch {
+        case _: Throwable => ExecuteResult(-1, "", s"Return value is not in right format: $x")
+      }
+      case Left(y) => ExecuteResult(-1, "", y.toString)
+    }
+  }
+  case class ProcessCallMsg(clazzName: String, methodName: String, paras: Array[AnyRef])
 }
