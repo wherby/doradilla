@@ -1,6 +1,7 @@
 package doradilla.api
 
 import doradilla.ActorTestClass
+import doradilla.core.msg.Job.{JobResult, JobStatus}
 import vars.ConstVarTest
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,8 +21,25 @@ class JobApiSpec extends ActorTestClass{
       })
      resultFuture.map{
         result => println(result)
+          result shouldBe a [JobResult]
       }
-      Await.result(resultFuture, ConstVarTest.timeout10S)
+      val jobSeq =Await.result(resultFuture, ConstVarTest.timeout10S)
+      jobSeq(0) shouldBe a [JobResult]
+      jobSeq(0).taskStatus should be (JobStatus.Finished)
+    }
+
+    "return result for call processTran api" in{
+      val jobApi = new JobApi()
+      val jobList = Seq(ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest)
+      val resultFuture = Future.sequence(jobList.map{
+        job => jobApi.runProcessCommand(job)
+      })
+      resultFuture.map{
+        result => println(result)
+      }
+      val jobSeq =Await.result(resultFuture, ConstVarTest.timeout10S)
+      jobSeq(0) shouldBe a [JobResult]
+      jobSeq(0).taskStatus should be (JobStatus.Finished)
     }
   }
 }

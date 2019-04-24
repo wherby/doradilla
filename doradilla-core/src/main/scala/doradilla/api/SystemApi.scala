@@ -1,9 +1,11 @@
 package doradilla.api
 
 import java.util.UUID
-import akka.actor.{ActorSystem}
-import com.typesafe.config.ConfigFactory
+import akka.actor.ActorSystem
+import akka.util.Timeout
+import com.typesafe.config.{Config, ConfigFactory}
 import doradilla.util.ConfigService
+import doradilla.vars.ConstVars
 
 
 /**
@@ -11,7 +13,9 @@ import doradilla.util.ConfigService
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/9
   */
 class SystemApi(systemOpt: Option[ActorSystem] = None) {
-  def getConfig() = {
+  val longTimeout = Timeout(ConstVars.longTimeOut)
+
+  def getConfig(): Config = {
     val config = ConfigFactory.load()
     ConfigFactory.load("doradilla").withFallback(config).resolve()
   }

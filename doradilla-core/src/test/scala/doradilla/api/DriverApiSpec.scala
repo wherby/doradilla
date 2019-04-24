@@ -23,7 +23,7 @@ class DriverApiSpec extends ActorTestClass{
       val systemApi = new SystemApi(Some(system))with DriverApi with CommandTranApi
       val queueActor = systemApi.actorSystem.actorOf(QueueActor.queueActorProps,"DriverApiSpecQueue1")
       systemApi.queueActorSet = Some(queueActor)
-      val commandRequest = JobRequest(ConstVarTest.commandJob,proxy.ref, systemApi.translatedActor)
+      val commandRequest = JobRequest(ConstVarTest.commandJob,proxy.ref, systemApi.commandTranslatedActor)
       queueActor ! commandRequest
       systemApi.defaultDriver ! commandRequest
       proxy.expectMsgPF(){
