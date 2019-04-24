@@ -17,6 +17,7 @@ class ProcessWorkerActorSpec extends ActorTestClass{
       val processWorkerActor = system.actorOf(ProcessWorkerActor.processTranActorProps,"ProcessWorkerActorSpecWorker1")
       val simpleProcessInit = SimpleProcessInit(ConstVarTest.processCallMsgTest,probe.ref)
       processWorkerActor ! simpleProcessInit
+      Thread.sleep(1000)
       probe.expectMsgPF(){
         case jobResult: JobResult => println(jobResult)
       }
