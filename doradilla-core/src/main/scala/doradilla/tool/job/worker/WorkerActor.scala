@@ -17,7 +17,7 @@ import scala.util.{Failure, Success}
 class WorkerActor extends BaseActor {
   var replyToOpt: Option[ActorRef] = None
   implicit val dispatcherToUse = context.system.dispatcher
-  var futureResultOpt: Option[Future[ExecuteResult]] = None
+  var futureResultOpt: Option[Future[Any]] = None
   var cancelableSchedulerOpt: Option[Cancellable] = None
   val tickTime = ConstVars.tickTime
 
@@ -28,14 +28,11 @@ class WorkerActor extends BaseActor {
     })
   }
 
-  def doSuccess(executeResult: ExecuteResult):Option[Unit] = {
+  def doSuccess(executeResult: Any):Option[Unit] = {
     cancelScheduler()
     replyToOpt.map {
       replyTo =>
-        val jobResult = executeResult.exitValue match {
-          case 0 => JobResult(JobStatus.Finished, Json.toJson(executeResult).toString)
-          case _ => JobResult(JobStatus.Failed, Json.toJson(executeResult).toString)
-        }
+        val jobResult = JobResult(JobStatus.Finished,executeResult)
         replyTo ! jobResult
     }
   }
