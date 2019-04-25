@@ -2,6 +2,8 @@ package doradilla.util
 
 import java.util.concurrent.Executors
 
+import doradilla.core.msg.Job.JobStatus
+import doradilla.core.msg.Job.JobStatus.JobStatus
 import doradilla.util.CommandService.ExecuteResult
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,19 +34,17 @@ object ProcessService {
     }
   }
 
-  def callProcessResult(processCallMsg: ProcessCallMsg)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ExecuteResult] = {
+  def callProcessResult(processCallMsg: ProcessCallMsg)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ProcessResult] = {
     Future{callProcessResultSync(processCallMsg)}(executor)
   }
 
-  private def callProcessResultSync(processCallMsg: ProcessCallMsg): ExecuteResult = {
+  private def callProcessResultSync(processCallMsg: ProcessCallMsg): ProcessResult = {
     callProcess(processCallMsg) match {
-      case Right(x) => try {
-        x.asInstanceOf[ExecuteResult]
-      } catch {
-        case _: Throwable => ExecuteResult(-1, "", s"Return value is not in right format: $x")
-      }
-      case Left(y) => ExecuteResult(-1, "", y.toString)
+      case Right(x) =>
+       ProcessResult(JobStatus.Finished,x)
+      case Left(y) => ProcessResult(JobStatus.Failed,y)
     }
   }
   case class ProcessCallMsg(clazzName: String, methodName: String, paras: Array[AnyRef])
+  case class ProcessResult(jobStatus: JobStatus, result: Any)
 }

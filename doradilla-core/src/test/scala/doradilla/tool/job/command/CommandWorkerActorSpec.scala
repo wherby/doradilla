@@ -3,7 +3,7 @@ package doradilla.tool.job.command
 import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.core.msg.Job.JobResult
+import doradilla.core.msg.Job.{JobResult, JobStatus}
 import doradilla.tool.job.command.CommandTranActor.SimpleCommandInit
 import doradilla.util.CommandService.ExecuteResult
 import play.api.libs.json.Json
@@ -23,9 +23,7 @@ class CommandWorkerActorSpec extends ActorTestClass {
       commandWorkerActor ! commandRequest
       probe.expectMsgPF() {
         case jobResult: JobResult => println(jobResult)
-          val result = Json.parse(jobResult.result.toString).asOpt[ExecuteResult]
-          result shouldBe a[Some[_]]
-          result.get.exitValue should (be (0) or be(127))
+          jobResult.taskStatus should be (JobStatus.Finished)
       }
     }
   }
