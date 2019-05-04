@@ -28,11 +28,14 @@ class WorkerActor extends BaseActor {
     })
   }
 
-  def doSuccess(executeResult: Any):Option[Unit] = {
+  def doSuccess(executeResultEither: Either[Any,Any]):Option[Unit] = {
     cancelScheduler()
     replyToOpt.map {
       replyTo =>
-        val jobResult = JobResult(JobStatus.Finished,executeResult)
+        val jobResult = executeResultEither match {
+          case Right(executeResult) => JobResult(JobStatus.Finished,executeResult)
+          case Left(value) =>JobResult(JobStatus.Failed,value)
+        }
         replyTo ! jobResult
     }
   }
@@ -41,8 +44,8 @@ class WorkerActor extends BaseActor {
     futureResultOpt.map {
       futureResult =>
         futureResult.value match {
-          case Some(Success(result)) => doSuccess(result)
-          case Some(Failure(failure)) => doSuccess(ExecuteResult(-1, "", s"Thread failed. ResultFailed for : ${failure.getCause.getMessage}"))
+          case Some(Success(result)) => doSuccess(Right(result))
+          case Some(Failure(failure)) => doSuccess(Left(failure))
           case None =>
         }
     }
