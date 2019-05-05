@@ -4,8 +4,6 @@ import java.util.concurrent.Executors
 
 import doradilla.core.msg.Job.JobStatus
 import doradilla.core.msg.Job.JobStatus.JobStatus
-import doradilla.util.CommandService.ExecuteResult
-
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -30,7 +28,7 @@ object ProcessService {
       }
     } catch {
       case e: Throwable => println(e)
-        Left("Remote call failed")
+        Left(e)
     }
   }
 
