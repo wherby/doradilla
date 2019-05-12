@@ -70,12 +70,7 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
     case Event(resetFsm: ResetFsm, _)=>
       goto(Idle) using (Uninitialized)
     case Event(jobEnd: JobEnd, task: Task) =>
-//      val remainTask = task.requestList.requests.filter(request => jobEnd.requestMsg.taskMsg != request.taskMsg)
-//      if (remainTask.length > 0) {
-//        stay() using (Task(RequestList(remainTask)))
-//      } else {
         goto(Idle) using (Uninitialized)
-//      }
     case Event(workerInfo: WorkerInfo, _) =>
       childActorOpt = DeployService.tryToInstanceDeployActor(workerInfo, context)
       if (childActorOpt != None && workerInfo.replyTo != None) {
@@ -128,6 +123,7 @@ object FsmActor {
   //Query fsm status
   case class QueryState()
 
+  case class RegistToDriver(actorRef: ActorRef)
   //Set driver ref in fsm
   case class SetDriver(ref: ActorRef)
 

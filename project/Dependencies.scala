@@ -16,6 +16,7 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-actor"   % akka,
     "com.typesafe.akka" %% "akka-slf4j"   % akka,
     "com.typesafe.akka" %% "akka-cluster" % akka,
+    "com.typesafe.akka" %% "akka-cluster-tools" % akka,
     "com.typesafe.akka" %% "akka-testkit" % akka % "test",
     // https://mvnrepository.com/artifact/org.scalatest/scalatest
     "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test,
@@ -26,7 +27,7 @@ object Dependencies {
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
     scalaVersion := "2.12.7",
-    version := "0.3.2-SNAPSHOT",
+    version := "0.3.3-SNAPSHOT",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")

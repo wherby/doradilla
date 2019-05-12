@@ -1,10 +1,9 @@
 package doradilla.core.queue
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job.{JobMsg, JobRequest}
-import doradilla.core.queue.QueueActor.{FetchTask, RequestList}
+import doradilla.core.queue.QueueActor.{FetchTask, RequestListResponse}
 
 
 /**
@@ -18,15 +17,15 @@ class QueueActorSpec extends  ActorTestClass  {
       val proxy = TestProbe()
       val queueActor = system.actorOf(QueueActor.queueActorProps, "queueActor")
       queueActor ! JobRequest(JobMsg("add", "test",None),proxy.ref,proxy.ref)
-      proxy.send(queueActor,FetchTask(2))
+      proxy.send(queueActor,FetchTask(2,proxy.ref))
       proxy.expectMsgPF(){
-        case RequestList(reqs) => reqs.length should be (1)
-          reqs.head.taskMsg.operation should be ("add")
-          reqs.head.replyTo should be(proxy.ref)
+        case requestListResponse: RequestListResponse  => requestListResponse.requestList.requests.length should be (1)
+          requestListResponse.requestList.requests.head.taskMsg.operation should be ("add")
+          requestListResponse.requestList.requests.head.replyTo should be(proxy.ref)
       }
-      proxy.send(queueActor,FetchTask(2))
+      proxy.send(queueActor,FetchTask(2,proxy.ref))
       proxy.expectMsgPF(){
-        case RequestList(reqs) => reqs.length should be (0)
+        case RequestListResponse(reqs,actorRef) => reqs.requests.length should be (0)
       }
     }
   }
