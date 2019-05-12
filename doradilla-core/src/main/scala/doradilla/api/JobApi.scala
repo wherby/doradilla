@@ -19,7 +19,7 @@ object JobApi {
   def getSystem(systemOpt: Option[ActorSystem] = None) = {
     actorSystemOpt match {
       case Some(actorSystem) => actorSystem
-      case _ => new SystemApi(systemOpt) with DriverApi with CommandTranApi
+      case _ => new SystemApi(systemOpt) with DriverApi with CommandTranApi with ProcessTranApi
     }
   }
 }

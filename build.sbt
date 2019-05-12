@@ -52,11 +52,10 @@ lazy val doradillaCore = (project in file("doradilla-core"))
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging)
   .settings(commonSettings: _*)
-  .aggregate(doradillaCore)
   .settings(
     name := "Doradilla",
-    libraryDependencies ++= Seq("io.github.wherby" %% "doradilla-core" % "0.2.0"),
     publishArtifact := false,
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
-  )
+  ).aggregate(doradillaCore)
+  .dependsOn(doradillaCore)
 

@@ -2,8 +2,7 @@ package doradilla.api
 
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.core.msg.Job.{JobRequest, JobResult}
-import doradilla.core.msg.JobControlMsg.ResetDriver
+import doradilla.core.msg.Job.{JobRequest}
 import doradilla.core.queue.QueueActor
 import vars.ConstVarTest
 
@@ -34,11 +33,6 @@ class DriverApiSpec extends ActorTestClass{
         case msg => println(msg)
           msg
       }
-      proxy.expectMsgPF(){
-        case msg => println(msg)
-          msg
-      }
-      systemApi.defaultDriver ! ResetDriver()
       proxy.expectMsgPF(){
         case msg => println(msg)
           msg
