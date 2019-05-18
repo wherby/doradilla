@@ -9,17 +9,21 @@ import io.github.wherby.doradilla.conf.DoraConf
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/18
   */
 object SimpleClusterApp {
-  def main(args: Array[String]): Seq[BackendServer] = {
-    if(args.isEmpty){
+  def main(args: Array[String]): Unit = {
+    RunWithArgs(args)
+  }
+
+  def RunWithArgs(args: Array[String]): Seq[BackendServer] = {
+    if (args.isEmpty) {
       val port = DoraConf.config.getInt("clustering.seed-port")
       Seq(startApp(port))
-    }else{
-      try{
-        args.map{
+    } else {
+      try {
+        args.map {
           arg => startApp(arg.toInt)
         }
-      }catch {
-        case e:Exception => Logger.apply(this.toString).error(s"Can't start the system with parameters :${args}for :${e.getMessage}")
+      } catch {
+        case e: Exception => Logger.apply(this.toString).error(s"Can't start the system with parameters :${args}for :${e.getMessage}")
           Seq()
       }
     }

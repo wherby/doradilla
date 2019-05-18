@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 object SimpleClusterAppTest {
   def main(args: Array[String]): Unit = {
-    val serverSeq= SimpleClusterApp.main(Array())
+    val serverSeq= SimpleClusterApp.RunWithArgs(Array())
     val msg = TestVars.processCallMsgTest
     BackendServer.runProcessCommand(msg,Some(serverSeq.head)).map{
       println

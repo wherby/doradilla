@@ -1,6 +1,7 @@
 import com.typesafe.sbt.SbtNativePackager.autoImport.maintainer
+import com.typesafe.sbt.SbtPgp.autoImportImpl.useGpg
 import sbt.Keys._
-import sbt._
+import sbt.{url, _}
 
 /**
   * For  in doradilla
@@ -30,13 +31,37 @@ object Dependencies {
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
     scalaVersion := "2.12.7",
-    version := "1.0.0",
+    version := "1.0.0-SNAPSHOT",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")
     ),
     libraryDependencies ++= commonDependencies,
     maintainer := "wherby <187225577@qq.com>",
+    licenses := Seq("Apache License 2.0" -> url("https://github.com/wherby/doradilla/blob/master/LICENSE")),
+    useGpg := true,
+    homepage := Some(url("https://github.com/wherby/doradilla")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/wherby/doradilla.git"),
+        "scm:git@github.com:wherby/doradilla.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id    = "wherby",
+        name  = "Tao Zhou",
+        email = "187225577@qq.com",
+        url   = url("https://github.com/wherby")
+      )
+    ),
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (version.value.contains("SNAPSHOT"))
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
   )
 
   lazy val settings = Seq(

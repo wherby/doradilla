@@ -23,30 +23,7 @@ lazy val doradillaCore = (project in file("doradilla-core"))
   .settings(
     name := "Doradilla-core",
     publishArtifact := true,
-    licenses := Seq("Apache License 2.0" -> url("https://github.com/wherby/doradilla/blob/master/LICENSE")),
-    useGpg := true,
-    homepage := Some(url("https://github.com/wherby/doradilla")),
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/wherby/doradilla.git"),
-        "scm:git@github.com:wherby/doradilla.git"
-      )
-      ),
-      developers := List(
-      Developer(
-        id    = "wherby",
-        name  = "Tao Zhou",
-        email = "187225577@qq.com",
-        url   = url("https://github.com/wherby")
-      )
-      ),
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
-      if (version.value.contains("SNAPSHOT"))
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    }
+
   )
 
 lazy val root = (project in file("."))
@@ -54,8 +31,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
     name := "Doradilla",
-    publishArtifact := false,
-    publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
+    publishArtifact := true,
     mainClass  := Some("io.github.wherby.doradilla.app.SimpleClusterApp"),//object with,
   ).aggregate(doradillaCore)
   .dependsOn(doradillaCore)
