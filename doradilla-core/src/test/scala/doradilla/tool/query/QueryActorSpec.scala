@@ -1,10 +1,8 @@
 package doradilla.tool.query
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor
-import doradilla.core.queue.QueueActor
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
 
 /**

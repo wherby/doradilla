@@ -16,7 +16,7 @@ class QueueActorSpec extends  ActorTestClass  {
     "receive RequestItem and fetch number of task" in {
       val proxy = TestProbe()
       val queueActor = system.actorOf(QueueActor.queueActorProps, "queueActor")
-      queueActor ! JobRequest(JobMsg("add", "test",None),proxy.ref,proxy.ref)
+      queueActor ! JobRequest(JobMsg("add", "io.github.wherby.doradilla.test",None),proxy.ref,proxy.ref)
       proxy.send(queueActor,FetchTask(2,proxy.ref))
       proxy.expectMsgPF(){
         case requestListResponse: RequestListResponse  => requestListResponse.requestList.requests.length should be (1)

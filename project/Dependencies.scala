@@ -17,12 +17,15 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-slf4j"   % akka,
     "com.typesafe.akka" %% "akka-cluster" % akka,
     "com.typesafe.akka" %% "akka-cluster-tools" % akka,
-    "com.typesafe.akka" %% "akka-testkit" % akka % "test",
+    "com.typesafe.akka" %% "akka-testkit" % akka,
     // https://mvnrepository.com/artifact/org.scalatest/scalatest
     "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test,
     // https://mvnrepository.com/artifact/com.typesafe.play/play-json
-    "com.typesafe.play" %% "play-json" % "2.6.13"
+    "com.typesafe.play" %% "play-json" % "2.6.13",
+    // https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core
+    "com.datastax.cassandra" % "cassandra-driver-core" % "3.7.1"
   )
+  
 
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",

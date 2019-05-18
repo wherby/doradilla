@@ -32,7 +32,7 @@ object ConstVarTest {
   val commandRequest = CommandRequest(command)
   val commandJob = JobMsg("SimpleCommand", Json.toJson(commandRequest).toString())
 
-//process test
+//process io.github.wherby.doradilla.test
   val paras = Array(ConstVarTest.command.asInstanceOf[AnyRef])
   val processCallMsgTest = ProcessCallMsg("doradilla.util.CommandService","runCommandSync",paras)
   val processJob = JobMsg("SimpleProcess",processCallMsgTest)

@@ -1,6 +1,5 @@
 package doradilla.tool.job.command
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor

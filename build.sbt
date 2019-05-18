@@ -56,6 +56,7 @@ lazy val root = (project in file("."))
     name := "Doradilla",
     publishArtifact := false,
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
+    mainClass  := Some("io.github.wherby.doradilla.app.SimpleClusterApp"),//object with,
   ).aggregate(doradillaCore)
   .dependsOn(doradillaCore)
 
