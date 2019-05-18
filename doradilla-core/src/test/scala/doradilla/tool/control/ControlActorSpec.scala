@@ -1,6 +1,5 @@
 package doradilla.tool.control
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.base.query.QueryTrait.NotHandleMessage

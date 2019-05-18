@@ -1,10 +1,10 @@
 package doradilla.tool.receive
 
-import akka.actor.{ActorRef, PoisonPill, Props}
+import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.msg.Job.JobResult
-import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, StopProxy}
+import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
 
 /**
   * For doradilla.tool.receive in Doradilla

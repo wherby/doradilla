@@ -4,7 +4,6 @@ import doradilla.util.ProcessService.ProcessCallMsg
 import org.scalatest._
 import vars.ConstVarTest
 
-import scala.concurrent.Await
 
 /**
   * For doradilla.util in Doradilla

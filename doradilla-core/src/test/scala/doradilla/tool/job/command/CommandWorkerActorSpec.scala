@@ -1,12 +1,9 @@
 package doradilla.tool.job.command
 
-import akka.actor.Props
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job.{JobResult, JobStatus}
 import doradilla.tool.job.command.CommandTranActor.SimpleCommandInit
-import doradilla.util.CommandService.ExecuteResult
-import play.api.libs.json.Json
 import vars.ConstVarTest
 
 /**

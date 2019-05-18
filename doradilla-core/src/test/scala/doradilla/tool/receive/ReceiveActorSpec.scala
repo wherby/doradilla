@@ -1,11 +1,10 @@
 package doradilla.tool.receive
 
-import akka.actor.{PoisonPill, Props}
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor.ProxyActorMsg
-import doradilla.core.msg.Job.{JobRequest, JobResult, JobStatus}
-import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, StopProxy}
+import doradilla.core.msg.Job.{ JobResult, JobStatus}
+import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
 
 /**
   * For doradilla.tool.receive in Doradilla
@@ -13,7 +12,7 @@ import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, StopPr
   */
 class ReceiveActorSpec extends ActorTestClass{
   "Receive Actor " must{
-    "Send back resut when jobResult receive later" in{
+    "Send io.github.wherby.doradilla.back resut when jobResult receive later" in{
       val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       probe.send(receiveActor,FetchResult())
@@ -23,7 +22,7 @@ class ReceiveActorSpec extends ActorTestClass{
       }
     }
 
-    "Send back resut when jobResult receive earlier" in{
+    "Send io.github.wherby.doradilla.back resut when jobResult receive earlier" in{
       val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       receiveActor ! JobResult(JobStatus.Finished,"finished")
@@ -37,9 +36,9 @@ class ReceiveActorSpec extends ActorTestClass{
       val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
       val probe = TestProbe()
       receiveActor ! ProxyActorMsg(probe.ref)
-      receiveActor ! ProxyControlMsg("test")
+      receiveActor ! ProxyControlMsg("io.github.wherby.doradilla.test")
       probe.expectMsgPF(){
-        case msg=> msg should be("test")
+        case msg=> msg should be("io.github.wherby.doradilla.test")
       }
     }
   }

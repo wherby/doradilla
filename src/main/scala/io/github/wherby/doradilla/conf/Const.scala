@@ -1,7 +1,7 @@
-package conf
+package io.github.wherby.doradilla.conf
 
 /**
-  * For conf in Doradilla
+  * For io.github.wherby.doradilla.conf in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
   */
 object Const {

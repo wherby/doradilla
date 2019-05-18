@@ -1,7 +1,5 @@
 package doradilla.util
 
-import java.util.concurrent.Executors
-
 import doradilla.core.msg.Job.JobStatus
 import doradilla.core.msg.Job.JobStatus.JobStatus
 import scala.concurrent.{ExecutionContext, Future}

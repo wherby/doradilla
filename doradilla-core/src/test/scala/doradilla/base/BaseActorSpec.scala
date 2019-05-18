@@ -15,12 +15,12 @@ class BaseActorSpec extends  ActorTestClass  {
   "An actor extends queryActor " must{
     "return child info response" in{
       val proxy = TestProbe()
-      val testActor = system.actorOf(TestActor.testActorProps,"test")
+      val testActor = system.actorOf(TestActor.testActorProps,"io.github.wherby.doradilla.test")
       testActor ! QueryChild(proxy.ref)
       proxy.expectMsgPF(){
-        case ChildInfo(root,child,_)=> root should be ("akka://AkkaQuickstartSpec/user/test")
+        case ChildInfo(root,child,_)=> root should be ("akka://AkkaQuickstartSpec/user/io.github.wherby.doradilla.test")
       }
-      proxy.send(testActor,"test")
+      proxy.send(testActor,"io.github.wherby.doradilla.test")
       proxy.expectMsgPF(){
         case notHandleMessage: NotHandleMessage =>println(notHandleMessage)
       }

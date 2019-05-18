@@ -3,7 +3,7 @@ package doradilla.util
 import akka.actor.{ActorRef, Props}
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.base.{BaseActor, TestActor}
+import doradilla.base.{BaseActor}
 import doradilla.core.msg.Job.WorkerInfo
 
 /**
@@ -39,7 +39,7 @@ class DeployServiceSpec extends  ActorTestClass  {
           res
       }
       val proxy2 = TestProbe()
-      ref.tell("test",proxy2.ref)
+      ref.tell("io.github.wherby.doradilla.test",proxy2.ref)
       proxy2.expectMsgPF(){
         case res => res shouldBe ("test2")
       }

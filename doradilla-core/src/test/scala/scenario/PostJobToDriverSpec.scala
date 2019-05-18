@@ -12,7 +12,7 @@ import vars.ConstVarTest
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/31
   */
 class PostJobToDriverSpec extends ActorTestClass {
-  "Post FibJob to Driver will start Fib task" must {
+  "Post FibJob to Driver will start Fib task" should  {
     val fibTran = system.actorOf(FibnacciTranActor.fibnacciTranActorProps)
     val driver = system.actorOf(DriverActor.driverActorProps())
     val probe = TestProbe()
