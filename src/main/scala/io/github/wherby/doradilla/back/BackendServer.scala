@@ -3,7 +3,7 @@ package io.github.wherby.doradilla.back
 import java.util.UUID
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
-import io.github.wherby.doradilla.conf.{CNaming, Const, DoraConf}
+import io.github.wherby.doradilla.conf.{Const, DoraConf}
 import akka.cluster.singleton.{ClusterSingletonManager, ClusterSingletonManagerSettings, ClusterSingletonProxy, ClusterSingletonProxySettings}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
@@ -16,11 +16,13 @@ import doradilla.util.ProcessService.ProcessCallMsg
 import doradilla.vars.ConstVars
 import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
+
 import scala.concurrent.{ExecutionContext, Future}
 import akka.pattern.ask
 import io.github.wherby.doradilla.back.BackendServer.proxyProps
 import doradilla.core.fsm.FsmActor
-import doradilla.core.fsm.FsmActor.{RegistToDriver}
+import doradilla.core.fsm.FsmActor.RegistToDriver
+import doradilla.util.CNaming
 
 /**
   * For io.github.wherby.doradilla.back in Doradilla

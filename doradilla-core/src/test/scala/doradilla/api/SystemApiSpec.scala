@@ -2,6 +2,7 @@ package doradilla.api
 
 import akka.actor.ActorSystem
 import doradilla.ActorTestClass
+import doradilla.util.CNaming
 
 /**
   * For doradilla.api in Doradilla
@@ -14,7 +15,7 @@ class SystemApiSpec extends ActorTestClass{
       system.actorSystem.name should startWith ("diradilla")
     }
     "Return a existed actorSystem when system pass in " in {
-      val system = ActorSystem("SystemApiSpecTest")
+      val system = ActorSystem(CNaming.timebasedName( "SystemApiSpecTest"))
       val systemApi = new SystemApi(Some(system))
       systemApi.actorSystem.name should startWith("SystemApiSpecTest")
     }

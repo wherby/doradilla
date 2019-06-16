@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor
 import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
+import doradilla.util.CNaming
 
 /**
   * For doradilla.tool.query in Doradilla
@@ -11,9 +12,11 @@ import doradilla.tool.query.QueryActor.{GetRoot, QueryRoot, RootResult}
   */
 class QueryActorSpec extends  ActorTestClass  {
   "QueryActor " must {
-    val driver = system.actorOf(DriverActor.driverActorProps(), "QueryActorSpecDriver")
+    val driverName =  CNaming.timebasedName(  "QueryActorSpecDriver")
+    val driver = system.actorOf(DriverActor.driverActorProps(), driverName)
     val probe = TestProbe("QueryActorProbe")
-    val queryActor = system.actorOf(QueryActor.queryActorProps,"QueryActorSpecQueryActor")
+    val queryName = CNaming.timebasedName( "QueryActorSpecQueryActor")
+    val queryActor = system.actorOf(QueryActor.queryActorProps,queryName)
     Thread.sleep(400)
     "return queried root actor when GetRoot with None " in {
       queryActor ! QueryRoot(driver)
@@ -21,16 +24,16 @@ class QueryActorSpec extends  ActorTestClass  {
       queryActor.tell(GetRoot(None),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[_]]
+          rootResult.rootMap.get(s"akka://AkkaQuickstartSpec/user/$driverName") shouldBe a [Some[_]]
       }
     }
     "return queried root actor when GetRoot with path " in {
       queryActor ! QueryRoot(driver)
       Thread.sleep(100)
-      queryActor.tell(GetRoot(Some("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver")),probe.ref)
+      queryActor.tell(GetRoot(Some(s"akka://AkkaQuickstartSpec/user/$driverName")),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get("akka://AkkaQuickstartSpec/user/QueryActorSpecDriver") shouldBe a [Some[_]]
+          rootResult.rootMap.get(s"akka://AkkaQuickstartSpec/user/$driverName") shouldBe a [Some[_]]
       }
     }
 

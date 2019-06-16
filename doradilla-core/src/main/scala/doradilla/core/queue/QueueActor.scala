@@ -3,23 +3,29 @@ package doradilla.core.queue
 import doradilla.base.BaseActor
 import doradilla.core.msg.Job.JobRequest
 import QueueActor.{FetchTask, RequestList, RequestListResponse}
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorLogging, ActorRef, Props}
+import doradilla.util.{ConfigService, DoraConfig}
 
 /**
   * For doradilla.queue in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
-class QueueActor extends BaseActor {
-  var taskQueue: Seq[JobRequest] = Seq()
+class QueueActor extends BaseActor with ActorLogging{
+  var taskQueue:Quelike[JobRequest] = ConfigService.getStringOpt(DoraConfig.getConfig(),"doradilla.queue.type") match {
+    case Some("Fifo") =>
+      log.debug("QueueActor is using Fifo queue")
+      new FifoQue[JobRequest]()
+    case _=>
+      log.debug("QueueActor is using Priority queue")
+      new PriorityQue()
+  }
 
   def insert(item: JobRequest) = {
-    taskQueue = taskQueue :+ item
+    taskQueue.enqueue(item)
   }
 
   def fetch(num: Int): Seq[JobRequest] = {
-    val res = taskQueue.take(num)
-    taskQueue = taskQueue.drop(num)
-    res
+    taskQueue.dequeue(num)
   }
 
   override def receive: Receive = {

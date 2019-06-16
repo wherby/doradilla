@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor
 import doradilla.core.msg.Job.JobRequest
+import doradilla.util.CNaming
 import jobs.fib.FibnacciTranActor
 import vars.ConstVarTest
 
@@ -13,11 +14,12 @@ import vars.ConstVarTest
   */
 class PostJobToDriverSpec extends ActorTestClass {
   "Post FibJob to Driver will start Fib task" should  {
-    val fibTran = system.actorOf(FibnacciTranActor.fibnacciTranActorProps)
-    val driver = system.actorOf(DriverActor.driverActorProps())
-    val probe = TestProbe()
+
 
     "driver actor will handle RequestMsg " in {
+      val fibTran = system.actorOf(FibnacciTranActor.fibnacciTranActorProps,CNaming.timebasedName("fibTran"))
+      val driver = system.actorOf(DriverActor.driverActorProps(),CNaming.timebasedName("driverActor"))
+      val probe = TestProbe()
       for (i <- 0 to 20) {
         val request = JobRequest(ConstVarTest.fibTaskN(i), probe.ref, fibTran)
         driver ! request
@@ -28,8 +30,6 @@ class PostJobToDriverSpec extends ActorTestClass {
         }
       }
 
-      val msgs = receiveN(21)
-      msgs.map(println)
     }
   }
 }

@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.msg.Job.JobResult
 import doradilla.tool.job.process.ProcessTranActor.SimpleProcessInit
+import doradilla.util.CNaming
 import vars.ConstVarTest
 
 /**
@@ -12,9 +13,9 @@ import vars.ConstVarTest
   */
 class ProcessWorkerActorSpec extends ActorTestClass{
   "Process worker" must{
-    val probe = TestProbe()
     "return result when finish command" in {
-      val processWorkerActor = system.actorOf(ProcessWorkerActor.processTranActorProps,"ProcessWorkerActorSpecWorker1")
+      val probe = TestProbe()
+      val processWorkerActor = system.actorOf(ProcessWorkerActor.processTranActorProps,CNaming.timebasedName( "ProcessWorkerActorSpecWorker1"))
       val simpleProcessInit = SimpleProcessInit(ConstVarTest.processCallMsgTest,probe.ref)
       processWorkerActor ! simpleProcessInit
       Thread.sleep(2000)

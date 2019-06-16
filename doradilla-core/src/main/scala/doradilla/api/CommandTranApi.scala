@@ -1,6 +1,5 @@
 package doradilla.api
 
-import java.util.UUID
 import akka.actor.PoisonPill
 import doradilla.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doradilla.tool.job.command.CommandTranActor
@@ -8,9 +7,11 @@ import doradilla.tool.job.command.CommandTranActor.CommandRequest
 import doradilla.tool.receive.ReceiveActor
 import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
 import play.api.libs.json.Json
+
 import scala.concurrent.{ExecutionContext, Future}
 import akka.pattern.ask
 import akka.util.Timeout
+import doradilla.util.CNaming
 
 /**
   * For doradilla.api in Doradilla
@@ -18,11 +19,11 @@ import akka.util.Timeout
   */
 trait CommandTranApi {
   this: SystemApi with DriverApi=>
-  val commandTranslatedActor = actorSystem.actorOf(CommandTranActor.commandTranProps, "CommandTran")
+  val commandTranslatedActor = actorSystem.actorOf(CommandTranActor.commandTranProps, CNaming.timebasedName("CommandTran"))
 
   def processCommand(command: List[String],timeout: Timeout = longTimeout)(implicit ex: ExecutionContext): Future[JobResult] = {
     val commandJobMsg = JobMsg("SimpleCommand", Json.toJson(CommandRequest(command)).toString())
-    val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, "Receive" + UUID.randomUUID().toString)
+    val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
     val commandJobRequest = JobRequest(commandJobMsg, receiveActor, commandTranslatedActor)
     defaultDriver.tell(commandJobRequest, receiveActor)
     val result = (receiveActor ? FetchResult())(timeout).map {

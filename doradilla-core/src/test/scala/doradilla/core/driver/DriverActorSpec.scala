@@ -7,6 +7,7 @@ import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.fsm.FsmActor
 import doradilla.core.fsm.FsmActor.RegistToDriver
 import doradilla.core.msg.Job.{JobMsg, JobRequest}
+import doradilla.util.CNaming
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 
@@ -20,7 +21,7 @@ class DriverActorSpec extends  ActorTestClass  {
 
     "Receive a request message will return a ProxyActorMsg with proxy actor ref" in {
       val proxy = TestProbe()
-      val driverActor = system.actorOf(DriverActor.driverActorProps(), "driverActor")
+      val driverActor = system.actorOf(DriverActor.driverActorProps(), CNaming.timebasedName( "driverActor"))
       val requestItem = JobRequest(JobMsg("fibreq", Json.toJson(FibRequest(10)).toString),proxy.ref,proxy.ref)
       driverActor.tell(requestItem,proxy.ref)
       proxy.expectMsgPF(){
