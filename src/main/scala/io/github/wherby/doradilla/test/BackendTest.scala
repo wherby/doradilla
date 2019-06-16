@@ -13,8 +13,7 @@ object BackendTest {
     backendServer.registFSMActor()
     val msg = TestVars.processCallMsgTest
     BackendServer.runProcessCommand(msg).map{
-      println
+      res=> println(res)
     }
-
   }
 }

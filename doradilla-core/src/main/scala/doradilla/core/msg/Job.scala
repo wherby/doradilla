@@ -13,7 +13,7 @@ object Job {
 
   case class JobMsg(operation: String, data: Any, taskControl: Option[JobSetting] = None)
 
-  case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef)
+  case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef, priority : Option[Int] = None)
 
   case class JobEnd(requestMsg: JobRequest)
 

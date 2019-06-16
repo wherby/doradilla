@@ -1,10 +1,8 @@
 package doradilla.api
 
-import java.util.UUID
-
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorRef}
 import doradilla.core.driver.DriverActor
-import doradilla.util.ConfigService
+import doradilla.util.{CNaming, ConfigService}
 
 /**
   * For doradilla.api in Doradilla
@@ -15,7 +13,7 @@ trait DriverApi {
   def createDriver(queueActorOpt: Option[ActorRef] = None, driverNameOpt: Option[String] = None): ActorRef = {
     val driverName = driverNameOpt match {
       case Some(driverName) => driverName
-      case _ => ConfigService.getStringOpt(doradillaConfig, "driverPrefix").getOrElse("driver") + UUID.randomUUID().toString
+      case _ => ConfigService.getStringOpt(doradillaConfig, "driverPrefix").getOrElse(CNaming.timebasedName( "driver"))
     }
     actorSystem.actorOf(DriverActor.driverActorProps(queueActorOpt), driverName)
   }

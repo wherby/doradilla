@@ -1,7 +1,5 @@
 package doradilla.core.driver
 
-import java.util.UUID
-
 import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import akka.event.LoggingReceive
@@ -12,21 +10,21 @@ import doradilla.core.msg.Job.JobRequest
 import doradilla.core.proxy.ProxyActor
 import doradilla.core.queue.QueueActor
 import doradilla.core.queue.QueueActor.{FetchTask, RequestListResponse}
+import doradilla.util.CNaming
 
 /**
   * For doradilla.driver in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 class DriverActor(queue: Option[ActorRef] = None, setDefaultFsmActor: Option[Boolean] = Some(true)) extends BaseActor {
-  val driverUUID = UUID.randomUUID().toString
   val queueActor = queue match {
     case Some(queue) => queue
     case _ =>
-      context.actorOf(QueueActor.queueActorProps, "queueActor" + driverUUID)
+      context.actorOf(QueueActor.queueActorProps, CNaming.timebasedName( "queueActor"))
   }
 
   if(setDefaultFsmActor == Some(true)){
-    val fsmActor: ActorRef = context.actorOf(DriverActor.fsmProps, "fsmActor" + driverUUID)
+    val fsmActor: ActorRef = context.actorOf(DriverActor.fsmProps, CNaming.timebasedName( "fsmActor"))
     fsmActor ! SetDriver(self)
   }
 
@@ -35,7 +33,7 @@ class DriverActor(queue: Option[ActorRef] = None, setDefaultFsmActor: Option[Boo
   }
 
   def handleRequest(jobRequest: JobRequest) = {
-    val proxyActor = createProxy(jobRequest.taskMsg.operation + UUID.randomUUID().toString)
+    val proxyActor = createProxy(CNaming.timebasedName( jobRequest.taskMsg.operation ))
     proxyActor ! jobRequest
     sender() ! ProxyActorMsg(proxyActor)
   }

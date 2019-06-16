@@ -1,7 +1,5 @@
 package doradilla.api
 
-import java.util.UUID
-
 import akka.actor.PoisonPill
 import doradilla.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doradilla.tool.job.process.ProcessTranActor
@@ -12,6 +10,7 @@ import doradilla.util.ProcessService.ProcessCallMsg
 import scala.concurrent.{ExecutionContext, Future}
 import akka.pattern.ask
 import akka.util.Timeout
+import doradilla.util.CNaming
 
 /**
   * For doradilla.api in Doradilla
@@ -23,7 +22,7 @@ trait ProcessTranApi {
 
   def runProcessCommand(processCallMsg: ProcessCallMsg, timeout: Timeout = longTimeout)(implicit ex: ExecutionContext): Future[JobResult] = {
     val processJob = JobMsg("SimpleProcess", processCallMsg)
-    val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, "Receive" + UUID.randomUUID().toString)
+    val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName( "Receive"))
     val processJobRequest = JobRequest(processJob, receiveActor, processTranActor)
     defaultDriver.tell(processJobRequest, receiveActor)
     val result = (receiveActor ? FetchResult()) (timeout).map {

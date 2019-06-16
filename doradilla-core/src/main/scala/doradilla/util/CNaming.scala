@@ -1,4 +1,4 @@
-package io.github.wherby.doradilla.conf
+package doradilla.util
 
 import com.datastax.driver.core.utils.UUIDs
 

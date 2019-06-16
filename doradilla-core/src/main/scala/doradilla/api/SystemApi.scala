@@ -1,11 +1,8 @@
 package doradilla.api
 
-import java.util.UUID
-
 import akka.actor.ActorSystem
 import akka.util.Timeout
-import com.typesafe.config.{Config, ConfigFactory}
-import doradilla.util.ConfigService
+import doradilla.util.{CNaming, ConfigService, DoraConfig}
 import doradilla.vars.ConstVars
 
 
@@ -16,15 +13,12 @@ import doradilla.vars.ConstVars
 class SystemApi(systemOpt: Option[ActorSystem] = None) {
   val longTimeout = Timeout(ConstVars.longTimeOut)
 
-  def getConfig(): Config = {
-    val config = ConfigFactory.load()
-    ConfigFactory.load("doradilla").withFallback(config).resolve()
-  }
 
-  lazy val doradillaConfig = getConfig()
+
+  lazy val doradillaConfig = DoraConfig.getConfig()
 
   def createDoradillaSystem: ActorSystem = {
-    val actorSystemName = ConfigService.getStringOpt(doradillaConfig, "doradillaSystem"+UUID.randomUUID().toString).getOrElse("diradilla" + UUID.randomUUID().toString)
+    val actorSystemName = ConfigService.getStringOpt(doradillaConfig, "doradillaSystem").getOrElse(CNaming.timebasedName( "diradilla"))
     ActorSystem(actorSystemName, doradillaConfig)
   }
 
