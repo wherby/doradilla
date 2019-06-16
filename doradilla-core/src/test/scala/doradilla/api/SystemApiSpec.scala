@@ -18,7 +18,6 @@ class SystemApiSpec extends ActorTestClass{
       val system = ActorSystem(CNaming.timebasedName( "SystemApiSpecTest"))
       val systemApi = new SystemApi(Some(system))
       systemApi.actorSystem.name should startWith("SystemApiSpecTest")
-      system.terminate()
     }
   }
 }
