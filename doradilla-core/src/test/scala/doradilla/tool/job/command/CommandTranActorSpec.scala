@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor
 import doradilla.core.msg.Job.{JobRequest, JobResult}
+import doradilla.util.CNaming
 import vars.ConstVarTest
 
 /**
@@ -13,8 +14,8 @@ import vars.ConstVarTest
 class CommandTranActorSpec extends ActorTestClass{
   "Command Tran Actor" must{
     val probe = TestProbe()
-    val commandTran = system.actorOf(CommandTranActor.commandTranProps,"CommandTranActorSpecTran")
-    val driver = system.actorOf(DriverActor.driverActorProps(),"CommandTranActorDriver")
+    val commandTran = system.actorOf(CommandTranActor.commandTranProps,CNaming.timebasedName( "CommandTranActorSpecTran"))
+    val driver = system.actorOf(DriverActor.driverActorProps(), CNaming.timebasedName( "CommandTranActorDriver"))
     "Schedule a command and return the command result to proxy" in {
       val commandRequest = JobRequest(ConstVarTest.commandJob, probe.ref, commandTran)
       driver ! commandRequest

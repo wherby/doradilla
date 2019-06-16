@@ -12,11 +12,10 @@ import vars.ConstVarTest
   */
 class ProcessTranActorSpec extends ActorTestClass{
   "Process Tran Actor" must{
-
-    val probe = TestProbe()
-    val processTran = system.actorOf(ProcessTranActor.processTranActorProps, "ProcessTranActorSpecTran1")
-    val driver = system.actorOf(DriverActor.driverActorProps(),"ProcessTranActorSpecDriver1")
     "Schedule a prcess and return the command result to proxy" in {
+      val probe = TestProbe()
+      val processTran = system.actorOf(ProcessTranActor.processTranActorProps, "ProcessTranActorSpecTran1")
+      val driver = system.actorOf(DriverActor.driverActorProps(),"ProcessTranActorSpecDriver1")
       val processRequest = JobRequest(ConstVarTest.processJob,probe.ref,processTran)
       driver! processRequest
       Thread.sleep(1000)

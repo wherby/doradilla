@@ -2,8 +2,9 @@ package doradilla.api
 
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
-import doradilla.core.msg.Job.{JobRequest}
+import doradilla.core.msg.Job.JobRequest
 import doradilla.core.queue.QueueActor
+import doradilla.util.CNaming
 import vars.ConstVarTest
 
 /**
@@ -20,7 +21,7 @@ class DriverApiSpec extends ActorTestClass{
     "Driver Api will use specified queue when queueActor is set" in {
       val proxy = TestProbe()
       val systemApi = new SystemApi(Some(system))with DriverApi with CommandTranApi
-      val queueActor = systemApi.actorSystem.actorOf(QueueActor.queueActorProps,"DriverApiSpecQueue1")
+      val queueActor = systemApi.actorSystem.actorOf(QueueActor.queueActorProps,CNaming.timebasedName( "DriverApiSpecQueue1"))
       systemApi.queueActorSet = Some(queueActor)
       val commandRequest = JobRequest(ConstVarTest.commandJob,proxy.ref, systemApi.commandTranslatedActor)
       queueActor ! commandRequest
