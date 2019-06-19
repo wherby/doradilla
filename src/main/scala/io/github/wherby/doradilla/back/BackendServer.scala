@@ -31,7 +31,7 @@ import doradilla.util.CNaming
 object BackendServer {
   var backendServerMap: Map[Int, BackendServer] = Map()
   var nextPort = 0
-  val seedPort = DoraConf.config.getInt("clustering.seed-port")
+  lazy val seedPort = DoraConf.config.getInt("dora.clustering.seed-port")
 
   def startup(portConf: Option[Int]=None):BackendServer ={
       portConf match {
@@ -59,7 +59,8 @@ object BackendServer {
       case Some(port) => port
       case _ => getAvailablePort
     }
-    val clusterName = DoraConf.config.getString("clustering.cluster.name")
+    val clusterName = DoraConf.config.getString("dora.clustering.cluster.name")
+    println(s"Cluster name : $clusterName")
     val system = ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
     setUpClusterSiglenton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSiglenton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)

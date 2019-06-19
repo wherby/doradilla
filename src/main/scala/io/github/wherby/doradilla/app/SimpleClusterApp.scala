@@ -15,7 +15,7 @@ object SimpleClusterApp {
 
   def RunWithArgs(args: Array[String]): Seq[BackendServer] = {
     if (args.isEmpty) {
-      val port = DoraConf.config.getInt("clustering.seed-port")
+      val port = DoraConf.config.getInt("dora.clustering.seed-port")
       Seq(startApp(port))
     } else {
       try {
