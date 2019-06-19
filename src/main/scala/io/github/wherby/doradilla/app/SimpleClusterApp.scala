@@ -29,7 +29,7 @@ object SimpleClusterApp {
     }
   }
 
-  def startApp(port:Int): BackendServer ={
+  def startApp(port: Int): BackendServer = {
     val backendServer = BackendServer.startup(Some(port))
     backendServer.registFSMActor()
     backendServer

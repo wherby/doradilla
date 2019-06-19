@@ -33,24 +33,24 @@ object BackendServer {
   var nextPort = 0
   lazy val seedPort = DoraConf.config.getInt("dora.clustering.seed-port")
 
-  def startup(portConf: Option[Int]=None):BackendServer ={
-      portConf match {
-        case Some(port) =>backendServerMap.get(port) match {
-          case Some(backendServer) => backendServer
-          case _=> CreateBackendServer(Some(port))
-        }
-        case _=>CreateBackendServer(portConf)
+  def startup(portConf: Option[Int] = None): BackendServer = {
+    portConf match {
+      case Some(port) => backendServerMap.get(port) match {
+        case Some(backendServer) => backendServer
+        case _ => CreateBackendServer(Some(port))
       }
+      case _ => CreateBackendServer(portConf)
+    }
   }
 
   private def CreateBackendServer(portConf: Option[Int]) = {
     val backendServer = new BackendServer()
 
     def getAvailablePort() = {
-      if(nextPort == 0){
+      if (nextPort == 0) {
         nextPort = seedPort
-      }else{
-        nextPort = nextPort +1
+      } else {
+        nextPort = nextPort + 1
       }
       nextPort
     }
@@ -65,23 +65,23 @@ object BackendServer {
     setUpClusterSiglenton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSiglenton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
     backendServer.actorSystemOpt = Some(system)
-    backendServerMap +=(port -> backendServer)
+    backendServerMap += (port -> backendServer)
     backendServer.getActorProxy(Const.driverServiceName)
     backendServer.getActorProxy(Const.procssTranServiceName)
     backendServer
   }
 
-  def runProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] =None, timeout: Timeout = ConstVars.longTimeOut)(implicit ex: ExecutionContext): Future[JobResult] = {
-    val backendServer =  backendServerOpt match {
-      case Some(backendServer)=> backendServer
-      case _=>startup(Some(seedPort))
+  def runProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+    val backendServer = backendServerOpt match {
+      case Some(backendServer) => backendServer
+      case _ => startup(Some(seedPort))
     }
     (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
       case (Some(dirverSercice), Some(processTranService)) =>
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, "Receive" + UUID.randomUUID().toString)
-        val processJobRequest = JobRequest(processJob, receiveActor, processTranService)
+        val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
         dirverSercice.tell(processJobRequest, receiveActor)
         val result = (receiveActor ? FetchResult()) (timeout).map {
           result =>
@@ -90,14 +90,14 @@ object BackendServer {
             result.asInstanceOf[JobResult]
         }
         result
-      case _=>{
+      case _ => {
         Logger.apply(this.getClass.getName).info(backendServer.actorMap.toString())
         Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service"))))
       }
     }
   }
 
-  def setUpClusterSiglenton(system: ActorSystem, props:Props,name:String): ActorRef ={
+  def setUpClusterSiglenton(system: ActorSystem, props: Props, name: String): ActorRef = {
     system.actorOf(ClusterSingletonManager.props(
       singletonProps = props,
       terminationMessage = PoisonPill,
@@ -107,38 +107,38 @@ object BackendServer {
 
 
   // #proxy
-  def proxyProps(system: ActorSystem, name:String):Props = ClusterSingletonProxy.props(
+  def proxyProps(system: ActorSystem, name: String): Props = ClusterSingletonProxy.props(
     settings = ClusterSingletonProxySettings(system).withRole(Const.backendRole),
     singletonManagerPath = s"/user/$name")
 
 }
 
-class BackendServer{
-  var actorSystemOpt : Option[ActorSystem] = None
-  var actorMap: Map[String,ActorRef] = Map()
+class BackendServer {
+  var actorSystemOpt: Option[ActorSystem] = None
+  var actorMap: Map[String, ActorRef] = Map()
 
-  def getActorProxy(actorName: String):Option[ActorRef] = {
+  def getActorProxy(actorName: String): Option[ActorRef] = {
     actorMap.get(actorName) match {
       case Some(actorProxy) => Some(actorProxy)
-      case _=>  val actorProxyOpt = actorSystemOpt.map{
-        actorSystem=>actorSystem.actorOf(proxyProps(actorSystem,actorName),CNaming.timebasedName( actorName + "Proxy") )
+      case _ => val actorProxyOpt = actorSystemOpt.map {
+        actorSystem => actorSystem.actorOf(proxyProps(actorSystem, actorName), CNaming.timebasedName(actorName + "Proxy"))
       }
-        actorProxyOpt.map{
-          actorProxy=> actorMap +=(actorName -> actorProxy)
+        actorProxyOpt.map {
+          actorProxy => actorMap += (actorName -> actorProxy)
         }
         actorProxyOpt
     }
   }
 
-  def registFSMActor(): Unit ={
-    actorSystemOpt.map{
-      actorSystem=>
-        val fsmActorName = CNaming.timebasedName( "FsmActor")
-        val fsmActor:ActorRef= actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
-        this.getActorProxy(Const.driverServiceName).map{
+  def registFSMActor(): Unit = {
+    actorSystemOpt.map {
+      actorSystem =>
+        val fsmActorName = CNaming.timebasedName("FsmActor")
+        val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
+        this.getActorProxy(Const.driverServiceName).map {
           driverPorxy =>
             println(driverPorxy)
-            driverPorxy.tell(RegistToDriver(fsmActor),fsmActor)
+            driverPorxy.tell(RegistToDriver(fsmActor), fsmActor)
         }
         actorMap += (fsmActorName -> fsmActor)
     }

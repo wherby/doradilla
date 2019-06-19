@@ -10,7 +10,8 @@ object DoraConf {
   lazy val config = ConfigFactory.load()
 
   def config(port: Int, role: String): Config =
-    ConfigFactory.parseString(s"""
+    ConfigFactory.parseString(
+      s"""
       dora.akka.remote.netty.tcp.port=$port
       dora.akka.cluster.roles=[$role]
     """).withFallback(ConfigFactory.load()).getConfig("dora")
