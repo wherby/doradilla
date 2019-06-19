@@ -8,7 +8,7 @@ import sbt.{url, _}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/31
   */
 object Dependencies {
-  lazy val akka = "2.5.21"
+  lazy val akka = "2.5.22"
   /* dependencies */
   val commonDependencies = Seq (
     // -- Logging --
@@ -31,7 +31,7 @@ object Dependencies {
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
     scalaVersion := "2.12.7",
-    version := "1.1.0-SNAPSHOT",
+    version := "1.1.1-SNAPSHOT",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")

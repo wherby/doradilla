@@ -1,4 +1,4 @@
-package io.github.wherby.doradilla.test
+package app
 
 import io.github.wherby.doradilla.app.SimpleClusterApp
 import io.github.wherby.doradilla.back.BackendServer
