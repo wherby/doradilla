@@ -37,13 +37,13 @@ object BackendServer {
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
-        case _ => CreateBackendServer(Some(port))
+        case _ => createBackendServer(Some(port))
       }
-      case _ => CreateBackendServer(portConf)
+      case _ => createBackendServer(portConf)
     }
   }
 
-  private def CreateBackendServer(portConf: Option[Int]) = {
+  private def createBackendServer(portConf: Option[Int]) = {
     val backendServer = new BackendServer()
 
     def getAvailablePort() = {
@@ -59,11 +59,10 @@ object BackendServer {
       case Some(port) => port
       case _ => getAvailablePort
     }
-    val clusterName = DoraConf.config.getString("dora.clustering.cluster.name")
-    println(s"Cluster name : $clusterName")
+    val clusterName = DoraConf.config.getString("clustering.cluster.name")
     val system = ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
-    setUpClusterSiglenton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
-    setUpClusterSiglenton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
+    setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
+    setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
     backendServer.actorSystemOpt = Some(system)
     backendServerMap += (port -> backendServer)
     backendServer.getActorProxy(Const.driverServiceName)
@@ -97,7 +96,7 @@ object BackendServer {
     }
   }
 
-  def setUpClusterSiglenton(system: ActorSystem, props: Props, name: String): ActorRef = {
+  def setUpClusterSingleton(system: ActorSystem, props: Props, name: String): ActorRef = {
     system.actorOf(ClusterSingletonManager.props(
       singletonProps = props,
       terminationMessage = PoisonPill,
@@ -136,9 +135,9 @@ class BackendServer {
         val fsmActorName = CNaming.timebasedName("FsmActor")
         val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
         this.getActorProxy(Const.driverServiceName).map {
-          driverPorxy =>
-            println(driverPorxy)
-            driverPorxy.tell(RegistToDriver(fsmActor), fsmActor)
+          driverProxy =>
+            println(driverProxy)
+            driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
         }
         actorMap += (fsmActorName -> fsmActor)
     }

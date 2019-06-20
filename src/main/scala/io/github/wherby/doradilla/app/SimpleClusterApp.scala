@@ -10,12 +10,12 @@ import io.github.wherby.doradilla.conf.DoraConf
   */
 object SimpleClusterApp {
   def main(args: Array[String]): Unit = {
-    RunWithArgs(args)
+    runWithArgs(args)
   }
 
-  def RunWithArgs(args: Array[String]): Seq[BackendServer] = {
+  def runWithArgs(args: Array[String]): Seq[BackendServer] = {
     if (args.isEmpty) {
-      val port = DoraConf.config.getInt("dora.clustering.seed-port")
+      lazy val port = DoraConf.config.getInt("clustering.seed-port")
       Seq(startApp(port))
     } else {
       try {
