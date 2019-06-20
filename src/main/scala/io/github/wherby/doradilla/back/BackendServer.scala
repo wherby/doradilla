@@ -31,7 +31,7 @@ import doradilla.util.CNaming
 object BackendServer {
   var backendServerMap: Map[Int, BackendServer] = Map()
   var nextPort = 0
-  lazy val seedPort = DoraConf.config.getInt("dora.clustering.seed-port")
+  lazy val seedPort = DoraConf.config.getInt("clustering.seed-port")
 
   def startup(portConf: Option[Int] = None): BackendServer = {
     portConf match {
