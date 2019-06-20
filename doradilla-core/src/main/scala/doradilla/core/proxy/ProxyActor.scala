@@ -22,7 +22,8 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
   def handleJobRequest(requestMsg: JobRequest): Unit = {
     replyTo = requestMsg.replyTo
     requestMsgBk =requestMsg
-    queueActor ! JobRequest(requestMsg.taskMsg, self, requestMsg.tranActor)
+    val updatedJobRequest = requestMsg.copy(replyTo=self)
+    queueActor ! updatedJobRequest
     status = JobStatus.Queued
   }
 

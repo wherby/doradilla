@@ -77,12 +77,12 @@ object BackendServer {
       case _ => startup(Some(seedPort))
     }
     (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
-      case (Some(dirverSercice), Some(processTranService)) =>
+      case (Some(driverService), Some(processTranService)) =>
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, "Receive" + UUID.randomUUID().toString)
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
-        dirverSercice.tell(processJobRequest, receiveActor)
+        driverService.tell(processJobRequest, receiveActor)
         val result = (receiveActor ? FetchResult()) (timeout).map {
           result =>
             receiveActor ! ProxyControlMsg(PoisonPill)
