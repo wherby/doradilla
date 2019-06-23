@@ -18,7 +18,7 @@ import doradilla.util.CNaming
   */
 trait ProcessTranApi {
   this: SystemApi with DriverApi =>
-  val processTranActor = actorSystem.actorOf(ProcessTranActor.processTranActorProps, "defaultProcessTranActor")
+  val processTranActor = actorSystem.actorOf(ProcessTranActor.processTranActorProps, CNaming.timebasedName( "defaultProcessTranActor"))
 
   def runProcessCommand(processCallMsg: ProcessCallMsg, timeout: Timeout = longTimeout)(implicit ex: ExecutionContext): Future[JobResult] = {
     val processJob = JobMsg("SimpleProcess", processCallMsg)

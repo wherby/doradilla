@@ -79,7 +79,7 @@ object BackendServer {
       case (Some(driverService), Some(processTranService)) =>
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
-        val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, "Receive" + UUID.randomUUID().toString)
+        val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName( "Receive"))
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
         driverService.tell(processJobRequest, receiveActor)
         val result = (receiveActor ? FetchResult()) (timeout).map {
