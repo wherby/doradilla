@@ -39,6 +39,13 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     val resultFuture = ProcessService.callProcess(msg)
     resultFuture.isRight should be (true)
   }
+
+
+  "Process service" should "return result for Command sercice call in object" in {
+    val msg = processCallMsg.copy( clazzName = "doradilla.util.TestProcess2",methodName = "objectAdd")
+    val result = ProcessService.callProcess(msg)
+    result shouldBe(Right(Par1(6)))
+  }
 }
 
 
