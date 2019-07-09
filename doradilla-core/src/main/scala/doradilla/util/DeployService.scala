@@ -10,9 +10,14 @@ import doradilla.core.msg.Job.WorkerInfo
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/30
   */
 object DeployService {
+  var classLoaderOpt: Option[ClassLoader] = None
+
   def tryToInstanceDeployActor(workerInfo: WorkerInfo, context: ActorContext): Option[ActorRef] = {
     try {
-      val clazz = Class.forName(workerInfo.actorName)
+      val clazz = classLoaderOpt match {
+        case Some(classLoader) => Class.forName(workerInfo.actorName, false,classLoader)
+        case _=> Class.forName(workerInfo.actorName)
+      }
       val actorName = clazz.getSimpleName + UUID.randomUUID().toString
       val actorRef = workerInfo.config match {
         case Some(conf) => context.actorOf(Props(clazz, conf), actorName)

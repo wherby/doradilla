@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/22
   */
 object ProcessService {
+  var classLoaderOpt: Option[ClassLoader] = None
   def callProcess(processCallMsg: ProcessCallMsg) = {
     //Call reflection will takes time
     // get runtime universe
@@ -17,7 +18,10 @@ object ProcessService {
     val rm = ru.runtimeMirror(getClass.getClassLoader)
     //val instanceMirror = rm.reflectClass(Class.)
     try {
-      val a = Class.forName(processCallMsg.clazzName)
+      lazy val a = classLoaderOpt match {
+        case Some(classloader) => Class.forName(processCallMsg.clazzName,false,classloader)
+        case _=> Class.forName(processCallMsg.clazzName)
+      }
       val instance = a.newInstance()
       val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
       methodOpt match {
