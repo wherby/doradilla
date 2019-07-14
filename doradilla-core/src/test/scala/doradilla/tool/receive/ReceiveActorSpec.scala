@@ -3,8 +3,8 @@ package doradilla.tool.receive
 import akka.testkit.TestProbe
 import doradilla.ActorTestClass
 import doradilla.core.driver.DriverActor.ProxyActorMsg
-import doradilla.core.msg.Job.{ JobResult, JobStatus}
-import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
+import doradilla.core.msg.Job.{JobResult, JobStatus}
+import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
 
 /**
   * For doradilla.tool.receive in Doradilla
@@ -39,6 +39,21 @@ class ReceiveActorSpec extends ActorTestClass{
       receiveActor ! ProxyControlMsg("io.github.wherby.doradilla.test")
       probe.expectMsgPF(){
         case msg=> msg should be("io.github.wherby.doradilla.test")
+      }
+    }
+
+    "Send QueryResult msg to  proxy" in{
+      val receiveActor = system.actorOf(ReceiveActor.receiveActorProps)
+      val probe = TestProbe()
+      receiveActor ! ProxyActorMsg(probe.ref)
+      receiveActor.tell(QueryResult(),probe.ref)
+      probe.expectMsgPF(){
+        case msg=> msg should be (None)
+      }
+      receiveActor ! JobResult(JobStatus.Finished,"finished")
+      receiveActor.tell(QueryResult(),probe.ref)
+      probe.expectMsgPF(){
+        case msg=> msg should be (Some(JobResult(JobStatus.Finished,"finished")))
       }
     }
   }

@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
   * For doradilla.tool.job.worker in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/13
   */
-class orkerActor extends BaseActor {
+class WorkerActor extends BaseActor {
   var replyToOpt: Option[ActorRef] = None
   implicit val dispatcherToUse = context.system.dispatcher
   var futureResultOpt: Option[Future[Any]] = None

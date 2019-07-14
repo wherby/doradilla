@@ -7,7 +7,7 @@ Doradilla
 
 Doradilla is a job manage system which will manage a job in reactive way.
 
-### Msg Flow
+### Message flow
 ![msgflow](./pics/msgflow.jpg)
 
 ### Driver

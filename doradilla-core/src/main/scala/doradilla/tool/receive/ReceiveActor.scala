@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import doradilla.base.BaseActor
 import doradilla.core.driver.DriverActor.ProxyActorMsg
 import doradilla.core.msg.Job.JobResult
-import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
+import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
 
 /**
   * For doradilla.tool.receive in Doradilla
@@ -47,10 +47,15 @@ class ReceiveActor extends BaseActor{
     }
   }
 
+  def handleQueryResult()={
+    sender() ! jobResultOpt
+  }
+
   override def receive: Receive = {
     case msg:FetchResult => handleFetchMsg()
     case jobResult: JobResult => handleJobResult(jobResult)
     case proxyActorMsg: ProxyActorMsg => handleProxyActorMsg(proxyActorMsg)
+    case queryResult: QueryResult => handleQueryResult()
     case proxyControlMsg: ProxyControlMsg => handleProxyControlMsg(proxyControlMsg)
   }
 }
@@ -59,5 +64,6 @@ object ReceiveActor{
   val receiveActorProps = Props(new ReceiveActor())
   case class FetchResult()
   case class StopProxy()
+  case class QueryResult()
   case class ProxyControlMsg(proxyControlMsg: Any)
 }

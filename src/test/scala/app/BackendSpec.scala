@@ -19,4 +19,20 @@ class BackendSpec extends AsyncFlatSpec  with  Matchers{
         assert(true)
     }
   }
+
+  "Run process Command " should  "start the command and qurey result " in {
+    val backendServer = BackendServer.startup(Some(1600))
+    backendServer.registFSMActor()
+    val msg = TestVars.processCallMsgTest
+    val receiveActor = BackendServer.startProcessCommand(msg).get
+    BackendServer.queryProcessResult(receiveActor).map{
+        resultOpt =>
+          assert(resultOpt == None)
+    }
+    Thread.sleep(2000)
+    BackendServer.queryProcessResult(receiveActor).map{
+      resultOpt =>
+        assert(resultOpt != None )
+    }
+  }
 }

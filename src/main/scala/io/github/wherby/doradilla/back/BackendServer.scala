@@ -1,24 +1,10 @@
 package io.github.wherby.doradilla.back
 
-import java.util.UUID
-
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import io.github.wherby.doradilla.conf.{Const, DoraConf}
 import akka.cluster.singleton.{ClusterSingletonManager, ClusterSingletonManagerSettings, ClusterSingletonProxy, ClusterSingletonProxySettings}
-import akka.event.slf4j.Logger
-import akka.util.Timeout
 import doradilla.core.driver.DriverActor
-import doradilla.core.msg.Job.{JobMsg, JobRequest, JobResult, JobStatus}
 import doradilla.tool.job.process.ProcessTranActor
-import doradilla.tool.receive.ReceiveActor
-import doradilla.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
-import doradilla.util.ProcessService.ProcessCallMsg
-import doradilla.vars.ConstVars
-import play.api.libs.json.JsError
-import play.api.libs.json.JsResult.Exception
-
-import scala.concurrent.{ExecutionContext, Future}
-import akka.pattern.ask
 import io.github.wherby.doradilla.back.BackendServer.proxyProps
 import doradilla.core.fsm.FsmActor
 import doradilla.core.fsm.FsmActor.RegistToDriver
@@ -28,7 +14,7 @@ import doradilla.util.CNaming
   * For io.github.wherby.doradilla.back in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
   */
-object BackendServer {
+object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
   var nextPort = 0
   lazy val seedPort = DoraConf.config.getInt("clustering.seed-port")
@@ -68,32 +54,6 @@ object BackendServer {
     backendServer.getActorProxy(Const.driverServiceName)
     backendServer.getActorProxy(Const.procssTranServiceName)
     backendServer
-  }
-
-  def runProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
-    val backendServer = backendServerOpt match {
-      case Some(backendServer) => backendServer
-      case _ => startup(Some(seedPort))
-    }
-    (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
-      case (Some(driverService), Some(processTranService)) =>
-        val processJob = JobMsg("SimpleProcess", processCallMsg)
-        val actorSystem = backendServer.actorSystemOpt.get
-        val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName( "Receive"))
-        val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
-        driverService.tell(processJobRequest, receiveActor)
-        val result = (receiveActor ? FetchResult()) (timeout).map {
-          result =>
-            receiveActor ! ProxyControlMsg(PoisonPill)
-            receiveActor ! PoisonPill
-            result.asInstanceOf[JobResult]
-        }
-        result
-      case _ => {
-        Logger.apply(this.getClass.getName).info(backendServer.actorMap.toString())
-        Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service"))))
-      }
-    }
   }
 
   def setUpClusterSingleton(system: ActorSystem, props: Props, name: String): ActorRef = {
@@ -136,7 +96,7 @@ class BackendServer {
         val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
         this.getActorProxy(Const.driverServiceName).map {
           driverProxy =>
-            println(driverProxy)
+            //println(driverProxy)
             driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
         }
         actorMap += (fsmActorName -> fsmActor)
