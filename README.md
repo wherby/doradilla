@@ -10,9 +10,11 @@ Doradilla is a distributed job manage system.
 
 Doradilla-core is a job manage system which will handle the job request in reactive way.
 
-See detail:
 
-[doradilla-core](/docs/doradilla-core/doradilla-core.md)
+### Message flow
+![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
+
+See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
 
 
 ### How to use
