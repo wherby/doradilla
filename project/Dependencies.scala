@@ -66,7 +66,7 @@ object Dependencies {
 
   lazy val settings = Seq(
     parallelExecution in Test := false,
-    fork in run := false,   //###If the value is true, Ctrl + C may only kill JVM and not kill Akka. Set to false to kill togother.
+    fork in run := false,   //###If the value is true, Ctrl + C may only kill JVM and not kill Akka. Set to false to kill togother.  Set to true for publishing in poor network.
     // These options will be used for *all* versions.
     scalacOptions ++= Seq(
       "-deprecation",
