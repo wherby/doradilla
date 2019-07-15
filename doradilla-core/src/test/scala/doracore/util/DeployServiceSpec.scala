@@ -25,7 +25,7 @@ class DeployServiceSpec extends  ActorTestClass  {
     "Deploy a correct workerInfo without parameter should return actorRef " in{
       val proxy = TestProbe()
       val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
-      testActor.tell(WorkerInfo("doradilla.core.queue.QueueActor",None,None),proxy.ref)
+      testActor.tell(WorkerInfo("doracore.core.queue.QueueActor",None,None),proxy.ref)
       proxy.expectMsgPF(){
         case res => res shouldBe a [Some[_]]
       }
@@ -33,13 +33,13 @@ class DeployServiceSpec extends  ActorTestClass  {
     "Deploy a correct workerInfo with  parameter should return actorRef " in{
       val proxy = TestProbe()
       val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
-      testActor.tell(WorkerInfo("doradilla.util.TestActor2",Some("test2"),None),proxy.ref)
+      testActor.tell(WorkerInfo("doracore.util.TestActor2",Some("test2"),None),proxy.ref)
       val ref = proxy.expectMsgPF(){
         case Some(res:ActorRef) =>
           res
       }
       val proxy2 = TestProbe()
-      ref.tell("io.github.wherby.doradilla.test",proxy2.ref)
+      ref.tell("io.github.wherby.doracore.test",proxy2.ref)
       proxy2.expectMsgPF(){
         case res => res shouldBe ("test2")
       }
