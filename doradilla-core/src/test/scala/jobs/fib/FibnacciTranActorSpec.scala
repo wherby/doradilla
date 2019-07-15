@@ -1,10 +1,10 @@
 package jobs.fib
 
 import akka.testkit.TestProbe
-import doradilla.ActorTestClass
-import doradilla.core.msg.Job._
-import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationError}
-import doradilla.util.CNaming
+import doracore.ActorTestClass
+import doracore.core.msg.Job._
+import doracore.core.msg.TranslationMsg.{TranslatedTask, TranslationError}
+import doracore.util.CNaming
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 import vars.ConstVarTest

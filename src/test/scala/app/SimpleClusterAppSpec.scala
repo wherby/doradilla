@@ -1,8 +1,8 @@
 package app
 
-import io.github.wherby.doradilla.app.SimpleClusterApp
-import io.github.wherby.doradilla.back.BackendServer
-import io.github.wherby.doradilla.conf.TestVars
+import doradilla.app.SimpleClusterApp
+import doradilla.back.BackendServer
+import doradilla.conf.TestVars
 import org.scalatest.{AsyncFlatSpec, Matchers}
 
 /**

@@ -1,8 +1,8 @@
 package vars
 
-import doradilla.core.msg.Job.JobMsg
-import doradilla.tool.job.command.CommandTranActor.CommandRequest
-import doradilla.util.ProcessService.ProcessCallMsg
+import doracore.core.msg.Job.JobMsg
+import doracore.tool.job.command.CommandTranActor.CommandRequest
+import doracore.util.ProcessService.ProcessCallMsg
 import jobs.fib.FibnacciTranActor.FibRequest
 import play.api.libs.json.Json
 

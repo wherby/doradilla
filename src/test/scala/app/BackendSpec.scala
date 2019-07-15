@@ -1,8 +1,8 @@
 package app
 
-import io.github.wherby.doradilla.back.BackendServer
-import io.github.wherby.doradilla.conf.TestVars
-import org.scalatest.{AsyncFlatSpec, FlatSpec, Matchers}
+import doradilla.back.BackendServer
+import doradilla.conf.TestVars
+import org.scalatest.{AsyncFlatSpec, Matchers}
 
 
 /**

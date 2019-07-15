@@ -1,10 +1,10 @@
 package scenario
 
 import akka.testkit.TestProbe
-import doradilla.ActorTestClass
-import doradilla.core.driver.DriverActor
-import doradilla.core.msg.Job.JobRequest
-import doradilla.util.CNaming
+import doracore.ActorTestClass
+import doracore.core.driver.DriverActor
+import doracore.core.msg.Job.JobRequest
+import doracore.util.CNaming
 import jobs.fib.FibnacciTranActor
 import vars.ConstVarTest
 

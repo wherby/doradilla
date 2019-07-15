@@ -1,9 +1,9 @@
 package jobs.fib
 
 import akka.actor.{ActorRef, Props}
-import doradilla.base.BaseActor
-import doradilla.core.msg.Job._
-import doradilla.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
+import doracore.base.BaseActor
+import doracore.core.msg.Job._
+import doracore.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibOperation, FibRequest}
 import play.api.libs.json.Json
 

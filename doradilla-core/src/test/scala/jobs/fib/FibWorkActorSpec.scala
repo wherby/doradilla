@@ -1,9 +1,9 @@
 package jobs.fib
 
 import akka.testkit.TestProbe
-import doradilla.ActorTestClass
-import doradilla.core.msg.Job.JobResult
-import doradilla.util.CNaming
+import doracore.ActorTestClass
+import doracore.core.msg.Job.JobResult
+import doracore.util.CNaming
 import jobs.fib.FibnacciTranActor.{FibAdd, FibInit, FibRequest, FibResult}
 import play.api.libs.json.Json
 
