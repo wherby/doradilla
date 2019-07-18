@@ -1,11 +1,14 @@
 package doracore.tool.job.worker
 
+import java.util.concurrent.Executors
+
 import akka.actor.{ActorRef, Cancellable}
 import doracore.base.BaseActor
 import doracore.core.msg.Job.{JobResult, JobStatus}
 import doracore.core.msg.WorkerMsg.TickMsg
 import doracore.vars.ConstVars
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /**
@@ -13,8 +16,12 @@ import scala.util.{Failure, Success}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/13
   */
 class WorkerActor extends BaseActor {
+  implicit val ec = context.system.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
+    case true => context.system.dispatchers.lookup(ConstVars.blockDispatcherName)
+    case _=> ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
+  }
+
   var replyToOpt: Option[ActorRef] = None
-  implicit val dispatcherToUse = context.system.dispatcher
   var futureResultOpt: Option[Future[Any]] = None
   var cancelableSchedulerOpt: Option[Cancellable] = None
   val tickTime = ConstVars.tickTime
