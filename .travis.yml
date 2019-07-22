@@ -4,10 +4,10 @@ scala:
 script:
 - sbt  ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
 before_install:
-- if [ $TRAVIS_PULL_REQUEST = 'false' ]; then openssl aes-256-cbc -K $encrypted_474c3e42cec4_key
-  -iv $encrypted_474c3e42cec4_iv -in travis/secrets.tar.enc -out travis/secrets.tar
-  -d; tar xv -C travis -f travis/secrets.tar;
-  fi
+  - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+    openssl aes-256-cbc -K $encrypted_474c3e42cec4_key -iv $encrypted_474c3e42cec4_iv -in travis/secrets.tar.enc -out travis/secrets.tar -d;
+    tar xv -C travis -f travis/secrets.tar;
+    fi
 env:
   global:
   - secure: e3CwCElBQdu94CvuVUz6lHHXBKLT4dKqDRzxZtbBzncXTpvHXamibvi6evcUnegR+Jm7XJstOcKtWUUfHWuxKwNBESn9wSZ251REiyUj6YUW3C2O/ijIIWkT6FZsuln1zwiUvBGLu+60Z72VKURd00kPc8zY59CnqSQdTfZR23lSAIE6rzCbvTZVMN3S1QOtD7dWmdUAaoirLITySNCW0kmF0DMtG5M7oVt4o7dfQh/AHvCB71i24G5rMG9ZN/i5qmi8hXuzaHSCIOu9SLzLYzP+Mdl4Jh6AIvZ0Kxmc3dViyZXnmQac+vmQHzCMN8IFkE9sWx74RF/z1GnNmhFCfQm+Iz2VDIc0lvLxbPU+HeRrc5297BY8QntDvfHlM7C1O/dDypdbk1EWZlRFfhELP4BLi8xgVcXSFsdjz+QIqVnjSc2H2VCBemI8ELFp39OZPFQhsPxp89sTSrvLXTmH1Cu5EQS+qc1Gz0MrPLBBgXuFf0XOHeKjN4jQ6dYQN8hwNKfs3+dY00yvKR7LLNF9Worf0nxVy4R1Es9NcgJnTH99qaKPtBpY8VM0GTe/VjWXPpiG5o8AVWClUjtN8/CMnOQhW3rQPhpHbnVVoM4w7fIocwjQrFxGSndBI1P47rw8EWiUHX4I48dD2NFJHAcUp5eRTy6WqTPY2/RWnxAVvOs=
