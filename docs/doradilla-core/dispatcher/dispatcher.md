@@ -23,4 +23,4 @@ class WorkerActor extends BaseActor {
   }
   ....
 ```
-if user doesn't define blockDispatcherName in configuration file, newFixedThreadPool will be used as blocking io dispatcher.  For more reference see [Akka Document](https://doc.akka.io/docs/akka/current/dispatchers.html).
+if user doesn't define blockDispatcherName in configuration file, newFixedThreadPool will be used as blocking io dispatcher.  
