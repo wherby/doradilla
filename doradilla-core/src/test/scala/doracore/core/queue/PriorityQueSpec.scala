@@ -9,9 +9,9 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class PriorityQueSpec extends FlatSpec with Matchers {
 
-  val task1 = JobRequest(JobMsg("test1",null,None),null,null,Some(9))
-  val task2 = JobRequest(JobMsg("test2",null,None),null,null,Some(11))
-  val task3 = JobRequest(JobMsg("test2",null,None),null,null,None)
+  val task1 = JobRequest(JobMsg("test1",null),null,null,Some(9))
+  val task2 = JobRequest(JobMsg("test2",null),null,null,Some(11))
+  val task3 = JobRequest(JobMsg("test2",null),null,null,None)
 
   "PrioriryQue" must "return value in priority way" in{
     val priorityQue = new PriorityQue()

@@ -9,9 +9,7 @@ import Job.JobStatus.JobStatus
   */
 object Job {
 
-  case class JobSetting(timeout: Int, retry: Int)
-
-  case class JobMsg(operation: String, data: Any, taskControl: Option[JobSetting] = None)
+  case class JobMsg(operation: String, data: Any)
 
   case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef, priority : Option[Int] = None)
 

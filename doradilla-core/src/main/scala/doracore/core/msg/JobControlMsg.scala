@@ -10,8 +10,6 @@ object JobControlMsg {
 
   sealed trait ControlMsg
 
-  final case class ResetJob(jobActor:ActorRef) extends ControlMsg
-
   final case class ResetFsm() extends ControlMsg
 
 }

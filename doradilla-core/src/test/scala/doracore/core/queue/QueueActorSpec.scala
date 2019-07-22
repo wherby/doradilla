@@ -17,7 +17,7 @@ class QueueActorSpec extends ActorTestClass {
     "receive RequestItem and fetch number of task" in {
       val proxy = TestProbe()
       val queueActor = system.actorOf(QueueActor.queueActorProps, CNaming.timebasedName("queueActor"))
-      queueActor ! JobRequest(JobMsg("add", "io.github.wherby.doradilla.test", None), proxy.ref, proxy.ref)
+      queueActor ! JobRequest(JobMsg("add", "io.github.wherby.doradilla.test"), proxy.ref, proxy.ref)
       proxy.send(queueActor, FetchTask(2, proxy.ref))
       proxy.expectMsgPF() {
         case requestListResponse: RequestListResponse => requestListResponse.requestList.requests.length should be(1)
@@ -35,8 +35,8 @@ class QueueActorSpec extends ActorTestClass {
     "Remove job and send cancel result to replyTo Actor " in {
       val proxy = TestProbe()
       val queueActor = system.actorOf(QueueActor.queueActorProps, CNaming.timebasedName("queueActor"))
-      val jobRequest = JobRequest(JobMsg("add", "io.github.wherby.doradilla.test", None), proxy.ref, proxy.ref)
-      val jobRequest2 = JobRequest(JobMsg("add2", "io.github.wherby.doradilla.test", None), proxy.ref, proxy.ref)
+      val jobRequest = JobRequest(JobMsg("add", "io.github.wherby.doradilla.test"), proxy.ref, proxy.ref)
+      val jobRequest2 = JobRequest(JobMsg("add2", "io.github.wherby.doradilla.test"), proxy.ref, proxy.ref)
       queueActor ! jobRequest
       queueActor ! jobRequest2
       queueActor ! RemoveJob(jobRequest)

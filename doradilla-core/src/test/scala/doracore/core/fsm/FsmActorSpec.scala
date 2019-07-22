@@ -21,7 +21,7 @@ class FsmActorSpec  extends  ActorTestClass {
         case res =>
           res should be(Uninitialized)
       }
-      val requestMsg = JobRequest(JobMsg("add", "io.github.wherby.doradilla.test",None),proxy2.ref,proxy.ref)
+      val requestMsg = JobRequest(JobMsg("add", "io.github.wherby.doradilla.test"),proxy2.ref,proxy.ref)
       proxy.send(fsmActor,requestMsg)
       proxy.expectMsgPF(){
         case res =>
