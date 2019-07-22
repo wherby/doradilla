@@ -15,7 +15,8 @@ dockerRepository := Some("wherby")
 dockerBaseImage := "java"
 
 
-
+pgpPublicRing := file("./travis/local.pubring.asc")
+pgpSecretRing := file("./travis/local.secring.asc")
 
 lazy val doradillaCore = (project in file("doradilla-core"))
   .settings(commonSettings: _*)

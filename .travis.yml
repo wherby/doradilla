@@ -1,10 +1,19 @@
 language: scala
 scala:
-  - 2.12.7
-
-
+- 2.12.7
 script:
-  - sbt clean coverage test coverageReport
+- sbt clean coverage test coverageReport
+before_install:
+- if [ $TRAVIS_PULL_REQUEST = 'false' ]; then openssl aes-256-cbc -K $encrypted_474c3e42cec4_key
+  -iv $encrypted_474c3e42cec4_iv -in travis/secrets.tar.enc -out travis/secrets.tar
+  -d; tar xv -C travis -f travis/secrets.tar; fi
+env:
+  global:
+  - secure: e3CwCElBQdu94CvuVUz6lHHXBKLT4dKqDRzxZtbBzncXTpvHXamibvi6evcUnegR+Jm7XJstOcKtWUUfHWuxKwNBESn9wSZ251REiyUj6YUW3C2O/ijIIWkT6FZsuln1zwiUvBGLu+60Z72VKURd00kPc8zY59CnqSQdTfZR23lSAIE6rzCbvTZVMN3S1QOtD7dWmdUAaoirLITySNCW0kmF0DMtG5M7oVt4o7dfQh/AHvCB71i24G5rMG9ZN/i5qmi8hXuzaHSCIOu9SLzLYzP+Mdl4Jh6AIvZ0Kxmc3dViyZXnmQac+vmQHzCMN8IFkE9sWx74RF/z1GnNmhFCfQm+Iz2VDIc0lvLxbPU+HeRrc5297BY8QntDvfHlM7C1O/dDypdbk1EWZlRFfhELP4BLi8xgVcXSFsdjz+QIqVnjSc2H2VCBemI8ELFp39OZPFQhsPxp89sTSrvLXTmH1Cu5EQS+qc1Gz0MrPLBBgXuFf0XOHeKjN4jQ6dYQN8hwNKfs3+dY00yvKR7LLNF9Worf0nxVy4R1Es9NcgJnTH99qaKPtBpY8VM0GTe/VjWXPpiG5o8AVWClUjtN8/CMnOQhW3rQPhpHbnVVoM4w7fIocwjQrFxGSndBI1P47rw8EWiUHX4I48dD2NFJHAcUp5eRTy6WqTPY2/RWnxAVvOs=
+  - secure: AnsxextoHwYEml2v8cw+tWNlsO/zX830yQyvx6NU50ydKqqCfMIATXwdBvr0R7VL/5eMLfXTrjd14z/RRb29P9kvXAtZFYS1ImSjkXhkuX6hEPxDHVGFogev87FTttCIcug9G9tcl5+bxgkS3mhd0dT5ZpexfYbVPQ+M2VK5ZN8izdxCNMYOhOD5wmUYEI0rYlbdDMvlah6VRC0UtWrv40BbFy7HP7vAvvnboGASqiBsKuSGP6peDxrC5tRxF/tkVhrXYAoSWXA5ObzRzLvlWvyplAY9uBVEuleXmC3FKGWs3ZjywGqph38JiQh0jObWI8S5reZRHSCwvbc99V8IRki3Xh+Sq97814KbZ+iq3QaopLsV//y8q230iUi6A/b0DPIF/c4t6fBD2JNuTgMPgrViW4SHBz0bsXYccn0Um2ftwQiPL4soULN623TDtFR9wJ5CbgazVN5wYn/njeJjwLpWQu0Mj72+3n7CrAFia7DDywH2DkFc09K7poOzGdwAUQYWuNfpkpLKstEe1oYY5SaPW5dmweXswxWoPTOcJqFahK6IIdEMBvb0hCBT1UsSs9JMT3/+aUHE7xrEcofYfwou4J/XyuJZxVetYR6BIcqoCZ2/9APRtDwV6p4kLFfbltjyWcku4h3AdljPlAlYzYaqwYdHIYHZGfcwTXHlVaE=
+  - secure: nMkx4R4f3yM2C5XxNCFB7wCPI+ypxWn0RdaFZ6PfXmHfnLtyzvMM6kNSj1CRIxKNT5/pT2Rq+iXKfzFFWuvRFQeCMiqnlxK+MId2IrHxxqwvH+VJHunOJhialPuD7htbBp+Lifr4P2spQBtk3ROL7h8Pez27NAiIhGRW/KJs1Fme36nfibzD3OGRaxvlG5K2SHxUbj+Z6VJ1sz6SvIrK7bonXV5xf9tqmzBui70OhUpIklAyHJ8asmVdZbStI3yM5rRD5wErwP6H+5zZbVunOwpV1A8SjE6f1mrBl2J/0+Lehb2MRqf025AjWQ9j8TNts+KV3ePt3n/vO87ozpZL2fFsJPVuUKRXADCnNzK4WLgdwWLfeUl+BjDoXPvRouhNpnvJ9E/HYMynVPh3sBM1GJVe3X88ckCQAB2HncIi3nGaSExXElcWjmX15Ioo/70xNtJfUtLl4NthpJV6mdnP+Ce2eSbe3xo3z3nEEgbtphG8jDHcqzhSzc+MsshrCreH9IdwTujEZtIqh8mjVI3+ly32ppvFa/2ps8wbhMwMRakxBcJVjOVkmozFbvNCtC0gbI7cfGyCd4QIwY/6sKUbwQpXWeHX8KkTRHnq5Uw+9kaUdTx3+i/PWlMbBtXOoT3jIAKvYNeNpBNzhLSGFKqvEPZ5bMiquZ6Oqf6uDKH5+0s=
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then sbt ++$TRAVIS_SCALA_VERSION releaseEarly;
+    fi
