@@ -18,4 +18,16 @@ class FifoQueSpec extends FlatSpec with Matchers {
     a2 should be(Seq(2))
   }
 
+  "Fifo" should "remove element and take snap" in {
+    val fifo = new FifoQue[Int]()
+    fifo.enqueue(3)
+    fifo.enqueue(2)
+    fifo.enqueue(3)
+    fifo.enqueue(2)
+    val a1 = fifo.removeEle(3)
+    a1 should be(Seq(3,3))
+    val b1 = fifo.snap()
+    b1 should be(Seq(2,2))
+  }
+
 }

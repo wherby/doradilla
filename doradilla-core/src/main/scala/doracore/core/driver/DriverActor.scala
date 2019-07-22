@@ -3,7 +3,7 @@ package doracore.core.driver
 import akka.actor.{ActorRef, Props}
 import doracore.base.BaseActor
 import akka.event.LoggingReceive
-import doracore.core.driver.DriverActor.ProxyActorMsg
+import doracore.core.driver.DriverActor.{FetchQueue, ProxyActorMsg}
 import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.{FetchJob, RegistToDriver, SetDriver}
 import doracore.core.msg.Job.JobRequest
@@ -52,12 +52,17 @@ class DriverActor(queue: Option[ActorRef] = None, setDefaultFsmActor: Option[Boo
     registToDriver.actorRef ! SetDriver(self)
   }
 
+  def handleFetchQueue()={
+    sender() ! queueActor
+  }
+
 
   override def receive: Receive = LoggingReceive {
     case jobRequest: JobRequest => handleRequest(jobRequest)
     case fetchJob: FetchJob => hundleFetchJob()
     case requestListResponse: RequestListResponse =>hundleRequestListResponse(requestListResponse)
     case registToDriver: RegistToDriver => handleRegister(registToDriver)
+    case _: FetchQueue => handleFetchQueue()
   }
 }
 
@@ -73,5 +78,7 @@ object DriverActor {
   def fsmProps: Props = Props(new FsmActor)
 
   case class ProxyActorMsg(proxyActor: ActorRef)
+
+  case class FetchQueue()
 
 }

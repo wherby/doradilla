@@ -9,9 +9,7 @@ import Job.JobStatus.JobStatus
   */
 object Job {
 
-  case class JobSetting(timeout: Int, retry: Int)
-
-  case class JobMsg(operation: String, data: Any, taskControl: Option[JobSetting] = None)
+  case class JobMsg(operation: String, data: Any)
 
   case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef, priority : Option[Int] = None)
 
@@ -23,7 +21,7 @@ object Job {
 
   object JobStatus extends Enumeration {
     type JobStatus = Value
-    val Queued, Scheduled, Working, Finished, TimeOut, Failed, Unknown = Value
+    val Queued, Scheduled, Working, Finished, TimeOut, Failed, Canceled , Unknown = Value
 
     def withDefaultName(name: String): Value = {
       values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)

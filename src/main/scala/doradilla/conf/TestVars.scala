@@ -22,6 +22,6 @@ object TestVars {
 
   //process io.github.wherby.doradilla.test
   val paras = Array(command.asInstanceOf[AnyRef])
-  val processCallMsgTest = ProcessCallMsg("doradilla.util.CommandService", "runCommandSync", paras)
+  val processCallMsgTest = ProcessCallMsg("doracore.util.CommandService", "runCommandSync", paras)
   val processJob = JobMsg("SimpleProcess", processCallMsgTest)
 }
