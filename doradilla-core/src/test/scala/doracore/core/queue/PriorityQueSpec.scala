@@ -40,4 +40,18 @@ class PriorityQueSpec extends FlatSpec with Matchers {
     val res = priorityQue.dequeue(1)
     res should be (Seq())
   }
+
+  "PriorityQue" must "remove element and take snap"  in{
+    val priorityQue = new PriorityQue()
+    priorityQue.enqueue(task1)
+    priorityQue.enqueue(task3)
+    priorityQue.enqueue(task2)
+    priorityQue.enqueue(task1)
+    priorityQue.enqueue(task3)
+    priorityQue.enqueue(task2)
+    val a1 = priorityQue.removeEle(task2)
+    a1 should be(Seq(task2,task2))
+    val a2 = priorityQue.snap()
+    a2 should be(Seq(task1,task1,task3,task3))
+  }
 }
