@@ -39,7 +39,7 @@ object Dependencies {
     libraryDependencies ++= commonDependencies,
     maintainer := "wherby <187225577@qq.com>",
     licenses := Seq("Apache License 2.0" -> url("https://github.com/wherby/doradilla/blob/master/LICENSE")),
-    useGpg := true,
+    //useGpg := true,
     homepage := Some(url("https://github.com/wherby/doradilla")),
     scmInfo := Some(
       ScmInfo(
