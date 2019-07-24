@@ -14,7 +14,7 @@ class BatchProcessCommandSpec extends AsyncFlatSpec  with  Matchers{
       resultOpt=>
         assert(resultOpt.results(0).jobResultOpt == None)
     }
-    Thread.sleep(2000)
+    Thread.sleep(4000)
     BackendServer.queryBatchProcessResult(batchActor).map{
       resultOpt=>
         println(resultOpt.results.toList)
