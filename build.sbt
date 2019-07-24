@@ -4,15 +4,6 @@ import Dependencies._
 
 
 
-version in Docker := "latest"
-
-dockerExposedPorts in Docker := Seq(1600)
-
-dockerEntrypoint in Docker := Seq("sh", "-c", "bin/clustering $*")
-
-dockerRepository := Some("wherby")
-
-dockerBaseImage := "java"
 
 publishMavenStyle := true
 releaseEarlyWith in Global := SonatypePublisher
@@ -26,7 +17,6 @@ lazy val doradillaCore = (project in file("doradilla-core"))
   .settings(
     name := "doradilla-core",
     publishArtifact := true,
-
   )
 
 lazy val root = (project in file("."))
@@ -34,7 +24,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
     name := "doradilla",
-    publishArtifact := true,
+    publishArtifact := false,
     mainClass  := Some("io.github.wherby.doradilla.app.SimpleClusterApp"),//object with,
   ).aggregate(doradillaCore)
   .dependsOn(doradillaCore)
