@@ -2,7 +2,7 @@ package doracore.api
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
-import doracore.util.{CNaming, ConfigService, DoraConfig}
+import doracore.util.{CNaming, ConfigService, DoraCoreConfig}
 import doracore.vars.ConstVars
 
 
@@ -15,7 +15,7 @@ class SystemApi(systemOpt: Option[ActorSystem] = None) {
 
 
 
-  lazy val doradillaConfig = DoraConfig.getConfig()
+  lazy val doradillaConfig = DoraCoreConfig.getConfig()
 
   def createDoradillaSystem: ActorSystem = {
     val actorSystemName = ConfigService.getStringOpt(doradillaConfig, "doradillaSystem").getOrElse(CNaming.timebasedName( "diradilla"))

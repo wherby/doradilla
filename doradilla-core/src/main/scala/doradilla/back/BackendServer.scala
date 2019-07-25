@@ -6,7 +6,7 @@ import doracore.core.driver.DriverActor
 import doracore.tool.job.process.ProcessTranActor
 import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.RegistToDriver
-import doracore.util.CNaming
+import doracore.util.{CNaming, ConfigService}
 import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
 
@@ -90,16 +90,20 @@ class BackendServer {
   }
 
   def registFSMActor(): Unit = {
-    actorSystemOpt.map {
-      actorSystem =>
-        val fsmActorName = CNaming.timebasedName("FsmActor")
-        val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
-        this.getActorProxy(Const.driverServiceName).map {
-          driverProxy =>
-            //println(driverProxy)
-            driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
+    val fsmNumber = ConfigService.getStringOpt( DoraConf.config, "fsmNumber").getOrElse("1").toInt
+    (0 until fsmNumber).map{
+      _=>
+        actorSystemOpt.map {
+          actorSystem =>
+            val fsmActorName = CNaming.timebasedName("FsmActor")
+            val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
+            this.getActorProxy(Const.driverServiceName).map {
+              driverProxy =>
+                //println(driverProxy)
+                driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
+            }
+            actorMap += (fsmActorName -> fsmActor)
         }
-        actorMap += (fsmActorName -> fsmActor)
     }
   }
 }
