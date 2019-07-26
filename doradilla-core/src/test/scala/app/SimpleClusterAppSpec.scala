@@ -34,5 +34,9 @@ class SimpleClusterAppSpec extends ActorTestClass with Matchers {
       val serverSeq = SimpleClusterApp.runWithArgs(Array("1600","ni"))
       serverSeq.length should be(0)
     }
+
+    "Run app" in {
+      SimpleClusterApp.runWithArgs(Array("1600"))
+    }
   }
 }

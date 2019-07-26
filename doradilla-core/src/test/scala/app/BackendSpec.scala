@@ -5,10 +5,8 @@ import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
 import org.scalatest.Matchers
-
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Random
 
 /**
   * For app in Doradilla
@@ -18,7 +16,7 @@ class BackendSpec extends ActorTestClass with Matchers {
   "Baeckend server " must {
 
     "start and run command " in {
-      val backendServer = BackendServer.startup(Some(1600 + Random.nextInt(1000)))
+      val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val res = BackendServer.runProcessCommand(msg).map {
@@ -30,7 +28,7 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
 
     "start the command and qurey result " in {
-      val backendServer = BackendServer.startup(Some(1600 + Random.nextInt(1000)))
+      val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val receiveActor = BackendServer.startProcessCommand(msg).get
