@@ -5,7 +5,6 @@ import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
 import org.scalatest.Matchers
-
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
@@ -18,10 +17,10 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
   "MultiBackend" should {
     "accept and run command " in {
       val randomInt =  Random.nextInt(1000)
-      val backendServer = BackendServer.startup(Some(1600 + randomInt))
+      val backendServer = BackendServer.startup(Some(1600 ))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
-      val backendServer2 = BackendServer.startup(Some(1601 + randomInt))
+      val backendServer2 = BackendServer.startup(Some(1601))
       val res = BackendServer.runProcessCommand(msg, Some(backendServer2)).map { result =>
         println(result)
         assert(true)
