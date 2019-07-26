@@ -4,6 +4,7 @@ import akka.actor.Props
 import akka.testkit.TestProbe
 import doracore.ActorTestClass
 import doracore.base.query.QueryTrait.{ChildInfo, NotHandleMessage, QueryChild}
+import doracore.util.CNaming
 
 
 /**
@@ -15,11 +16,23 @@ class BaseActorSpec extends  ActorTestClass  {
   "An actor extends queryActor " must{
     "return child info response" in{
       val proxy = TestProbe()
-      val testActor = system.actorOf(TestActor.testActorProps,"io.github.wherby.doradilla.test")
+      val name =CNaming.timebasedName( "testActor")
+      val testActor = system.actorOf(TestActor.testActorProps,name )
       testActor ! QueryChild(proxy.ref)
       proxy.expectMsgPF(){
-        case ChildInfo(root,child,_)=> root should be ("akka://AkkaQuickstartSpec/user/io.github.wherby.doradilla.test")
+        case ChildInfo(root,child,_)=> root should be (s"akka://AkkaQuickstartSpec/user/$name")
       }
+      proxy.send(testActor,"io.github.wherby.doradilla.test")
+      proxy.expectMsgPF(){
+        case notHandleMessage: NotHandleMessage =>println(notHandleMessage)
+      }
+    }
+
+    "handle exception" in{
+      val proxy = TestProbe()
+      val testActor = system.actorOf(TestActor.testActorProps, CNaming.timebasedName( "testActor"))
+      testActor !"Crash"
+      testActor ! NotHandleMessage("dssd")
       proxy.send(testActor,"io.github.wherby.doradilla.test")
       proxy.expectMsgPF(){
         case notHandleMessage: NotHandleMessage =>println(notHandleMessage)
@@ -32,6 +45,9 @@ class TestActor extends  BaseActor{
   override def receive = {
     case "init" =>
       Some("Up and running")
+    case "Crash" =>
+      println("about to crash")
+      throw new Exception("failed")
   }
 }
 

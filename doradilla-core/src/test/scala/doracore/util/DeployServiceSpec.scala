@@ -3,7 +3,7 @@ package doracore.util
 import akka.actor.{ActorRef, Props}
 import akka.testkit.TestProbe
 import doracore.ActorTestClass
-import doracore.base.{BaseActor}
+import doracore.base.BaseActor
 import doracore.core.msg.Job.WorkerInfo
 
 /**
@@ -42,6 +42,15 @@ class DeployServiceSpec extends  ActorTestClass  {
       ref.tell("io.github.wherby.doracore.test",proxy2.ref)
       proxy2.expectMsgPF(){
         case res => res shouldBe ("test2")
+      }
+    }
+
+    "Deploy a notexisted workerInfo with  parameter should return none " in {
+      val proxy = TestProbe()
+      val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
+      testActor.tell(WorkerInfo("doracore.util.NotExisted", Some("test2"), None), proxy.ref)
+      proxy.expectMsgPF() {
+        case None =>
       }
     }
   }

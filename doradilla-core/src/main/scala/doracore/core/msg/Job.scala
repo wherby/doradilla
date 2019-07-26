@@ -11,13 +11,15 @@ object Job {
 
   case class JobMsg(operation: String, data: Any)
 
-  case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef, priority : Option[Int] = None)
+  case class JobRequest(taskMsg: JobMsg, replyTo: ActorRef, tranActor: ActorRef, priority : Option[Int] = None, jobMetaOpt: Option[JobMeta] = None)
 
   case class JobEnd(requestMsg: JobRequest)
 
   case class JobResult(taskStatus: JobStatus, result: Any)
 
   case class WorkerInfo(actorName: String, config: Option[String], replyTo: Option[ActorRef])
+
+  case class JobMeta(jobUUID : String)
 
   object JobStatus extends Enumeration {
     type JobStatus = Value

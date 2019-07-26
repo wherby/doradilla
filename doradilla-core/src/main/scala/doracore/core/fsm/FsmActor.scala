@@ -21,11 +21,14 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   startWith(Idle, Uninitialized)
   var driverActor: ActorRef = null
   var childActorOpt: Option[ActorRef] = None
+  var jobMetaOpt: Option[JobMeta] = None
 
   def hundleRequestList(requestList: RequestList) = {
     if (requestList.requests.length > 0) {
       requestList.requests.map {
         request =>
+          jobMetaOpt =request.jobMetaOpt
+          log.info(s"{${request.jobMetaOpt}} is started in fsm worker, and will be handled by {${request.tranActor}}")
           request.tranActor ! request
           request.replyTo ! JobStatus.Scheduled
       }
@@ -33,6 +36,8 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   }
 
   def endChildActor() = {
+    log.info(s"$jobMetaOpt is end")
+    jobMetaOpt = None
     childActorOpt.map {
       childActor => childActor ! PoisonPill
     }
@@ -67,8 +72,6 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   }
 
   when(Active) {
-    case Event(resetFsm: ResetFsm, _)=>
-      goto(Idle) using (Uninitialized)
     case Event(jobEnd: JobEnd, task: Task) =>
         goto(Idle) using (Uninitialized)
     case Event(workerInfo: WorkerInfo, _) =>
@@ -87,11 +90,11 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
 
   whenUnhandled {
+    case Event(resetFsm: ResetFsm, _)=>
+      log.info("Reset fsm actor..")
+      goto(Idle) using (Uninitialized)
     case Event(queryChild: QueryChild, _) => val childInfo = ChildInfo(context.self.path.toString, getChildren(), System.currentTimeMillis() / 1000)
       queryChild.actorRef ! childInfo
-      this.context.children.map { child =>
-        child ! queryChild
-      }
       stay()
     case Event(QueryState(), data) =>
       sender() ! data

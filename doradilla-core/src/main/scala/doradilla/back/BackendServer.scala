@@ -42,7 +42,9 @@ object BackendServer extends ProcessCommandRunner {
     }
 
     val port = portConf match {
-      case Some(port) => port
+      case Some(port) =>
+        nextPort =port +1
+        port
       case _ => getAvailablePort
     }
     val clusterName = DoraConf.config.getString("clustering.cluster.name")
