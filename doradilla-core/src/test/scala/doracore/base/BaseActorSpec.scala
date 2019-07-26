@@ -45,7 +45,7 @@ class TestActor extends  BaseActor{
   override def receive = {
     case "init" =>
       Some("Up and running")
-    case "crash" =>
+    case "Crash" =>
       println("about to crash")
       throw new Exception("failed")
   }

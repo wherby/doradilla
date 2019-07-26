@@ -24,5 +24,15 @@ class SimpleClusterAppSpec extends ActorTestClass with Matchers {
       }
       Await.ready(res, ConstVars.timeout1S * 10)
     }
+
+    "accept a list of number" in {
+      val serverSeq = SimpleClusterApp.runWithArgs(Array("1600","1601"))
+      serverSeq.length should be(2)
+    }
+
+    "Accept a wrong port" in {
+      val serverSeq = SimpleClusterApp.runWithArgs(Array("1600","ni"))
+      serverSeq.length should be(0)
+    }
   }
 }
