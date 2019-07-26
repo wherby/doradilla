@@ -4,14 +4,14 @@ import doracore.base.BaseActor
 import doracore.core.msg.Job.{JobRequest, JobResult, JobStatus}
 import QueueActor._
 import akka.actor.{ActorLogging, ActorRef, Props}
-import doracore.util.{ConfigService, DoraConfig}
+import doracore.util.{ConfigService, DoraCoreConfig}
 
 /**
   * For doradilla.queue in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
 class QueueActor extends BaseActor with ActorLogging {
-  var taskQueue: Quelike[JobRequest] = ConfigService.getStringOpt(DoraConfig.getConfig(), "doradilla.queue.type") match {
+  var taskQueue: Quelike[JobRequest] = ConfigService.getStringOpt(DoraCoreConfig.getConfig(), "doradilla.queue.type") match {
     case Some("Fifo") =>
       log.debug("QueueActor is using Fifo queue")
       new FifoQue[JobRequest]()
