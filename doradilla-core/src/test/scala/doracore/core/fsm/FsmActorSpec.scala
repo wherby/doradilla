@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doracore.ActorTestClass
 import doracore.core.fsm.FsmActor._
 import doracore.core.msg.Job.{JobEnd, JobMsg, JobRequest}
+import doracore.core.msg.JobControlMsg.ResetFsm
 
 /**
   * For doradilla.fsm in doradilla
@@ -22,6 +23,8 @@ class FsmActorSpec  extends  ActorTestClass {
           res should be(Uninitialized)
       }
       val requestMsg = JobRequest(JobMsg("add", "io.github.wherby.doradilla.test"),proxy2.ref,proxy.ref)
+      proxy.send(fsmActor, ResetFsm())
+      proxy.send(fsmActor, "Unhandled msg")
       proxy.send(fsmActor,requestMsg)
       proxy.expectMsgPF(){
         case res =>

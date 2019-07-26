@@ -40,6 +40,11 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     resultFuture.isRight should be (true)
   }
 
+  "Process service" should "return left for Command sercice call failed " in {
+    val msg = ConstVarTest.processCallMsgTest.copy(clazzName = "NOExisted")
+    val resultFuture = ProcessService.callProcess(msg)
+    resultFuture.isRight should be (false)
+  }
 
   "Process service" should "return result for Command sercice call in object" in {
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcess2",methodName = "objectAdd")

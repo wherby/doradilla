@@ -1,6 +1,5 @@
 package doracore.core.msg
 
-import akka.actor.ActorRef
 
 /**
   * For doradilla.core.msg in Doradilla

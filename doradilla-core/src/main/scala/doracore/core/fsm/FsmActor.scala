@@ -67,8 +67,6 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   }
 
   when(Active) {
-    case Event(resetFsm: ResetFsm, _)=>
-      goto(Idle) using (Uninitialized)
     case Event(jobEnd: JobEnd, task: Task) =>
         goto(Idle) using (Uninitialized)
     case Event(workerInfo: WorkerInfo, _) =>
@@ -87,11 +85,11 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
 
   whenUnhandled {
+    case Event(resetFsm: ResetFsm, _)=>
+      log.info("Reset fsm actor..")
+      goto(Idle) using (Uninitialized)
     case Event(queryChild: QueryChild, _) => val childInfo = ChildInfo(context.self.path.toString, getChildren(), System.currentTimeMillis() / 1000)
       queryChild.actorRef ! childInfo
-      this.context.children.map { child =>
-        child ! queryChild
-      }
       stay()
     case Event(QueryState(), data) =>
       sender() ! data

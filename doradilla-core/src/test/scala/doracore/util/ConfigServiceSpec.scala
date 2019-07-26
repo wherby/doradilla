@@ -19,6 +19,11 @@ class ConfigServiceSpec extends ActorTestClass{
       val existValue =  ConfigService.getStringOpt(config, "akka.actor.default-blocking-io-dispatcher.executor")
       existValue shouldBe (Some("thread-pool-executor"))
     }
+
+    "return None when no config in path" in{
+      val notExistValue = ConfigService.getConfigOpt(config, "NoExisted")
+      notExistValue shouldBe (None)
+    }
   }
 
 }

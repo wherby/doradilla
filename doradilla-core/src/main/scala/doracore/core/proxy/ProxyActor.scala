@@ -40,7 +40,6 @@ class ProxyActor(queueActor: ActorRef) extends BaseActor {
       status =JobStatus.Scheduled
     case JobStatus.Finished | JobStatus.Failed | JobStatus.TimeOut =>
       finishTask()
-    case msg: JobStatus => status = msg
     case query: QueryProxy => sender() ! ProxyTaskResult(requestMsgBk, status, result, translatedActorSeq, fsmActor )
     case translatedActor: TranslatedActor =>translatedActorSeq = translatedActorSeq :+ translatedActor.child
   }
