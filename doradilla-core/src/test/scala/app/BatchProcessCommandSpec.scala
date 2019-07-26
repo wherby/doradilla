@@ -1,6 +1,7 @@
 package app
 
 import doracore.ActorTestClass
+import doracore.core.msg.Job.JobMeta
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
@@ -16,7 +17,8 @@ class BatchProcessCommandSpec extends ActorTestClass with Matchers {
       val backendServer = BackendServer.startup(Some(1600 + Random.nextInt(1000)))
       backendServer.registFSMActor()
       val batchMsg = Seq(TestVars.processCallMsgTest, TestVars.processCallMsgTest)
-      val batchActor = BackendServer.startProcessBatchCommand(batchMsg).get
+      val batchActor = BackendServer.startProcessBatchCommand(batchMsg,jobMetaOpt = Some(JobMeta("aaaa"))).get
+      BackendServer.startProcessBatchCommand(batchMsg).get
       BackendServer.queryBatchProcessResult(batchActor).map {
         resultOpt =>
           assert(resultOpt.results(0).jobResultOpt == None)

@@ -3,7 +3,7 @@ package doradilla.back
 import akka.actor.{ActorRef, PoisonPill}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
-import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult, JobStatus}
+import doracore.core.msg.Job._
 import doracore.tool.receive.ReceiveActor
 import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
 import doracore.util.CNaming
@@ -12,7 +12,7 @@ import doracore.vars.ConstVars
 import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
 import akka.pattern.ask
-import doradilla.back.BatchProcessActor.{BatchProcessJob, BatchJobResult}
+import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -84,7 +84,7 @@ trait ProcessCommandRunner {
 
   def startProcessBatchCommand(batchRequests: Seq[ProcessCallMsg],
                                backendServerOpt: Option[BackendServer] = None,
-                               priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
+                               priority: Option[Int] = None, jobMetaOpt: Option[JobMeta]= None)(implicit ex: ExecutionContext): Option[ActorRef] = {
     val backendServer = backendServerOpt match {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
@@ -93,7 +93,7 @@ trait ProcessCommandRunner {
       case (Some(driverService), Some(processTranService)) =>
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(BatchProcessActor.batchProcessActorProp(), CNaming.timebasedName("BatchProcessActor"))
-        val batchProcessJobRequest = BatchProcessJob(batchRequests, driverService, processTranService, priority)
+        val batchProcessJobRequest = BatchProcessJob(batchRequests, driverService, processTranService, priority,jobMetaOpt)
         receiveActor ! batchProcessJobRequest
         Some(receiveActor)
       case _ => None
