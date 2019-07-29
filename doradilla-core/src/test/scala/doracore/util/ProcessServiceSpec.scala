@@ -1,8 +1,12 @@
 package doracore.util
 
+import doracore.core.msg.Job.JobStatus
 import doracore.util.ProcessService.ProcessCallMsg
+import doracore.vars.ConstVars
 import org.scalatest._
 import vars.ConstVarTest
+
+import scala.concurrent.Await
 
 
 /**
@@ -44,6 +48,12 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     val msg = ConstVarTest.processCallMsgTest.copy(clazzName = "NOExisted")
     val resultFuture = ProcessService.callProcess(msg)
     resultFuture.isRight should be (false)
+  }
+
+  "Process service" should "return failed when call processReusult for wrong process execution " in {
+    val msg = ConstVarTest.processCallMsgTest.copy(clazzName = "NOExisted")
+    val resultFuture = Await.result( ProcessService.callProcessResult(msg), ConstVars.timeout1S)
+    resultFuture.jobStatus should be (JobStatus.Failed)
   }
 
   "Process service" should "return result for Command sercice call in object" in {

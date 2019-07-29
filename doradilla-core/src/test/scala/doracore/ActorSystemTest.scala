@@ -1,5 +1,6 @@
 package doracore
 import akka.actor.ActorSystem
+import doradilla.conf.DoraConf
 
 /**
   * For doradilla in doradilla
