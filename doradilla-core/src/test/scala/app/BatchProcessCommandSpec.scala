@@ -5,7 +5,6 @@ import doracore.core.msg.Job.JobMeta
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.{DoraConf, TestVars}
-import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
