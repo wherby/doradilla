@@ -43,5 +43,17 @@ class BackendSpec extends ActorTestClass with Matchers {
       }
       Await.ready(res, ConstVars.timeout1S)
     }
+
+    "start and run command without actor  " in {
+      val backendServer = BackendServer.startup(Some(1600))
+      backendServer.registFSMActor()
+      backendServer.actorMap = Map()
+      val msg = TestVars.processCallMsgTest
+      val res = BackendServer.runProcessCommand(msg).map {
+        res =>
+          println(res)
+      }
+      Await.ready(res, ConstVars.timeout1S * 10)
+    }
   }
 }

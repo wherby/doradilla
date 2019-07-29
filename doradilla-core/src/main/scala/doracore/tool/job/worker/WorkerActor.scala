@@ -1,24 +1,20 @@
 package doracore.tool.job.worker
 
-import java.util.concurrent.Executors
-
 import akka.actor.{ActorRef, Cancellable}
 import doracore.base.BaseActor
 import doracore.core.msg.WorkerMsg.TickMsg
 import doracore.vars.ConstVars
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ Future}
 import scala.util.{ Try}
 
 /**
   * For doradilla.tool.job.worker in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/13
   */
-class WorkerActor extends BaseActor with ExtractResultTrait {
-  implicit val ec = context.system.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
-    case true => context.system.dispatchers.lookup(ConstVars.blockDispatcherName)
-    case _=> ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
-  }
+class WorkerActor extends BaseActor with ExtractResultTrait with BlockIODispatcher {
+  implicit val ec = GetBlockIODispatcher
+
+
 
   var replyToOpt: Option[ActorRef] = None
   var futureResultOpt: Option[Future[Any]] = None

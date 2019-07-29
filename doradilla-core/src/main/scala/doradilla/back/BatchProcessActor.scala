@@ -13,15 +13,13 @@ import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob, JobInf
 import akka.pattern.ask
 import akka.util.Timeout
 import com.datastax.driver.core.utils.UUIDs
+import doracore.tool.job.worker.BlockIODispatcher
 import doracore.vars.ConstVars
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class BatchProcessActor extends BaseActor {
-  implicit val ec = context.system.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
-    case true => context.system.dispatchers.lookup(ConstVars.blockDispatcherName)
-    case _ => ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
-  }
+class BatchProcessActor extends BaseActor with BlockIODispatcher {
+  implicit val ec = GetBlockIODispatcher
   var jobRecorder: Map[ActorRef, JobInfo] = Map()
 
 
@@ -35,8 +33,8 @@ class BatchProcessActor extends BaseActor {
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = context.system
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("ReceiverForBatch"))
-        val jobMetaOpt = batchProcessJob.jobmetaOpt match {
-          case Some(jobMeta) => Some(jobMeta.copy(jobUUID = jobMeta.jobUUID + "_Extends_"+ UUIDs.timeBased().toString))
+        val jobMetaOpt = batchProcessJob.jobmetaOpt.map{
+          jobMeta =>  jobMeta.copy(jobUUID = jobMeta.jobUUID + "_Extends_"+ UUIDs.timeBased().toString)
         }
         val processJobRequest = JobRequest(processJob, receiveActor, batchProcessJob.processTranServiceActor, batchProcessJob.priorityOpt,jobMetaOpt)
         batchProcessJob.driverServiceActor.tell(processJobRequest, receiveActor)
