@@ -29,8 +29,9 @@ trait ProcessCommandRunner {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
     }
-    (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
-      case (Some(driverService), Some(processTranService)) =>
+    val resultOpt= for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
+         processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
+      yield{
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
@@ -43,11 +44,8 @@ trait ProcessCommandRunner {
             result.asInstanceOf[JobResult]
         }
         result
-      case _ => {
-        Logger.apply(this.getClass.getName).info(backendServer.actorMap.toString())
-        Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service"))))
       }
-    }
+    resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
 
   def startProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
@@ -55,17 +53,17 @@ trait ProcessCommandRunner {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
     }
-    (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
-      case (Some(driverService), Some(processTranService)) =>
+    for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
+         processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
+      yield{
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
         driverService.tell(processJobRequest, receiveActor)
         receiveActor ! FetchResult()
-        Some(receiveActor)
-      case _ => None
-    }
+        receiveActor
+      }
   }
 
   def queryProcessResult(receiveActor: ActorRef, timeout: Timeout = ConstVars.longTimeOut)(implicit ex: ExecutionContext): Future[Option[JobResult]] = {
@@ -89,15 +87,15 @@ trait ProcessCommandRunner {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
     }
-    (backendServer.getActorProxy(Const.driverServiceName), backendServer.getActorProxy(Const.procssTranServiceName)) match {
-      case (Some(driverService), Some(processTranService)) =>
+    for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
+         processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
+      yield{
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(BatchProcessActor.batchProcessActorProp(), CNaming.timebasedName("BatchProcessActor"))
         val batchProcessJobRequest = BatchProcessJob(batchRequests, driverService, processTranService, priority,jobMetaOpt)
         receiveActor ! batchProcessJobRequest
-        Some(receiveActor)
-      case _ => None
-    }
+        receiveActor
+      }
   }
 
   def queryBatchProcessResult(batchProcessActor: ActorRef, timeout: Timeout = ConstVars.timeout1S)(implicit ex: ExecutionContext): Future[BatchJobResult] = {

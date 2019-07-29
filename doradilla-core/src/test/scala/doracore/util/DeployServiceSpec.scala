@@ -21,6 +21,16 @@ class DeployServiceSpec extends  ActorTestClass  {
 
 
   "DeployService" must{
+    "Deploy service works with classLoader specified" in {
+      DeployService.classLoaderOpt =Some(this.getClass.getClassLoader)
+      val proxy = TestProbe()
+      val testActor = system.actorOf(DeployTestActor.deployTestActorProps)
+      testActor.tell(WorkerInfo("doracore.core.queue.QueueActor",None,None),proxy.ref)
+      proxy.expectMsgPF(){
+        case res => res shouldBe a [Some[_]]
+      }
+      DeployService.classLoaderOpt = None
+    }
 
     "Deploy a correct workerInfo without parameter should return actorRef " in{
       val proxy = TestProbe()

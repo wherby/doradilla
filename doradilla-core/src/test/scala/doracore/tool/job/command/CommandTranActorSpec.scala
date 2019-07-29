@@ -4,6 +4,7 @@ import akka.testkit.TestProbe
 import doracore.ActorTestClass
 import doracore.core.driver.DriverActor
 import doracore.core.msg.Job.{JobRequest, JobResult}
+import doracore.core.msg.TranslationMsg.{TranslationDataError, TranslationOperationError}
 import doracore.util.CNaming
 import vars.ConstVarTest
 
@@ -21,6 +22,22 @@ class CommandTranActorSpec extends ActorTestClass{
       driver ! commandRequest
       probe.expectMsgPF() {
         case msg: JobResult => println(msg)
+      }
+    }
+
+    "Return Operation error when operation is not included " in {
+      val commandRequest = JobRequest(ConstVarTest.commandJob.copy(operation = "OperationNotInclude"), probe.ref, commandTran)
+      commandTran.tell( commandRequest, probe.ref)
+      probe.expectMsgPF() {
+        case msg: TranslationOperationError => println(msg)
+      }
+    }
+
+    "Return data error when data is not in correct format " in {
+      val commandRequest = JobRequest(ConstVarTest.commandJob.copy(data =1), probe.ref, commandTran)
+      commandTran.tell( commandRequest, probe.ref)
+      probe.expectMsgPF() {
+        case msg: TranslationDataError => println(msg)
       }
     }
   }

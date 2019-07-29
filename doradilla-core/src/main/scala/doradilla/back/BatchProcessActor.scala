@@ -1,6 +1,5 @@
 package doradilla.back
 
-import java.util.concurrent.Executors
 
 import akka.actor.{ActorRef, PoisonPill, Props}
 import doracore.base.BaseActor
@@ -9,38 +8,35 @@ import doracore.tool.receive.ReceiveActor
 import doracore.tool.receive.ReceiveActor.{ProxyControlMsg, QueryResult}
 import doracore.util.CNaming
 import doracore.util.ProcessService.ProcessCallMsg
-import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob, JobInfo}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.datastax.driver.core.utils.UUIDs
+import doracore.tool.job.worker.BlockIODispatcher
 import doracore.vars.ConstVars
-
+import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob, JobInfo}
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class BatchProcessActor extends BaseActor {
-  implicit val ec = context.system.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
-    case true => context.system.dispatchers.lookup(ConstVars.blockDispatcherName)
-    case _ => ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
-  }
+class BatchProcessActor extends BaseActor with BlockIODispatcher {
+  implicit val ec = GetBlockIODispatcher
   var jobRecorder: Map[ActorRef, JobInfo] = Map()
 
 
   def handleBacthJob(batchProcessJobOrg: BatchProcessJob) = {
     val batchProcessJob = batchProcessJobOrg.jobmetaOpt match {
-      case Some(_)=> batchProcessJobOrg
-      case _=> batchProcessJobOrg.copy(jobmetaOpt = Some(JobMeta(UUIDs.timeBased().toString)))
+      case Some(_) => batchProcessJobOrg
+      case _ => batchProcessJobOrg.copy(jobmetaOpt = Some(JobMeta(UUIDs.timeBased().toString)))
     }
     batchProcessJob.jobs.map {
       processCallMsg =>
         val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = context.system
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("ReceiverForBatch"))
-        val jobMetaOpt = batchProcessJob.jobmetaOpt match {
-          case Some(jobMeta) => Some(jobMeta.copy(jobUUID = jobMeta.jobUUID + "_Extends_"+ UUIDs.timeBased().toString))
+        val jobMetaOpt = batchProcessJob.jobmetaOpt.map {
+          jobMeta => jobMeta.copy(jobUUID = jobMeta.jobUUID + "_Extends_" + UUIDs.timeBased().toString)
         }
-        val processJobRequest = JobRequest(processJob, receiveActor, batchProcessJob.processTranServiceActor, batchProcessJob.priorityOpt,jobMetaOpt)
+        val processJobRequest = JobRequest(processJob, receiveActor, batchProcessJob.processTranServiceActor, batchProcessJob.priorityOpt, jobMetaOpt)
         batchProcessJob.driverServiceActor.tell(processJobRequest, receiveActor)
-        jobRecorder = jobRecorder.updated(receiveActor,JobInfo(processCallMsg, None))
+        jobRecorder = jobRecorder.updated(receiveActor, JobInfo(processCallMsg, None))
     }
   }
 
@@ -53,7 +49,7 @@ class BatchProcessActor extends BaseActor {
             resultOpt =>
               resultOpt.asInstanceOf[Option[JobResult]] match {
                 case Some(result) =>
-                  jobRecorder = jobRecorder.updated(actorRef,JobInfo(jobInfo.processCallMsg, Some(result)))
+                  jobRecorder = jobRecorder.updated(actorRef, JobInfo(jobInfo.processCallMsg, Some(result)))
                   actorRef ! ProxyControlMsg(PoisonPill)
                   actorRef ! PoisonPill
                   Some(result)

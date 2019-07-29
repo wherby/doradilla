@@ -11,7 +11,8 @@ import doracore.util.{ConfigService, DoraCoreConfig}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24
   */
 class QueueActor extends BaseActor with ActorLogging {
-  var taskQueue: Quelike[JobRequest] = ConfigService.getStringOpt(DoraCoreConfig.getConfig(), "doradilla.queue.type") match {
+  println(context.system.settings.config)
+  var taskQueue: Quelike[JobRequest] = ConfigService.getStringOpt(context.system.settings.config, "doradilla.queue.type") match {
     case Some("Fifo") =>
       log.debug("QueueActor is using Fifo queue")
       new FifoQue[JobRequest]()

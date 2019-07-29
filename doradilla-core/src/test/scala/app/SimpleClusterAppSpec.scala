@@ -36,7 +36,7 @@ class SimpleClusterAppSpec extends ActorTestClass with Matchers {
     }
 
     "Run app" in {
-      SimpleClusterApp.runWithArgs(Array("1600"))
+      SimpleClusterApp.main(Array("1600"))
     }
   }
 }
