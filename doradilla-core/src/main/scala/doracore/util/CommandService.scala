@@ -28,22 +28,18 @@ object CommandService {
     Future(runCommandSync(cmdProcess))(executor)
   }
 
-  def runCommandSync(cmdProcess: List[String]):ExecuteResult = {
-    try {
-      val stdoutStream = new ByteArrayOutputStream
-      val stderrStream = new ByteArrayOutputStream
-      val stdoutWriter = new PrintWriter(stdoutStream)
-      val stderrWriter = new PrintWriter(stderrStream)
-      val exitValue = cmdProcess.!(ProcessLogger(stdoutWriter.println, stderrWriter.println))
-      stdoutWriter.close()
-      stderrWriter.close()
-      ExecuteResult(exitValue, stdoutStream.toString, stderrStream.toString)
-    } catch {
-      case e: Exception => ExecuteResult(-1, "", s"Exception is throwing: ${e.getCause.getMessage}")
-    }
+  def runCommandSync(cmdProcess: List[String]): ExecuteResult = {
+    val stdoutStream = new ByteArrayOutputStream
+    val stderrStream = new ByteArrayOutputStream
+    val stdoutWriter = new PrintWriter(stdoutStream)
+    val stderrWriter = new PrintWriter(stderrStream)
+    val exitValue = cmdProcess.!(ProcessLogger(stdoutWriter.println, stderrWriter.println))
+    stdoutWriter.close()
+    stderrWriter.close()
+    ExecuteResult(exitValue, stdoutStream.toString, stderrStream.toString)
   }
 }
 
-class CommandService{
+class CommandService {
 
 }
