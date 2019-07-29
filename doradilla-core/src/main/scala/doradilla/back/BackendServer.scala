@@ -9,6 +9,7 @@ import doracore.core.fsm.FsmActor.RegistToDriver
 import doracore.util.{CNaming, ConfigService}
 import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
+import com.typesafe.config.Config
 
 /**
   * For io.github.wherby.doradilla.back in Doradilla
@@ -16,39 +17,39 @@ import BackendServer.proxyProps
   */
 object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
-  var nextPort = 0
   lazy val seedPort = DoraConf.config.getInt("clustering.seed-port")
+  var nextPort = seedPort
 
-  def startup(portConf: Option[Int] = None): BackendServer = {
+
+  def startup(portConf: Option[Int] = None, systemConfigOpt: Option[Config] = None): BackendServer = {
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
-        case _ => createBackendServer(Some(port))
+        case _ => createBackendServer(Some(port),systemConfigOpt)
       }
       case _ => createBackendServer(portConf)
     }
   }
 
-  private def createBackendServer(portConf: Option[Int]) = {
+  private def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
 
     def getAvailablePort() = {
-      if (nextPort == 0) {
-        nextPort = seedPort
-      } else {
-        nextPort = nextPort + 1
-      }
+      nextPort = nextPort + 1
       nextPort
     }
 
     val port = portConf match {
       case Some(port) =>
-        nextPort =port +1
+        nextPort = port + 1
         port
       case _ => getAvailablePort
     }
     val clusterName = DoraConf.config.getString("clustering.cluster.name")
-    val system = ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
+    val system = systemConfigOpt match {
+      case Some(systemConfig) =>ActorSystem(clusterName,systemConfig)
+      case _=> ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
+    }
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
     backendServer.actorSystemOpt = Some(system)
@@ -92,9 +93,9 @@ class BackendServer {
   }
 
   def registFSMActor(): Unit = {
-    val fsmNumber = ConfigService.getStringOpt( DoraConf.config, "fsmNumber").getOrElse("1").toInt
-    (0 until fsmNumber).map{
-      _=>
+    val fsmNumber = ConfigService.getStringOpt(DoraConf.config, "fsmNumber").getOrElse("1").toInt
+    (0 until fsmNumber).map {
+      _ =>
         actorSystemOpt.map {
           actorSystem =>
             val fsmActorName = CNaming.timebasedName("FsmActor")
