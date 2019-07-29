@@ -25,7 +25,7 @@ object BackendServer extends ProcessCommandRunner {
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
-        case _ => createBackendServer(Some(port),systemConfigOpt)
+        case _ => createBackendServer(Some(port), systemConfigOpt)
       }
       case _ => createBackendServer(portConf)
     }
@@ -47,8 +47,8 @@ object BackendServer extends ProcessCommandRunner {
     }
     val clusterName = DoraConf.config.getString("clustering.cluster.name")
     val system = systemConfigOpt match {
-      case Some(systemConfig) =>ActorSystem(clusterName,systemConfig)
-      case _=> ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
+      case Some(systemConfig) => ActorSystem(clusterName, systemConfig)
+      case _ => ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
     }
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
@@ -102,7 +102,6 @@ class BackendServer {
             val fsmActor: ActorRef = actorSystem.actorOf(FsmActor.fsmActorProps, fsmActorName)
             this.getActorProxy(Const.driverServiceName).map {
               driverProxy =>
-                //println(driverProxy)
                 driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
             }
             actorMap += (fsmActorName -> fsmActor)
