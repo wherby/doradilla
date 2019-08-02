@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import doracore.base.BaseActor
 import doracore.core.msg.Job.{JobRequest, WorkerInfo}
 import doracore.core.msg.TranslationMsg.{TranslatedTask, TranslationDataError, TranslationOperationError}
-import doracore.tool.job.process.ProcessTranActor.{ProcessOperation, SimpleProcessInit}
+import doracore.tool.job.process.ProcessTranActor.{ProcessOperation, SimpleProcessFutureInit, SimpleProcessInit}
 import doracore.util.ProcessService.ProcessCallMsg
 
 
@@ -20,6 +20,14 @@ class ProcessTranActor extends BaseActor{
           val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
           sender()! WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo))
           sender() ! TranslatedTask(SimpleProcessInit(msg,jobRequest.replyTo))
+        }catch{
+          case _:Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
+        }
+      case ProcessOperation.SimpleProcessFuture =>
+        try{
+          val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
+          sender()! WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo))
+          sender() ! TranslatedTask(SimpleProcessFutureInit(msg,jobRequest.replyTo))
         }catch{
           case _:Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
         }
@@ -39,7 +47,7 @@ object ProcessTranActor{
   object ProcessOperation extends  Enumeration{
     type ProcessOperation = Value
 
-    val SimpleProcess, Unknown = Value
+    val SimpleProcess, SimpleProcessFuture, Unknown = Value
 
     def withDefaultName(name: String): Value = {
       values.find(_.toString.toLowerCase == name.toLowerCase).getOrElse(Unknown)
@@ -47,4 +55,6 @@ object ProcessTranActor{
   }
 
   case class SimpleProcessInit(processCallMsg: ProcessCallMsg, replyTo: ActorRef)
+
+  case class SimpleProcessFutureInit(processCallMsg: ProcessCallMsg, replyTo: ActorRef)
 }

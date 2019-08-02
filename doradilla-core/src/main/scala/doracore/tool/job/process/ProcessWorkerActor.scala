@@ -2,7 +2,7 @@ package doracore.tool.job.process
 
 import akka.actor.{ActorLogging, Props}
 import doracore.core.msg.WorkerMsg.TickMsg
-import doracore.tool.job.process.ProcessTranActor.SimpleProcessInit
+import doracore.tool.job.process.ProcessTranActor.{SimpleProcessFutureInit, SimpleProcessInit}
 import doracore.tool.job.worker.WorkerActor
 import doracore.util.ProcessService
 
@@ -19,8 +19,17 @@ class ProcessWorkerActor extends WorkerActor with ActorLogging{
     cancelableSchedulerOpt = Some(context.system.scheduler.schedule(tickTime, tickTime, this.self, TickMsg()))
   }
 
+  def handleSimpleProcessFutureInit(simpleProcessFutureInit: SimpleProcessFutureInit) ={
+    futureResultOpt = Some(ProcessService.callProcessFutureResult(simpleProcessFutureInit.processCallMsg))
+    replyToOpt = Some(simpleProcessFutureInit.replyTo)
+    cancelableSchedulerOpt = Some(context.system.scheduler.schedule(tickTime, tickTime, this.self, TickMsg()))
+  }
+
+
   override def receive: Receive = super.receive orElse{
     case simpleProcessInit: SimpleProcessInit => handleSimpleProcessInit(simpleProcessInit)
+    case simpleProcessFutureInit: SimpleProcessFutureInit => handleSimpleProcessFutureInit(simpleProcessFutureInit)
+
   }
 }
 

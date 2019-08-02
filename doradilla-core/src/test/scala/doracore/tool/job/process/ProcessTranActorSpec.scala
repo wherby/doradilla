@@ -3,7 +3,7 @@ package doracore.tool.job.process
 import akka.testkit.TestProbe
 import doracore.ActorTestClass
 import doracore.core.driver.DriverActor
-import doracore.core.msg.Job.JobRequest
+import doracore.core.msg.Job.{JobRequest, JobResult}
 import doracore.core.msg.TranslationMsg.{TranslationDataError, TranslationOperationError}
 import doracore.util.CNaming
 import vars.ConstVarTest
@@ -21,7 +21,18 @@ class ProcessTranActorSpec extends ActorTestClass{
       val processRequest = JobRequest(ConstVarTest.processJob,probe.ref,processTran)
       driver! processRequest
       probe.expectMsgPF() {
-        case msg => println(msg)
+        case msg:JobResult => println(msg)
+      }
+    }
+
+    "Schedule a SimpleProcessFuture and return the command result to proxy" in {
+      val probe = TestProbe()
+      val processTran = system.actorOf(ProcessTranActor.processTranActorProps, CNaming.timebasedName( "ProcessTranActorSpecTran1"))
+      val driver = system.actorOf(DriverActor.driverActorProps(),CNaming.timebasedName( "ProcessTranActorSpecDriver1"))
+      val processRequest = JobRequest(ConstVarTest.processJob.copy(operation = "SimpleProcessFuture"),probe.ref,processTran)
+      driver! processRequest
+      probe.expectMsgPF() {
+        case msg:JobResult => println(msg)
       }
     }
 
