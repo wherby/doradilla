@@ -14,6 +14,7 @@ class ActorTestClass (_system: ActorSystem = ActorSystemTest.getActorSystem()) e
   with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override def afterAll: Unit = {
+    Thread.sleep(2000)
     ActorSystemTest.shutdowmSystem()
   }
 }

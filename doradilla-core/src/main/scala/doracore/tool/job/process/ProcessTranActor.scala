@@ -16,23 +16,31 @@ class ProcessTranActor extends BaseActor{
   def translateProcessRequest(jobRequest: JobRequest) ={
     ProcessOperation.withDefaultName(jobRequest.taskMsg.operation) match {
       case ProcessOperation.SimpleProcess =>
-        try{
-          val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
-          sender()! WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo))
-          sender() ! TranslatedTask(SimpleProcessInit(msg,jobRequest.replyTo))
-        }catch{
-          case _:Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
-        }
+        safeTranslate(jobRequest,processSimpleProcess)
       case ProcessOperation.SimpleProcessFuture =>
-        try{
-          val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
-          sender()! WorkerInfo(classOf[ProcessWorkerActor].getName,None,Some(jobRequest.replyTo))
-          sender() ! TranslatedTask(SimpleProcessFutureInit(msg,jobRequest.replyTo))
-        }catch{
-          case _:Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
-        }
+        safeTranslate(jobRequest,processSimpleProcessFuture)
       case _=> sender() ! TranslationOperationError(Some(jobRequest.taskMsg.operation))
     }
+  }
+
+  private def safeTranslate(jobRequest: JobRequest,transFun: JobRequest => Unit) = {
+    try {
+      transFun(jobRequest)
+    } catch {
+      case _: Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
+    }
+  }
+
+  private def processSimpleProcessFuture(jobRequest: JobRequest) = {
+    val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
+    sender() ! WorkerInfo(classOf[ProcessWorkerActor].getName, None, Some(jobRequest.replyTo))
+    sender() ! TranslatedTask(SimpleProcessFutureInit(msg, jobRequest.replyTo))
+  }
+
+  private def processSimpleProcess(jobRequest: JobRequest) = {
+    val msg = jobRequest.taskMsg.data.asInstanceOf[ProcessCallMsg]
+    sender() ! WorkerInfo(classOf[ProcessWorkerActor].getName, None, Some(jobRequest.replyTo))
+    sender() ! TranslatedTask(SimpleProcessInit(msg, jobRequest.replyTo))
   }
 
   override def receive: Receive = {

@@ -37,15 +37,11 @@ object ProcessService {
     }
   }
 
-  def callProcessAwaitFuture(processCallMsg: ProcessCallMsg) ={
+  def callProcessAwaitFuture(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds) ={
     callProcess(processCallMsg) match {
       case Left(e) => Left(e)
       case Right(resultF) => try{
         val futureResult= resultF.asInstanceOf[Future[AnyRef]]
-        val timeOut: Duration = ConfigService.getStringOpt(DoraCoreConfig.getConfig(),"dora.timeout") match {
-          case Some(timeout) => timeout.toInt seconds
-          case _=> 36000 seconds
-        }
         val result =  Await.result(futureResult, timeOut)
         Right(result)
       }catch {
@@ -59,8 +55,8 @@ object ProcessService {
     Future{callProcessResultSync(processCallMsg)}(executor)
   }
 
-  def callProcessFutureResult(processCallMsg: ProcessCallMsg)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ProcessResult] = {
-    Future{callProcessResultFutureSync(processCallMsg)}(executor)
+  def callProcessFutureResult(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ProcessResult] = {
+    Future{callProcessResultFutureSync(processCallMsg,timeOut)}(executor)
   }
 
   private def callProcessResultSync(processCallMsg: ProcessCallMsg): ProcessResult = {
@@ -71,8 +67,8 @@ object ProcessService {
     }
   }
 
-  private def callProcessResultFutureSync(processCallMsg: ProcessCallMsg): ProcessResult = {
-    callProcessAwaitFuture(processCallMsg) match {
+  private def callProcessResultFutureSync(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds): ProcessResult = {
+    callProcessAwaitFuture(processCallMsg,timeOut) match {
       case Right(x) =>
         ProcessResult(JobStatus.Finished,x)
       case Left(y) => ProcessResult(JobStatus.Failed,y)
