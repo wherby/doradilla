@@ -1,11 +1,13 @@
 package app
 
 import doracore.ActorTestClass
+import doracore.core.msg.Job.JobMsg
 import doracore.vars.ConstVars
 import doradilla.app.SimpleClusterApp
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
-import org.scalatest.{Matchers}
+import org.scalatest.Matchers
+
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,7 +20,8 @@ class SimpleClusterAppSpec extends ActorTestClass with Matchers {
     "accept a request and run " in {
       val serverSeq = SimpleClusterApp.runWithArgs(Array())
       val msg = TestVars.processCallMsgTest
-      val res = BackendServer.runProcessCommand(msg, Some(serverSeq.head)).map { result =>
+      val processJob = JobMsg("SimpleProcess", msg)
+      val res = BackendServer.runProcessCommand(processJob, Some(serverSeq.head)).map { result =>
         println(result)
         assert(true)
       }

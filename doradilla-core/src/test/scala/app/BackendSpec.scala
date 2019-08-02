@@ -1,10 +1,12 @@
 package app
 
 import doracore.ActorTestClass
+import doracore.core.msg.Job.JobMsg
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
 import org.scalatest.Matchers
+
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,7 +21,8 @@ class BackendSpec extends ActorTestClass with Matchers {
       val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
-      val res = BackendServer.runProcessCommand(msg).map {
+      val processJob = JobMsg("SimpleProcess", msg)
+      val res = BackendServer.runProcessCommand(processJob).map {
         res =>
           println(res)
           assert(true)
@@ -31,7 +34,8 @@ class BackendSpec extends ActorTestClass with Matchers {
       val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
-      val receiveActor = BackendServer.startProcessCommand(msg).get
+      val processJob = JobMsg("SimpleProcess", msg)
+      val receiveActor = BackendServer.startProcessCommand(processJob).get
       BackendServer.queryProcessResult(receiveActor).map {
         resultOpt =>
           assert(resultOpt == None)
@@ -49,7 +53,8 @@ class BackendSpec extends ActorTestClass with Matchers {
       backendServer.registFSMActor()
       backendServer.actorMap = Map()
       val msg = TestVars.processCallMsgTest
-      val res = BackendServer.runProcessCommand(msg).map {
+      val processJob = JobMsg("SimpleProcess", msg)
+      val res = BackendServer.runProcessCommand(processJob).map {
         res =>
           println(res)
       }

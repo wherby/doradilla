@@ -1,7 +1,7 @@
 package app
 
 import doracore.ActorTestClass
-import doracore.core.msg.Job.JobMeta
+import doracore.core.msg.Job.{JobMeta, JobMsg}
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.{DoraConf, TestVars}
@@ -11,10 +11,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class BatchProcessCommandSpec extends ActorTestClass  {
   "Run batched process command " must {
+    val batchMsg = Seq(JobMsg("SimpleProcess",TestVars.processCallMsgTest), JobMsg("SimpleProcess",TestVars.processCallMsgTest))
     "start batch job and query the result " in {
       val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
-      val batchMsg = Seq(TestVars.processCallMsgTest, TestVars.processCallMsgTest)
+
       val batchActor = BackendServer.startProcessBatchCommand(batchMsg,jobMetaOpt = Some(JobMeta("aaaa"))).get
       BackendServer.startProcessBatchCommand(batchMsg).get
       BackendServer.queryBatchProcessResult(batchActor).map {
@@ -38,7 +39,6 @@ class BatchProcessCommandSpec extends ActorTestClass  {
       val ress =systemopt.get.dispatchers.hasDispatcher(ConstVars.blockDispatcherName)
        assert(ress == true)
       backendServer.registFSMActor()
-      val batchMsg = Seq(TestVars.processCallMsgTest, TestVars.processCallMsgTest)
       val batchActor = BackendServer.startProcessBatchCommand(batchMsg,jobMetaOpt = Some(JobMeta("aaaa"))).get
       BackendServer.startProcessBatchCommand(batchMsg).get
       BackendServer.queryBatchProcessResult(batchActor).map {

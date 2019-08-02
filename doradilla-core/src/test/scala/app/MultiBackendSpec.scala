@@ -1,10 +1,12 @@
 package app
 
 import doracore.ActorTestClass
+import doracore.core.msg.Job.JobMsg
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
 import org.scalatest.Matchers
+
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,7 +21,8 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val backendServer2 = BackendServer.startup()
-      val res = BackendServer.runProcessCommand(msg, Some(backendServer2)).map { result =>
+      val processJob = JobMsg("SimpleProcess", msg)
+      val res = BackendServer.runProcessCommand(processJob, Some(backendServer2)).map { result =>
         println(result)
         assert(true)
       }
