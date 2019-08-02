@@ -7,7 +7,6 @@ import doracore.core.msg.Job.{JobMeta, JobMsg, JobRequest, JobResult}
 import doracore.tool.receive.ReceiveActor
 import doracore.tool.receive.ReceiveActor.{ProxyControlMsg, QueryResult}
 import doracore.util.CNaming
-import doracore.util.ProcessService.ProcessCallMsg
 import akka.pattern.ask
 import akka.util.Timeout
 import com.datastax.driver.core.utils.UUIDs
@@ -27,8 +26,7 @@ class BatchProcessActor extends BaseActor with BlockIODispatcher {
       case _ => batchProcessJobOrg.copy(jobmetaOpt = Some(JobMeta(UUIDs.timeBased().toString)))
     }
     batchProcessJob.jobs.map {
-      processCallMsg =>
-        val processJob = JobMsg("SimpleProcess", processCallMsg)
+      processJob =>
         val actorSystem = context.system
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("ReceiverForBatch"))
         val jobMetaOpt = batchProcessJob.jobmetaOpt.map {
@@ -36,7 +34,7 @@ class BatchProcessActor extends BaseActor with BlockIODispatcher {
         }
         val processJobRequest = JobRequest(processJob, receiveActor, batchProcessJob.processTranServiceActor, batchProcessJob.priorityOpt, jobMetaOpt)
         batchProcessJob.driverServiceActor.tell(processJobRequest, receiveActor)
-        jobRecorder = jobRecorder.updated(receiveActor, JobInfo(processCallMsg, None))
+        jobRecorder = jobRecorder.updated(receiveActor, JobInfo(processJob, None))
     }
   }
 
@@ -49,7 +47,7 @@ class BatchProcessActor extends BaseActor with BlockIODispatcher {
             resultOpt =>
               resultOpt.asInstanceOf[Option[JobResult]] match {
                 case Some(result) =>
-                  jobRecorder = jobRecorder.updated(actorRef, JobInfo(jobInfo.processCallMsg, Some(result)))
+                  jobRecorder = jobRecorder.updated(actorRef, JobInfo(jobInfo.jobMsg, Some(result)))
                   actorRef ! ProxyControlMsg(PoisonPill)
                   actorRef ! PoisonPill
                   Some(result)
@@ -71,9 +69,9 @@ class BatchProcessActor extends BaseActor with BlockIODispatcher {
 
 object BatchProcessActor {
 
-  case class BatchProcessJob(jobs: Seq[ProcessCallMsg], driverServiceActor: ActorRef, processTranServiceActor: ActorRef, priorityOpt: Option[Int] = None, jobmetaOpt: Option[JobMeta] = None)
+  case class BatchProcessJob(jobs: Seq[JobMsg], driverServiceActor: ActorRef, processTranServiceActor: ActorRef, priorityOpt: Option[Int] = None, jobmetaOpt: Option[JobMeta] = None)
 
-  case class JobInfo(processCallMsg: ProcessCallMsg, jobResultOpt: Option[JobResult])
+  case class JobInfo(jobMsg: JobMsg, jobResultOpt: Option[JobResult])
 
   case class BatchJobResult(results: Seq[JobInfo])
 

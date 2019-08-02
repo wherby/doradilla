@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ProcessCommandRunner {
   this: BackendServer.type =>
 
-  def runProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+  def runProcessCommand(processJob:JobMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
     val backendServer = backendServerOpt match {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
@@ -32,7 +32,6 @@ trait ProcessCommandRunner {
     val resultOpt= for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
          processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
       yield{
-        val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
@@ -48,7 +47,7 @@ trait ProcessCommandRunner {
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
 
-  def startProcessCommand(processCallMsg: ProcessCallMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
+  def startProcessCommand(processJob:JobMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
     val backendServer = backendServerOpt match {
       case Some(backendServer) => backendServer
       case _ => startup(Some(seedPort))
@@ -56,7 +55,6 @@ trait ProcessCommandRunner {
     for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
          processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
       yield{
-        val processJob = JobMsg("SimpleProcess", processCallMsg)
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
@@ -80,7 +78,7 @@ trait ProcessCommandRunner {
     }
   }
 
-  def startProcessBatchCommand(batchRequests: Seq[ProcessCallMsg],
+  def startProcessBatchCommand(batchRequests: Seq[JobMsg],
                                backendServerOpt: Option[BackendServer] = None,
                                priority: Option[Int] = None, jobMetaOpt: Option[JobMeta]= None)(implicit ex: ExecutionContext): Option[ActorRef] = {
     val backendServer = backendServerOpt match {

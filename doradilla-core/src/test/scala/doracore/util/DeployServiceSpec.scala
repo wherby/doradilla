@@ -1,6 +1,6 @@
 package doracore.util
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorRef, PoisonPill, Props}
 import akka.testkit.TestProbe
 import doracore.ActorTestClass
 import doracore.base.BaseActor
@@ -30,6 +30,7 @@ class DeployServiceSpec extends  ActorTestClass  {
         case res => res shouldBe a [Some[_]]
       }
       DeployService.classLoaderOpt = None
+      testActor ! PoisonPill
     }
 
     "Deploy a correct workerInfo without parameter should return actorRef " in{
@@ -39,6 +40,7 @@ class DeployServiceSpec extends  ActorTestClass  {
       proxy.expectMsgPF(){
         case res => res shouldBe a [Some[_]]
       }
+      testActor ! PoisonPill
     }
     "Deploy a correct workerInfo with  parameter should return actorRef " in{
       val proxy = TestProbe()
@@ -53,6 +55,8 @@ class DeployServiceSpec extends  ActorTestClass  {
       proxy2.expectMsgPF(){
         case res => res shouldBe ("test2")
       }
+
+      testActor ! PoisonPill
     }
 
     "Deploy a notexisted workerInfo with  parameter should return none " in {
