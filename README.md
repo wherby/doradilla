@@ -4,17 +4,24 @@ Doradilla
 [![Build Status](https://travis-ci.org/wherby/doradilla.svg?branch=master)](https://travis-ci.org/wherby/doradilla)
 
 
-Doradilla is a distributed job manage system.
+Doradilla-core is a job manage system.
+Doradilla is a distributed system which is based on Akka cluster.
 
 ### Doradilla-Core
 
 Doradilla-core is a job manage system which will handle the job request in reactive way.
 
 
-### Message flow
+#### Message flow
 ![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
 
 See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
+
+### Doradilla 
+
+Doradilla provides distributed running environment which is based on Akka cluster. With same configuration as Akka cluster, Doradilla-core will running on Akka cluster node.
+
+![Doradilla-cluster](./docs/doradilla-core/pics/dora-cluster.png)
 
 
 ### How to use
@@ -28,10 +35,13 @@ See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
     val backendServer = BackendServer.startup(Some(1600))
     backendServer.registFSMActor()
     val msg = TestVars.processCallMsgTest
-    BackendServer.runProcessCommand(msg).map{
-      res=> println(res)
+    val processJob = JobMsg("SimpleProcess", msg)
+    val res = BackendServer.runProcessCommand(processJob).map {
+      res =>
+        println(res)
         assert(true)
     }
+    Await.ready(res, ConstVars.timeout1S * 10)
   }
 ```
 
@@ -42,16 +52,18 @@ See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
     val backendServer = BackendServer.startup(Some(1600))
     backendServer.registFSMActor()
     val msg = TestVars.processCallMsgTest
-    val receiveActor = BackendServer.startProcessCommand(msg).get
-    BackendServer.queryProcessResult(receiveActor).map{
-        resultOpt =>
-          assert(resultOpt == None)
+    val processJob = JobMsg("SimpleProcess", msg)
+    val receiveActor = BackendServer.startProcessCommand(processJob).get
+    BackendServer.queryProcessResult(receiveActor).map {
+      resultOpt =>
+        assert(resultOpt == None)
     }
     Thread.sleep(2000)
-    BackendServer.queryProcessResult(receiveActor).map{
+    val res = BackendServer.queryProcessResult(receiveActor).map {
       resultOpt =>
-        assert(resultOpt != None )
+        assert(resultOpt != None)
     }
+    Await.ready(res, ConstVars.timeout1S)
   }
 ```
 
