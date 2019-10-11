@@ -24,14 +24,15 @@ object Dependencies {
     // https://mvnrepository.com/artifact/com.typesafe.play/play-json
     "com.typesafe.play" %% "play-json" % "2.6.13",
     // https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core
-    "com.datastax.cassandra" % "cassandra-driver-core" % "3.7.1"
+    "com.datastax.cassandra" % "cassandra-driver-core" % "3.7.1",
+    "io.netty" % "netty-handler" % "4.1.42.Final"
   )
   
 
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
     scalaVersion := "2.12.7",
-    version := "1.5.1.3",
+    version := "1.5.1.4",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")

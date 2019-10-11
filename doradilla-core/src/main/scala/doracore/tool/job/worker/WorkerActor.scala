@@ -4,8 +4,8 @@ import akka.actor.{ActorRef, Cancellable}
 import doracore.base.BaseActor
 import doracore.core.msg.WorkerMsg.TickMsg
 import doracore.vars.ConstVars
-import scala.concurrent.{ Future}
-import scala.util.{ Try}
+import scala.concurrent.{Future}
+import scala.util.{Try}
 
 /**
   * For doradilla.tool.job.worker in Doradilla
@@ -15,20 +15,19 @@ class WorkerActor extends BaseActor with ExtractResultTrait with BlockIODispatch
   implicit val ec = GetBlockIODispatcher
 
 
-
   var replyToOpt: Option[ActorRef] = None
   var futureResultOpt: Option[Future[Any]] = None
   var cancelableSchedulerOpt: Option[Cancellable] = None
   val tickTime = ConstVars.tickTime
 
 
-  def cancelScheduler():Option[Boolean] = {
+  def cancelScheduler(): Option[Boolean] = {
     cancelableSchedulerOpt.map({
       cancelableScheduler => cancelableScheduler.cancel()
     })
   }
 
-  def doSuccess(executeResultEither: Try[Any]):Option[Unit] = {
+  def doSuccess(executeResultEither: Try[Any]): Option[Unit] = {
     cancelScheduler()
     replyToOpt.map {
       replyTo =>
@@ -38,13 +37,11 @@ class WorkerActor extends BaseActor with ExtractResultTrait with BlockIODispatch
   }
 
 
-
-  def handleTickMsg():Option[Any] = {
+  def handleTickMsg(): Option[Any] = {
     futureResultOpt.map {
       futureResult =>
-        futureResult.value match {
-          case Some(any) => doSuccess(any)
-          case None =>
+        futureResult.value.map {
+          any => doSuccess(any)
         }
     }
   }
