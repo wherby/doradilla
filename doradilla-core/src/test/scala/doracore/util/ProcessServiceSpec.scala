@@ -1,7 +1,7 @@
 package doracore.util
 
 import doracore.core.msg.Job.JobStatus
-import doracore.util.ProcessService.ProcessCallMsg
+import doracore.util.ProcessService.{ProcessCallMsg, ProcessResult}
 import doracore.vars.ConstVars
 import org.scalatest._
 import vars.ConstVarTest
@@ -71,6 +71,18 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
     result shouldBe(Right(Par1(6)))
+  }
+
+  "Process Service " should "return futureResult in callProcessFutureResult use" in{
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture")
+    val result = Await.result( ProcessService.callProcessFutureResult(msg), ConstVars.timeout1S)
+    result shouldBe(ProcessResult(JobStatus.Finished,Par1(6)))
+  }
+
+  "Process Service " should "return futureResult with failed  in callProcessFutureResult use when use wrong classname " in{
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
+    val result = Await.result( ProcessService.callProcessFutureResult(msg), ConstVars.timeout1S)
+    result shouldBe(ProcessResult(JobStatus.Failed,"Only processor with name Processor will be created."))
   }
 
   "Process Service " should "return left if class name is not with Processor " in{
