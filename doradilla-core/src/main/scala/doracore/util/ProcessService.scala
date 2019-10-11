@@ -2,7 +2,6 @@ package doracore.util
 
 import doracore.core.msg.Job.JobStatus
 import doracore.core.msg.Job.JobStatus.JobStatus
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
@@ -21,16 +20,24 @@ object ProcessService {
     val rm = ru.runtimeMirror(getClass.getClassLoader)
     //val instanceMirror = rm.reflectClass(Class.)
     try {
-      lazy val a = classLoaderOpt match {
-        case Some(classloader) => Class.forName(processCallMsg.clazzName,false,classloader)
-        case _=> Class.forName(processCallMsg.clazzName)
+      lazy val aOpt = classLoaderOpt match {
+        case Some(classloader) if processCallMsg.clazzName.indexOf("Processor")>=0 =>
+          Some(Class.forName(processCallMsg.clazzName,false,classloader))
+        case _ if processCallMsg.clazzName.indexOf("Processor" )>=0 =>
+          Some(Class.forName(processCallMsg.clazzName))
+        case _=>None
       }
-      val instance = a.newInstance()
-      val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
-      methodOpt match {
-        case Some(method) => Right(method.invoke(instance, processCallMsg.paras: _*))
-        case _ => Left(new Throwable("No such method"))
+      aOpt match {
+        case Some(a) =>
+          val instance = a.newInstance()
+          val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
+          methodOpt match {
+            case Some(method) => Right(method.invoke(instance, processCallMsg.paras: _*))
+            case _ => Left(new Throwable("No such method"))
+          }
+        case _=> Left("Only processor with name Processor will be created.")
       }
+
     } catch {
       case e: Throwable => println(e)
         Left(e)
