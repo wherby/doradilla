@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/7
   */
-object CommandService {
+object CommandServiceProcessor {
   implicit val ExecuteResultFormat = Json.format[ExecuteResult]
 
   case class ExecuteResult(exitValue: Int, stdout: String, stderr: String)
@@ -40,6 +40,6 @@ object CommandService {
   }
 }
 
-class CommandService {
+class CommandServiceProcessor {
 
 }

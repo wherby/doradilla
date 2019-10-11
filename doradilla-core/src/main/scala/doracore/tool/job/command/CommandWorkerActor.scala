@@ -4,7 +4,7 @@ import akka.actor.Props
 import doracore.core.msg.WorkerMsg.TickMsg
 import doracore.tool.job.command.CommandTranActor.SimpleCommandInit
 import doracore.tool.job.worker.WorkerActor
-import doracore.util.CommandService
+import doracore.util.CommandServiceProcessor
 
 /**
   * For doradilla.tool.job.command in Doradilla
@@ -12,7 +12,7 @@ import doracore.util.CommandService
   */
 class CommandWorkerActor extends WorkerActor {
   def handleSimpleCommandInit(simpleCommandInit: SimpleCommandInit):Unit = {
-    futureResultOpt = Some(CommandService.runCommand(simpleCommandInit.commandRequest.command))
+    futureResultOpt = Some(CommandServiceProcessor.runCommand(simpleCommandInit.commandRequest.command))
     replyToOpt = Some(simpleCommandInit.repleyTo)
     cancelableSchedulerOpt = Some(context.system.scheduler.schedule(tickTime, tickTime, this.self, TickMsg()))
   }

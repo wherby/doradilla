@@ -14,7 +14,7 @@ import scala.concurrent.Await
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/23
   */
 class ProcessServiceSpec extends FlatSpec with Matchers {
-  val processCallMsg = ProcessCallMsg("doracore.util.TestProcess","addPar",Array(Par1(2).asInstanceOf[AnyRef],Par2(4).asInstanceOf[AnyRef]))
+  val processCallMsg = ProcessCallMsg("doracore.util.TestProcessor","addPar",Array(Par1(2).asInstanceOf[AnyRef],Par2(4).asInstanceOf[AnyRef]))
   "Process Service" should "return value "in {
     val result = ProcessService.callProcess(processCallMsg)
     result shouldBe(Right(Par1(6)))
@@ -57,20 +57,26 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return result for Command sercice call in object" in {
-    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcess2",methodName = "objectAdd")
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor2",methodName = "objectAdd")
     val result = ProcessService.callProcess(msg)
     result shouldBe(Right(Par1(6)))
   }
 
   "Process Service " should "return left  in SimpleProcessFuture use with wrong parameters" in{
-    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcess",methodName = "addFuture" ,paras = Array(2.asInstanceOf[AnyRef],4.asInstanceOf[AnyRef]))
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture" ,paras = Array(2.asInstanceOf[AnyRef],4.asInstanceOf[AnyRef]))
     val result = ProcessService.callProcessAwaitFuture(msg)
     result.isLeft should be (true)
   }
   "Process Service " should "return futureResult in SimpleProcessFuture use" in{
-    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcess",methodName = "addFuture")
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
     result shouldBe(Right(Par1(6)))
+  }
+
+  "Process Service " should "return left if class name is not with Processor " in{
+    val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
+    val result = ProcessService.callProcessAwaitFuture(msg)
+    result shouldBe(Left("Only processor with name Processor will be created."))
   }
 }
 

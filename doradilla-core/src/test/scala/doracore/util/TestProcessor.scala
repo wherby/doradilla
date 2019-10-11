@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/23
   */
-class TestProcess {
+class TestProcessor {
   def add(a: Int, b: Int) = {
     a + b
   }
