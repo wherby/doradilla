@@ -84,7 +84,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     val result = Await.result( ProcessService.callProcessFutureResult(msg), ConstVars.timeout1S)
     result shouldBe(ProcessResult(JobStatus.Failed,"Only processor with name Processor will be created."))
   }
-
+  
   "Process Service " should "return left if class name is not with Processor " in{
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
