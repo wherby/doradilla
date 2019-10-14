@@ -13,9 +13,23 @@ import scala.concurrent.Await
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/23
   */
+object ProcessServiceSpec{
+  def processServiceNameToClassOpt(className: String,classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
+    classLoaderOpt match {
+      case Some(classloader) if className.indexOf("Processor")>=0 =>
+        Some(Class.forName(className,false,classloader))
+      case _ if className.indexOf("Processor" )>=0 =>
+        Some(Class.forName(className))
+      case _=>None
+    }
+  }
+}
 class ProcessServiceSpec extends FlatSpec with Matchers {
+
+
   val processCallMsg = ProcessCallMsg("doracore.util.TestProcessor","addPar",Array(Par1(2).asInstanceOf[AnyRef],Par2(4).asInstanceOf[AnyRef]))
   "Process Service" should "return value "in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val result = ProcessService.callProcess(processCallMsg)
     result shouldBe(Right(Par1(6)))
   }
@@ -23,6 +37,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   "Process service" should "return left when class is not exist" in {
     val msg =processCallMsg.copy(clazzName = "NOTEXISTED")
     val result = ProcessService.callProcess(msg)
+    println(result)
     result.isLeft should be (true)
   }
 
@@ -33,6 +48,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return left when paras is not correct" in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy(paras=Array(Par1(2).asInstanceOf[AnyRef]))
     val result = ProcessService.callProcess(msg)
     result.isLeft should be (true)
@@ -57,6 +73,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return result for Command sercice call in object" in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor2",methodName = "objectAdd")
     val result = ProcessService.callProcess(msg)
     result shouldBe(Right(Par1(6)))
@@ -68,6 +85,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     result.isLeft should be (true)
   }
   "Process Service " should "return futureResult in SimpleProcessFuture use" in{
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
     result shouldBe(Right(Par1(6)))
@@ -82,13 +100,13 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   "Process Service " should "return futureResult with failed  in callProcessFutureResult use when use wrong classname " in{
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
     val result = Await.result( ProcessService.callProcessFutureResult(msg), ConstVars.timeout1S)
-    result shouldBe(ProcessResult(JobStatus.Failed,"Only processor with name Processor will be created."))
+    result shouldBe(ProcessResult(JobStatus.Failed,"Class is not found."))
   }
   
   "Process Service " should "return left if class name is not with Processor " in{
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
-    result shouldBe(Left("Only processor with name Processor will be created."))
+    result shouldBe(Left("Class is not found."))
   }
 }
 

@@ -1,7 +1,9 @@
 package doracore.util
 
+import akka.event.slf4j.Logger
 import doracore.core.msg.Job.JobStatus
 import doracore.core.msg.Job.JobStatus.JobStatus
+
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
@@ -12,6 +14,12 @@ import scala.concurrent.duration._
   */
 object ProcessService {
   var classLoaderOpt: Option[ClassLoader] = None
+  def notImplement(className: String,classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
+    Logger.apply(this.getClass.toString).error("Not implement the name to class function")
+    None
+  }
+  var nameToClassOpt:(String, Option[ClassLoader]) => Option[Class[_]] = notImplement
+
   def callProcess(processCallMsg: ProcessCallMsg) = {
     //Call reflection will takes time
     // get runtime universe
@@ -20,13 +28,16 @@ object ProcessService {
     val rm = ru.runtimeMirror(getClass.getClassLoader)
     //val instanceMirror = rm.reflectClass(Class.)
     try {
-      lazy val aOpt = classLoaderOpt match {
+      lazy val aOpt = nameToClassOpt(processCallMsg.clazzName, classLoaderOpt)
+      /*
+        classLoaderOpt match {
         case Some(classloader) if processCallMsg.clazzName.indexOf("Processor")>=0 =>
           Some(Class.forName(processCallMsg.clazzName,false,classloader))
         case _ if processCallMsg.clazzName.indexOf("Processor" )>=0 =>
           Some(Class.forName(processCallMsg.clazzName))
         case _=>None
       }
+      */
       aOpt match {
         case Some(a) =>
           val instance = a.newInstance()
@@ -35,7 +46,7 @@ object ProcessService {
             case Some(method) => Right(method.invoke(instance, processCallMsg.paras: _*))
             case _ => Left(new Throwable("No such method"))
           }
-        case _=> Left("Only processor with name Processor will be created.")
+        case _=> Left("Class is not found.")
       }
 
     } catch {
