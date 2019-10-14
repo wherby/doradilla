@@ -35,6 +35,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return left when class is not exist" in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg =processCallMsg.copy(clazzName = "NOTEXISTED")
     val result = ProcessService.callProcess(msg)
     println(result)
@@ -42,6 +43,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return left when method is not exist" in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy(methodName = "NotExisted")
     val result = ProcessService.callProcess(msg)
     result.isLeft should be (true)
@@ -55,18 +57,21 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process service" should "return result for Command sercice call" in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = ConstVarTest.processCallMsgTest
     val resultFuture = ProcessService.callProcess(msg)
     resultFuture.isRight should be (true)
   }
 
   "Process service" should "return left for Command sercice call failed " in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = ConstVarTest.processCallMsgTest.copy(clazzName = "NOExisted")
     val resultFuture = ProcessService.callProcess(msg)
     resultFuture.isRight should be (false)
   }
 
   "Process service" should "return failed when call processReusult for wrong process execution " in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = ConstVarTest.processCallMsgTest.copy(clazzName = "NOExisted")
     val resultFuture = Await.result( ProcessService.callProcessResult(msg), ConstVars.timeout1S)
     resultFuture.jobStatus should be (JobStatus.Failed)
@@ -80,6 +85,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process Service " should "return left  in SimpleProcessFuture use with wrong parameters" in{
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture" ,paras = Array(2.asInstanceOf[AnyRef],4.asInstanceOf[AnyRef]))
     val result = ProcessService.callProcessAwaitFuture(msg)
     result.isLeft should be (true)
@@ -92,6 +98,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
 
   "Process Service " should "return futureResult in callProcessFutureResult use" in{
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor",methodName = "addFuture")
     val result = Await.result( ProcessService.callProcessFutureResult(msg), ConstVars.timeout1S)
     result shouldBe(ProcessResult(JobStatus.Finished,Par1(6)))
@@ -104,6 +111,7 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
   }
   
   "Process Service " should "return left if class name is not with Processor " in{
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
     result shouldBe(Left("Class is not found."))
