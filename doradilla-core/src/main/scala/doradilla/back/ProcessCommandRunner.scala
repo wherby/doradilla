@@ -1,13 +1,11 @@
 package doradilla.back
 
 import akka.actor.{ActorRef, PoisonPill}
-import akka.event.slf4j.Logger
 import akka.util.Timeout
 import doracore.core.msg.Job._
 import doracore.tool.receive.ReceiveActor
 import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
 import doracore.util.CNaming
-import doracore.util.ProcessService.ProcessCallMsg
 import doracore.vars.ConstVars
 import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
