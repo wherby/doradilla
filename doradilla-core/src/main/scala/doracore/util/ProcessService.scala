@@ -14,11 +14,12 @@ import scala.concurrent.duration._
   */
 object ProcessService {
   var classLoaderOpt: Option[ClassLoader] = None
-  def notImplement(className: String,classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
+
+  def noImplementNameToClassOpt(className: String, classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
     Logger.apply(this.getClass.toString).error("Not implement the name to class function")
     None
   }
-  var nameToClassOpt:(String, Option[ClassLoader]) => Option[Class[_]] = notImplement
+  var nameToClassOpt:(String, Option[ClassLoader]) => Option[Class[_]] = noImplementNameToClassOpt
 
   def callProcess(processCallMsg: ProcessCallMsg) = {
     //Call reflection will takes time

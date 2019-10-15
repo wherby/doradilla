@@ -23,19 +23,28 @@ object ProcessServiceSpec{
       case _=>None
     }
   }
+  val processNameSet :Map[String,Class[_]] = Map(
+    "doracore.util.TestProcessor"-> (new TestProcessor).getClass,
+    "doracore.util.TestProcessor2"->(new TestProcessor2).getClass,
+    "doracore.util.TestProcesso3"->(new TestProcesso3).getClass,
+  )
+
+  def safeProcessServiceNameToClassOpt(className: String,classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
+    processNameSet.get(className)
+  }
 }
 class ProcessServiceSpec extends FlatSpec with Matchers {
 
 
   val processCallMsg = ProcessCallMsg("doracore.util.TestProcessor","addPar",Array(Par1(2).asInstanceOf[AnyRef],Par2(4).asInstanceOf[AnyRef]))
   "Process Service" should "return value "in {
-    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
+    ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
     val result = ProcessService.callProcess(processCallMsg)
     result shouldBe(Right(Par1(6)))
   }
 
   "Process service" should "return left when class is not exist" in {
-    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
+    ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
     val msg =processCallMsg.copy(clazzName = "NOTEXISTED")
     val result = ProcessService.callProcess(msg)
     println(result)
@@ -114,6 +123,12 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcesso3",methodName = "addFuture")
     val result = ProcessService.callProcessAwaitFuture(msg)
+    result shouldBe(Left("Class is not found."))
+  }
+
+  "Process Service" should "return left  value for no implementation "in {
+    ProcessService.nameToClassOpt = ProcessService.noImplementNameToClassOpt
+    val result = ProcessService.callProcess(processCallMsg)
     result shouldBe(Left("Class is not found."))
   }
 }
