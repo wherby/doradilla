@@ -67,3 +67,6 @@ Doradilla provides distributed running environment which is based on Akka cluste
   }
 ```
 
+### For use defined implementation of reflection. 
+
+User should defined their implementation of reflection, more information see [ProcessService](./docs/doradilla-core/util/ProcessService.md)
