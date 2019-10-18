@@ -59,14 +59,18 @@ object ProcessService {
   def callProcessAwaitFuture(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds) ={
     callProcess(processCallMsg) match {
       case Left(e) => Left(e)
-      case Right(resultF) => try{
-        val futureResult= resultF.asInstanceOf[Future[AnyRef]]
-        val result =  Await.result(futureResult, timeOut)
-        Right(result)
-      }catch {
-        case e: Throwable => println(e)
-          Left(e)
-      }
+      case Right(resultF) => getFutureResult( resultF,timeOut)
+    }
+  }
+
+  def getFutureResult(resultF: AnyRef,timeOut: Duration): Either[Throwable, AnyRef] = {
+    try {
+      val futureResult = resultF.asInstanceOf[Future[AnyRef]]
+      val result = Await.result(futureResult, timeOut)
+      Right(result)
+    } catch {
+      case e: Throwable => println(e)
+        Left(e)
     }
   }
 

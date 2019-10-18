@@ -6,9 +6,9 @@ import doracore.vars.ConstVars
 import org.scalatest._
 import vars.ConstVarTest
 
-import scala.concurrent.Await
-
-
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 /**
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/23
@@ -86,6 +86,13 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     resultFuture.jobStatus should be (JobStatus.Failed)
   }
 
+  "Process service" should "return failed when call processReusult for right process execution " in {
+    ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
+    val msg = ConstVarTest.processCallMsgTest
+    val resultFuture = Await.result( ProcessService.callProcessResult(msg), ConstVars.timeout1S)
+    resultFuture.jobStatus should be (JobStatus.Finished)
+  }
+
   "Process service" should "return result for Command sercice call in object" in {
     ProcessService.nameToClassOpt = ProcessServiceSpec.processServiceNameToClassOpt
     val msg = processCallMsg.copy( clazzName = "doracore.util.TestProcessor2",methodName = "objectAdd")
@@ -130,6 +137,16 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
     ProcessService.nameToClassOpt = ProcessService.noImplementNameToClassOpt
     val result = ProcessService.callProcess(processCallMsg)
     result shouldBe(Left("Class is not found."))
+  }
+
+  "Get Future result" should "return Left when result is not Future" in {
+    val result = ProcessService.getFutureResult("result",  3600 seconds)
+    result.isLeft shouldBe(true)
+  }
+
+  "Get Future result" should "return right when result is  Future" in {
+    val result = ProcessService.getFutureResult(Future("result")(scala.concurrent.ExecutionContext.Implicits.global),  3600 seconds)
+    result shouldBe(Right("result"))
   }
 }
 
