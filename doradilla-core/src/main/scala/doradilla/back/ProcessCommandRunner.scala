@@ -1,6 +1,7 @@
 package doradilla.back
 
 import akka.actor.{ActorRef, PoisonPill}
+import akka.event.slf4j.Logger
 import akka.util.Timeout
 import doracore.core.msg.Job._
 import doracore.tool.receive.ReceiveActor
@@ -23,10 +24,7 @@ trait ProcessCommandRunner {
   this: BackendServer.type =>
 
   def runProcessCommand(processJob:JobMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
-    val backendServer = backendServerOpt match {
-      case Some(backendServer) => backendServer
-      case _ => startup(Some(seedPort))
-    }
+    val backendServer = getBackendServerForCommand(backendServerOpt)
     val resultOpt= for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
          processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
       yield{
@@ -45,11 +43,17 @@ trait ProcessCommandRunner {
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
 
-  def startProcessCommand(processJob:JobMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
-    val backendServer = backendServerOpt match {
+  private def getBackendServerForCommand(backendServerOpt: Option[BackendServer]) = {
+    backendServerOpt match {
       case Some(backendServer) => backendServer
-      case _ => startup(Some(seedPort))
+      case _ =>
+        Logger.apply(this.getClass.getName).error("Failed to find backend server, start new ...")
+        startup(Some(seedPort))
     }
+  }
+
+  def startProcessCommand(processJob:JobMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
+    val backendServer = getBackendServerForCommand(backendServerOpt)
     for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
          processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
       yield{

@@ -25,6 +25,7 @@ class ProcessTranActor extends BaseActor{
 
   private def safeTranslate(jobRequest: JobRequest,transFun: JobRequest => Unit) = {
     try {
+      log.debug(s"Start running reqeust for: $jobRequest")
       transFun(jobRequest)
     } catch {
       case _: Throwable => sender() ! TranslationDataError(Some(s"${jobRequest.taskMsg.data}"))
