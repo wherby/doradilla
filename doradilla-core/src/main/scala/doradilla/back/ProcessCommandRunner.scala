@@ -44,10 +44,10 @@ trait ProcessCommandRunner {
   }
 
   private def getBackendServerForCommand(backendServerOpt: Option[BackendServer]) = {
-    backendServerOpt match {
+    BackendServer.backendServerMap.headOption.map(_._2) match {
       case Some(backendServer) => backendServer
       case _ =>
-        Logger.apply(this.getClass.getName).error("Failed to find backend server, start new ...")
+        Logger.apply(this.getClass.getName).error("No backend server, start new ...")
         startup(Some(seedPort))
     }
   }
