@@ -9,6 +9,7 @@ import doracore.core.fsm.FsmActor.RegistToDriver
 import doracore.util.{CNaming, ConfigService}
 import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
+import akka.event.jul.Logger
 import com.typesafe.config.Config
 
 /**
@@ -105,6 +106,7 @@ class BackendServer {
                 driverProxy.tell(RegistToDriver(fsmActor), fsmActor)
             }
             actorMap += (fsmActorName -> fsmActor)
+            Logger.apply(this.getClass.getName).info(s"ActorMap are $actorMap")
         }
     }
   }
