@@ -1,7 +1,7 @@
 Doradilla
 ===========================
 
-[![Build Status](https://travis-ci.org/wherby/doradilla.svg?branch=master)](https://travis-ci.org/wherby/doradilla)
+[![Build Status](https://travis-ci.org/wherby/doradilla.svg?branch=master)](https://travis-ci.org/wherby/doradilla)[![codecov.io](https://codecov.io/github/wherby/doradilla/coverage.svg?branch=master)](https://codecov.io/github/wherby/doradilla?branch=master)
 
 
 Doradilla-core is a job manage system.

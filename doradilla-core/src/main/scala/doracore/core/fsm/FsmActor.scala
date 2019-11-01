@@ -29,6 +29,7 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
         request =>
           jobMetaOpt =request.jobMetaOpt
           log.info(s"{${request.jobMetaOpt}} is started in fsm worker, and will be handled by {${request.tranActor}}")
+          log.debug(s"${request.taskMsg} is handled in FSM actor, the task will be start soon")
           request.tranActor ! request
           request.replyTo ! JobStatus.Scheduled
       }
