@@ -1,5 +1,6 @@
 package app
 
+import akka.actor.ActorSystem
 import doracore.ActorTestClass
 import doracore.core.msg.Job.{JobMeta, JobMsg}
 import doracore.vars.ConstVars
@@ -54,5 +55,8 @@ class BatchProcessCommandSpec extends ActorTestClass  {
       BackendServer.queryBatchProcessResult(batchActor)
       Await.ready(res, ConstVars.timeout1S * 10)
     }
+
+
+
   }
 }
