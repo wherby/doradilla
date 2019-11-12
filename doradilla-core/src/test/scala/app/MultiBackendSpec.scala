@@ -55,7 +55,7 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
     }
 
     "timeout will be used in config" in {
-      val config =Some(DoraConf.config(1800,"backend",Some("doradilla.fsm.timeout=3")))
+      val config =Some(DoraConf.config(1888,"backend",Some("doradilla.fsm.timeout=3")))
       val systemTest = ActorSystem("testSSS", config)
       val proxy = TestProbe()
       val proxy2 = TestProbe()
@@ -67,6 +67,7 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       val requestMsg = JobRequest(processJob,proxy2.ref,proxy.ref)
       fsmActor ! requestMsg
       Thread.sleep(5000)
+      systemTest.terminate()
     }
   }
 }

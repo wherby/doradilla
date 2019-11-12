@@ -60,7 +60,12 @@ object BackendServer extends ProcessCommandRunner {
     }
   }
 
-  // Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
+
+  /**
+  * @Description: Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
+  * @Param:
+  * @return:
+  */
   private def setupSingletonProxyActor(backendServer: BackendServer, system: ActorSystem) = {
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
@@ -77,7 +82,10 @@ object BackendServer extends ProcessCommandRunner {
   }
 
 
-  // #proxy
+  /**
+   Set singleton proxy
+   * @return the Props of singlenton proxy
+  */
   def proxyProps(system: ActorSystem, name: String): Props = ClusterSingletonProxy.props(
     settings = ClusterSingletonProxySettings(system).withRole(Const.backendRole),
     singletonManagerPath = s"/user/$name")
