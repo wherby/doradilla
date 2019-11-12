@@ -22,7 +22,7 @@ object ConstVarTest {
   val commandWin = List("cmd.exe", "/c", "ping 127.0.0.1 -n 1")
   val commandLinux = List("bash", " -c", " ping 127.0.0.1 -c 1")
   val timeout100m = 100 milliseconds
-  val timeout10S = 100 second
+  val timeout10S = 10 second
 
   val osString = System.getProperty("os.name")
   val command = osString.toLowerCase() match {

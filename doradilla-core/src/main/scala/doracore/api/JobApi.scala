@@ -14,7 +14,7 @@ class JobApi extends SystemApi with DriverApi with CommandTranApi with ProcessTr
 
 object JobApi {
   type JobSystem = SystemApi
-  private var actorSystemOpt: Option[JobSystem] = None
+  var actorSystemOpt: Option[JobSystem] = None
 
   def getSystem(systemOpt: Option[ActorSystem] = None) = {
     actorSystemOpt match {
