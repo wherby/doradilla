@@ -34,30 +34,38 @@ object BackendServer extends ProcessCommandRunner {
 
   private def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
-
-    def getAvailablePort() = {
-      nextPort = nextPort + 1
-      nextPort
-    }
-
-    val port = portConf match {
-      case Some(port) =>
-        nextPort = port + 1
-        port
-      case _ => getAvailablePort
-    }
+    val port = getAvailbleConfigByConf(portConf)
     val clusterName = DoraConf.config.getString("clustering.cluster.name")
     val system = systemConfigOpt match {
       case Some(systemConfig) => ActorSystem(clusterName, systemConfig)
       case _ => ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
     }
-    setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
-    setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
     backendServer.actorSystemOpt = Some(system)
     backendServerMap += (port -> backendServer)
+
+    setupSingletonProxyActor(backendServer, system)
+    backendServer
+  }
+
+  private def getAvailbleConfigByConf(portConf: Option[Int]) = {
+    def getAvailablePort() = {
+      nextPort = nextPort + 1
+      nextPort
+    }
+    portConf match {
+      case Some(port) =>
+        nextPort = port + 1
+        port
+      case _ => getAvailablePort()
+    }
+  }
+
+  // Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
+  private def setupSingletonProxyActor(backendServer: BackendServer, system: ActorSystem) = {
+    setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
+    setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
     backendServer.getActorProxy(Const.driverServiceName)
     backendServer.getActorProxy(Const.procssTranServiceName)
-    backendServer
   }
 
   def setUpClusterSingleton(system: ActorSystem, props: Props, name: String): ActorRef = {

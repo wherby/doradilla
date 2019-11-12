@@ -43,12 +43,13 @@ trait ProcessCommandRunner {
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
 
-  private def getBackendServerForCommand(backendServerOpt: Option[BackendServer]) = {
+  def getBackendServerForCommand(backendServerOpt: Option[BackendServer]) = {
     BackendServer.backendServerMap.headOption.map(_._2) match {
       case Some(backendServer) => backendServer
       case _ =>
-        Logger.apply(this.getClass.getName).error("No backend server, start new ...")
-        startup(Some(seedPort))
+        val seedPortForNew = seedPort +10000
+        Logger.apply(this.getClass.getName).error(s"No backend server, start new  on port ${seedPortForNew}")
+        startup(Some(seedPortForNew))
     }
   }
 
@@ -83,10 +84,7 @@ trait ProcessCommandRunner {
   def startProcessBatchCommand(batchRequests: Seq[JobMsg],
                                backendServerOpt: Option[BackendServer] = None,
                                priority: Option[Int] = None, jobMetaOpt: Option[JobMeta]= None)(implicit ex: ExecutionContext): Option[ActorRef] = {
-    val backendServer = backendServerOpt match {
-      case Some(backendServer) => backendServer
-      case _ => startup(Some(seedPort))
-    }
+    val backendServer = getBackendServerForCommand(backendServerOpt)
     for( driverService<- backendServer.getActorProxy(Const.driverServiceName);
          processTranService<- backendServer.getActorProxy(Const.procssTranServiceName))
       yield{
