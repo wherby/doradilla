@@ -37,7 +37,7 @@ class ConfigServiceSpec extends ActorTestClass{
     }
     "return None to  Int when int config in path is not Int" in{
       val conf2= DoraConf.config(1888,"backend",Some("doradilla.fsm.timeout=3s"))
-      val fsmNumber = ConfigService.getIntOpt(config, "doradilla.fsm.timeout")
+      val fsmNumber = ConfigService.getIntOpt(conf2, "doradilla.fsm.timeout")
       fsmNumber shouldBe (None)
     }
   }

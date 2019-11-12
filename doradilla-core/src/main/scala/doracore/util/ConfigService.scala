@@ -21,7 +21,7 @@ object ConfigService {
       case Some(str) => try {
         Some(str.toInt)
       } catch {
-        case e: ConfigException =>
+        case e: Throwable =>
           None
       }
       case _ =>None
