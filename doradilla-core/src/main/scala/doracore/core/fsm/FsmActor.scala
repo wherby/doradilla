@@ -1,6 +1,7 @@
 package doracore.core.fsm
 
-import akka.actor.{ActorLogging, ActorRef, FSM, PoisonPill, Props}
+import akka.actor.{ActorLogging, ActorRef, Cancellable, FSM, PoisonPill, Props}
+import akka.event.slf4j.Logger
 import doracore.base.BaseActor
 import doracore.base.query.QueryTrait.{ChildInfo, QueryChild}
 import doracore.core.fsm.FsmActor._
@@ -9,7 +10,7 @@ import doracore.core.msg.JobControlMsg.ResetFsm
 import doracore.core.msg.TranslationMsg.TranslatedTask
 import doracore.core.queue.QueueActor
 import doracore.core.queue.QueueActor.RequestList
-import doracore.util.DeployService
+import doracore.util.{ConfigService, DeployService}
 
 import scala.concurrent.duration._
 
@@ -22,9 +23,13 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   var driverActor: ActorRef = null
   var childActorOpt: Option[ActorRef] = None
   var jobMetaOpt: Option[JobMeta] = None
+  var cancelableSchedulerOpt: Option[Cancellable] = None
+  val ex =scala.concurrent.ExecutionContext.Implicits.global
+  lazy val timeoutConf:Option[Int] =  ConfigService.getIntOpt(context.system.settings.config, "doradilla.fsm.timeout")
 
   def hundleRequestList(requestList: RequestList) = {
     if (requestList.requests.length > 0) {
+      setTimeOutCheck()
       requestList.requests.map {
         request =>
           jobMetaOpt =request.jobMetaOpt
@@ -43,6 +48,21 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
       childActor => childActor ! PoisonPill
     }
     childActorOpt = None
+  }
+
+  def setTimeOutCheck()={
+    timeoutConf.map{
+      timeout => val delay:FiniteDuration = timeout.seconds
+        if(cancelableSchedulerOpt != None){
+          log.info("There are existed cancelable scheduler which will be clean...")
+          cancelableSchedulerOpt.map{
+            cancelableScheduler => cancelableScheduler.cancel()
+          }
+          cancelableSchedulerOpt = None
+        }
+        log.error(s"set timeout ot $timeout with $delay")
+        cancelableSchedulerOpt = Some(context.system.scheduler.scheduleOnce(delay,self,FSMTimeout("FSMtimeout"))(ex))
+    }
   }
 
   when(Idle, stateTimeout = 1 second) {
@@ -68,6 +88,10 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
   onTransition {
     case Active -> Idle =>
+      cancelableSchedulerOpt.map({
+        cancelableScheduler => cancelableScheduler.cancel()
+      })
+      cancelableSchedulerOpt = None
       endChildActor()
       driverActor ! FetchJob()
   }
@@ -91,6 +115,10 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
 
   whenUnhandled {
+    case Event(fsmtim: FSMTimeout,_) =>
+      log.error("FSM Timeout and reset to uninitialized state..")
+      log.error(s"$jobMetaOpt will need be cleaned by user.")
+      goto(Idle) using (Uninitialized)
     case Event(resetFsm: ResetFsm, _)=>
       log.info("Reset fsm actor..")
       goto(Idle) using (Uninitialized)
@@ -136,5 +164,8 @@ object FsmActor {
 
   // SendBack child Actor to TranslationActor
   case class TranslatedActor(child: ActorRef)
+
+  case class FSMTimeout(info :String)
+
 
 }

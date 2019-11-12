@@ -16,6 +16,18 @@ object ConfigService {
     }
   }
 
+  def getIntOpt(config: Config, path: String): Option[Int] = {
+    getStringOpt(config,path) match {
+      case Some(str) => try {
+        Some(str.toInt)
+      } catch {
+        case e: ConfigException =>
+          None
+      }
+      case _ =>None
+    }
+  }
+
   def getConfigOpt(config: Config, path: String): Option[Config] = {
     try {
       Some(config.getConfig(path))

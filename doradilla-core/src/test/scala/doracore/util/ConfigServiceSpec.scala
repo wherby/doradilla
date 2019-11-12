@@ -24,6 +24,16 @@ class ConfigServiceSpec extends ActorTestClass{
       val notExistValue = ConfigService.getConfigOpt(config, "NoExisted")
       notExistValue shouldBe (None)
     }
+
+    "return None when no int config in path" in {
+      val noExistInt = ConfigService.getIntOpt(config, "NoExisted")
+      noExistInt shouldBe(None)
+    }
+
+    "return Some Int when int config in path" in{
+      val fsmNumber = ConfigService.getIntOpt(config, "dora.fsmNumber")
+      fsmNumber shouldBe (Some(1))
+    }
   }
 
 }
