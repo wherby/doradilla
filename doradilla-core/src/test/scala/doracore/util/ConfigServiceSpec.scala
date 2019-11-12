@@ -2,6 +2,7 @@ package doracore.util
 
 import com.typesafe.config.ConfigFactory
 import doracore.ActorTestClass
+import doradilla.conf.DoraConf
 
 /**
   * For doradilla.util in Doradilla
@@ -33,6 +34,11 @@ class ConfigServiceSpec extends ActorTestClass{
     "return Some Int when int config in path" in{
       val fsmNumber = ConfigService.getIntOpt(config, "dora.fsmNumber")
       fsmNumber shouldBe (Some(1))
+    }
+    "return None to  Int when int config in path is not Int" in{
+      val conf2= DoraConf.config(1888,"backend",Some("doradilla.fsm.timeout=3s"))
+      val fsmNumber = ConfigService.getIntOpt(config, "doradilla.fsm.timeout")
+      fsmNumber shouldBe (None)
     }
   }
 
