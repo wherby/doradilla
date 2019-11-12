@@ -22,6 +22,11 @@ object TestVars {
 
   //process io.github.wherby.doradilla.test
   val paras = Array(command.asInstanceOf[AnyRef])
-  val processCallMsgTest = ProcessCallMsg("doracore.util.CommandService", "runCommandSync", paras)
+  val processCallMsgTest = ProcessCallMsg("doracore.util.CommandServiceProcessor", "runCommandSync", paras)
   val processJob = JobMsg("SimpleProcess", processCallMsgTest)
+
+  val sleepCommand = List( "sleep","10")
+  val sleepParas = Array(sleepCommand.asInstanceOf[AnyRef])
+  val sleepProcessCallMsgTest = ProcessCallMsg("doracore.util.CommandServiceProcessor", "runCommandSync", sleepParas)
+  val slewpProcessJob = JobMsg("SimpleProcess", sleepProcessCallMsgTest)
 }

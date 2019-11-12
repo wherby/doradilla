@@ -27,6 +27,7 @@ object ProcessServiceSpec{
     "doracore.util.TestProcessor"-> (new TestProcessor).getClass,
     "doracore.util.TestProcessor2"->(new TestProcessor2).getClass,
     "doracore.util.TestProcesso3"->(new TestProcesso3).getClass,
+    "doracore.util.CommandServiceProcessor"->(new CommandServiceProcessor).getClass,
   )
 
   def safeProcessServiceNameToClassOpt(className: String,classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
