@@ -53,13 +53,6 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   def setTimeOutCheck()={
     timeoutConf.map{
       timeout => val delay:FiniteDuration = timeout.seconds
-        if(cancelableSchedulerOpt != None){
-          log.info("There are existed cancelable scheduler which will be clean...")
-          cancelableSchedulerOpt.map{
-            cancelableScheduler => cancelableScheduler.cancel()
-          }
-          cancelableSchedulerOpt = None
-        }
         log.error(s"set timeout ot $timeout with $delay")
         cancelableSchedulerOpt = Some(context.system.scheduler.scheduleOnce(delay,self,FSMTimeout("FSMtimeout"))(ex))
     }
@@ -88,12 +81,16 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
   onTransition {
     case Active -> Idle =>
-      cancelableSchedulerOpt.map({
-        cancelableScheduler => cancelableScheduler.cancel()
-      })
-      cancelableSchedulerOpt = None
+      CleanCancelScheduler()
       endChildActor()
       driverActor ! FetchJob()
+  }
+
+  private def CleanCancelScheduler() = {
+    cancelableSchedulerOpt.map({
+      cancelableScheduler => cancelableScheduler.cancel()
+        cancelableSchedulerOpt = None
+    })
   }
 
   when(Active) {
