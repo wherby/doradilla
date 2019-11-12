@@ -34,17 +34,14 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
         assert(true)
       }
       Await.ready(res, ConstVars.timeout1S * 10)
-    }
 
-    "timeout in run processcommand" in {
-      val backendServer = BackendServer.startup(Some(1600))
-      backendServer.registFSMActor()
-      val msg = TestVars.sleepProcessCallMsgTest
-      val backendServer2 = BackendServer.startup()
-      val processJob = JobMsg("SimpleProcess", msg)
+
+      val msg2 = TestVars.sleepProcessCallMsgTest
+
+      val processJob2 = JobMsg("SimpleProcess", msg2)
       val timeout = ConstVars.timeout1S *2
       try{
-        val res = BackendServer.runProcessCommand(processJob, Some(backendServer2),timeout)
+        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout)
         println("result")
         println(res)
         val result = Await.ready(res, ConstVars.timeout1S * 1)
