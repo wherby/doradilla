@@ -40,6 +40,8 @@ trait ProcessCommandRunner {
           case ex: Throwable =>
             Logger.apply(this.getClass.getName).error(s"$processJob timeout after $timeoutValue")
             result = JobResult(JobStatus.TimeOut, ex.toString)
+            receiveActor ! ProxyControlMsg(result)
+            Thread.sleep(100)
         }
         receiveActor ! ProxyControlMsg(PoisonPill)
         receiveActor ! PoisonPill

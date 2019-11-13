@@ -36,6 +36,7 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       Await.ready(res, ConstVars.timeout1S * 10)
 
 
+
       val msg2 = TestVars.sleepProcessCallMsgTest
 
       val processJob2 = JobMsg("SimpleProcess", msg2)
@@ -49,6 +50,12 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       }catch {
         case ex:Throwable => println(ex)
       }
+      val res2 = BackendServer.runProcessCommand(processJob, Some(backendServer2)).map { result =>
+        println(result)
+        assert(true)
+      }
+      Await.ready(res2, ConstVars.timeout1S * 10)
+
     }
 
     "timeout will be used in config" in {
@@ -63,8 +70,12 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       val processJob = JobMsg("SimpleProcess", msg)
       val requestMsg = JobRequest(processJob,proxy2.ref,proxy.ref)
       fsmActor ! requestMsg
-      Thread.sleep(5000)
-      systemTest.terminate()
+      Thread.sleep(4000)
+      val msg1 = TestVars.processCallMsgTest
+      val processJob1 = JobMsg("SimpleProcess", msg1)
+      val requestMsg2 = JobRequest(processJob1,proxy2.ref,proxy.ref)
+      fsmActor ! requestMsg2
+      Thread.sleep(1000)
     }
   }
 }
