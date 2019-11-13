@@ -15,7 +15,7 @@ import doracore.api.AskProcessResult
 import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * For io.github.wherby.doradilla.back in doradilla
