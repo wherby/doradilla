@@ -20,7 +20,8 @@ From [reference](https://support.travis-ci.com/hc/en-us/articles/115002904174-Va
 ## the travis encrypt for file not working on windows
 https://docs.travis-ci.com/user/encrypting-files/
 
-##Caveat 
+## Caveat 
+
 There is a report of this function not working on a local Windows machine. Please use the WSL (Windows Subsystem for Linux) or a Linux or macOS machine.
 
 
