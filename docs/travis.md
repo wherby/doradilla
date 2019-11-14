@@ -1,7 +1,7 @@
 Travis 
 ============
 ## Travis publish
-[Travis publish](https://github.com/scalacenter/sbt-release-early/wiki/How-to-release-in-Travis-(CI\))
+[Travis publish](https://github.com/scalacenter/sbt-release-early/wiki/How-to-release-in-Travis-(CI))
 
 ## Command line Validation
 To install the command line client, which requires Ruby 1.9.3 and RubyGems:
