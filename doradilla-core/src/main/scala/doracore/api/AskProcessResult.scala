@@ -13,18 +13,22 @@ trait AskProcessResult {
   def getProcessCommandFutureResult(jobRequest: JobRequest, driver:ActorRef, receiveActor: ActorRef, timeout: Timeout )(implicit ex: ExecutionContext): Future[JobResult] = {
     driver.tell(jobRequest, receiveActor)
     var result = JobResult(JobStatus.Unknown, "Unkonwn").asInstanceOf[Any]
-    implicit val timeoutValue: Timeout = timeout
-    try {
-      result = Await.result((receiveActor ? FetchResult()), timeout.duration)
-    } catch {
-      case ex: Throwable =>
-        Logger.apply(this.getClass.getName).error(s"$jobRequest timeout after $timeout")
-        result = JobResult(JobStatus.TimeOut, ex.toString)
-        receiveActor ! ProxyControlMsg(result)
-        Thread.sleep(100)
+
+    def getResult = {
+      implicit val timeoutValue: Timeout = timeout
+      try {
+        result = Await.result((receiveActor ? FetchResult()), timeout.duration)
+      } catch {
+        case ex: Throwable =>
+          Logger.apply(this.getClass.getName).error(s"$jobRequest timeout after $timeout")
+          result = JobResult(JobStatus.TimeOut, ex.toString)
+          receiveActor ! ProxyControlMsg(result)
+          Thread.sleep(100)
+      }
+      receiveActor ! ProxyControlMsg(PoisonPill)
+      receiveActor ! PoisonPill
+      result.asInstanceOf[JobResult]
     }
-    receiveActor ! ProxyControlMsg(PoisonPill)
-    receiveActor ! PoisonPill
-    Future(result.asInstanceOf[JobResult])
+    Future(getResult)
   }
 }
