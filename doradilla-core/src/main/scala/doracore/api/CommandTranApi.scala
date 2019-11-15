@@ -22,7 +22,7 @@ trait CommandTranApi extends  AskProcessResult{
     val commandJobMsg = JobMsg("SimpleCommand", Json.toJson(CommandRequest(command)).toString())
     val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
     val commandJobRequest = JobRequest(commandJobMsg, receiveActor, commandTranslatedActor)
-    getProcessCommandFutureResult(commandJobRequest, defaultDriver, receiveActor,timeout)(ex)
+    getProcessCommandFutureResult(commandJobRequest, defaultDriver, receiveActor,timeout)
   }
 }
 

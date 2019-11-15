@@ -1,6 +1,6 @@
 package doradilla.back
 
-import akka.actor.{ActorRef, PoisonPill}
+import akka.actor.{ActorRef, ActorSystem, PoisonPill}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
 import doracore.core.msg.Job._
@@ -11,18 +11,26 @@ import doracore.vars.ConstVars
 import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
 import akka.pattern.ask
-import doracore.api.AskProcessResult
+import doracore.api.{AskProcessResult, GetBlockIOExcutor}
 import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
 /**
   * For io.github.wherby.doradilla.back in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/7/14
   */
-trait ProcessCommandRunner extends AskProcessResult{
+trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor{
   this: BackendServer.type =>
+
+  override def getBlockDispatcher(): ExecutionContextExecutor = {
+    val actorSystem:ActorSystem= BackendServer.backendServerMap.head._2.actorSystemOpt.get
+    actorSystem.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
+      case true => actorSystem.dispatchers.lookup(ConstVars.blockDispatcherName)
+      case _ => actorSystem.dispatcher
+    }
+  }
 
   def runProcessCommand(processJob: JobMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
     val backendServer = getBackendServerForCommand(backendServerOpt)
@@ -32,7 +40,7 @@ trait ProcessCommandRunner extends AskProcessResult{
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
         val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
-        getProcessCommandFutureResult(processJobRequest, driverService, receiveActor,timeout)(ex)
+        getProcessCommandFutureResult(processJobRequest, driverService, receiveActor,timeout)
       }
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
