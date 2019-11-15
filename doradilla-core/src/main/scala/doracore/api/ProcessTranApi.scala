@@ -24,6 +24,6 @@ trait ProcessTranApi extends AskProcessResult{
     val processJob = JobMsg("SimpleProcess", processCallMsg)
     val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName( "Receive"))
     val processJobRequest = JobRequest(processJob, receiveActor, processTranActor)
-    getProcessCommandFutureResult(processJobRequest, defaultDriver, receiveActor,timeout)(ex)
+    getProcessCommandFutureResult(processJobRequest, defaultDriver, receiveActor,timeout)
   }
 }
