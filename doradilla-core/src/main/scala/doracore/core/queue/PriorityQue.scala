@@ -21,7 +21,10 @@ class PriorityQue extends Quelike[JobRequest] {
     var res: Seq[JobRequest] = Seq()
     for (i <- 1 to number) {
       if (queue.length > 0) {
-        res = res :+ queue.dequeue()._1
+        res =queue.take(1).map{
+          pair=>pair._1
+        }.toSeq
+        queue =queue.drop(1)
       }
     }
     res
