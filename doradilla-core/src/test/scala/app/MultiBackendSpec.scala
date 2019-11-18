@@ -45,8 +45,20 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
         val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout)
         println("result")
         println(res)
-        val result = Await.ready(res, ConstVars.timeout1S * 1)
-        println(result)
+      }catch {
+        case ex:Throwable => println(ex)
+      }
+      try{
+        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*2)
+        println("result")
+        println(res)
+      }catch {
+        case ex:Throwable => println(ex)
+      }
+      try{
+        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*3)
+        println("result")
+        println(res)
       }catch {
         case ex:Throwable => println(ex)
       }

@@ -12,6 +12,9 @@ class PriorityQueSpec extends FlatSpec with Matchers {
   val task1 = JobRequest(JobMsg("test1",null),null,null,Some(9))
   val task2 = JobRequest(JobMsg("test2",null),null,null,Some(11))
   val task3 = JobRequest(JobMsg("test2",null),null,null,None)
+  val task4 = JobRequest(JobMsg("test4",null),null,null,None)
+  val task5 = JobRequest(JobMsg("test5",null),null,null,None)
+  val task6 = JobRequest(JobMsg("test6",null),null,null,None)
 
   "PrioriryQue" must "return value in priority way" in{
     val priorityQue = new PriorityQue()
@@ -30,6 +33,17 @@ class PriorityQueSpec extends FlatSpec with Matchers {
     priorityQue.dequeue(2)
     val res = priorityQue.dequeue(1)
     res.head.priority should be (None)
+  }
+
+  "PriorityQue" must "FIFO" in{
+    val priorityQue = new PriorityQue()
+    priorityQue.enqueue(task4)
+    priorityQue.enqueue(task5)
+    priorityQue.enqueue(task6)
+    val res = priorityQue.dequeue(1)
+    val res2 = priorityQue.dequeue(1)
+    res.head should be (task4)
+    res2.head should be (task5)
   }
   "PrioriryQue" must "could take more numbser " in{
     val priorityQue = new PriorityQue()
