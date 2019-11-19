@@ -44,14 +44,16 @@ object ProcessService {
           val instance = a.newInstance()
           val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
           methodOpt match {
-            case Some(method) => Right(method.invoke(instance, processCallMsg.paras: _*))
+            case Some(method) =>
+              Right(method.invoke(instance, processCallMsg.paras: _*))
             case _ => Left(new Throwable("No such method"))
           }
         case _=> Left("Class is not found.")
       }
 
     } catch {
-      case e: Throwable => println(e)
+      case e: Throwable =>
+        Logger.apply(this.getClass.getName).error(e.getMessage)
         Left(e)
     }
   }

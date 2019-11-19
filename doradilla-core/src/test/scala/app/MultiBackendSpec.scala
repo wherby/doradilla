@@ -7,6 +7,7 @@ import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.SetDriver
 import doracore.core.msg.Job.{JobMsg, JobRequest}
 import doracore.core.queue.QueueActor.RequestList
+import doracore.util.ProcessService.ProcessResult
 import doracore.util.{ProcessService, ProcessServiceSpec}
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
@@ -24,7 +25,8 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
   "MultiBackend" should {
     "accept and run command " in {
-      val backendServer = BackendServer.startup(Some(1600))
+      val config =Some(DoraConf.config(1600,"backend",Some("doradilla.fsm.timeout=3")))
+      val backendServer = BackendServer.startup(Some(1600),config)
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val backendServer2 = BackendServer.startup()
@@ -42,31 +44,50 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       val processJob2 = JobMsg("SimpleProcess", msg2)
       val timeout = ConstVars.timeout1S *2
       try{
-        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout)
-        println("result")
+        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*30).map{
+          re=>
+            println("FIRST>>>>>>")
+            println(re)
+        }
         println(res)
       }catch {
         case ex:Throwable => println(ex)
       }
       try{
-        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*2)
-        println("result")
-        println(res)
+        BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*20).map{
+          jobResult=>
+            println("SECOND>>>>>>")
+            println(jobResult)
+            if((jobResult.result.asInstanceOf[ProcessResult]).jobStatus.toString == "Failed" ){
+              println("failed....")
+              throw new RuntimeException(jobResult.result.asInstanceOf[ProcessResult].result.asInstanceOf[Exception].getMessage)
+            }
+            println(jobResult)
+            println("cccccaaaaaaaaaa")
+        }
       }catch {
-        case ex:Throwable => println(ex)
+        case ex:Exception =>
+          println("Cdd")
+          println(ex)
       }
+
       try{
-        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*3)
-        println("result")
-        println(res)
+        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*1)
+        res.map{
+          re=>
+            println(">>>>.3rd result")
+            println(re)
+        }
       }catch {
-        case ex:Throwable => println(ex)
+        case ex:Exception => println(ex)
+          println(">>>>>>>>>>third call")
       }
       val res2 = BackendServer.runProcessCommand(processJob, Some(backendServer2)).map { result =>
         println(result)
         assert(true)
       }
-      Await.ready(res2, ConstVars.timeout1S * 10)
+      Await.ready(res2, ConstVars.timeout1S * 20)
+      println()
 
     }
 
