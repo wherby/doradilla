@@ -10,6 +10,7 @@ import doracore.core.msg.JobControlMsg.ResetFsm
 import doracore.core.msg.TranslationMsg.TranslatedTask
 import doracore.core.queue.QueueActor
 import doracore.core.queue.QueueActor.RequestList
+import doracore.util.ProcessService.ProcessResult
 import doracore.util.{ConfigService, DeployService}
 
 import scala.concurrent.duration._
@@ -26,12 +27,14 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   var cancelableSchedulerOpt: Option[Cancellable] = None
   val ex =scala.concurrent.ExecutionContext.Implicits.global
   lazy val timeoutConf:Option[Int] =  ConfigService.getIntOpt(context.system.settings.config, "doradilla.fsm.timeout")
+  var replyToActor:Option[ActorRef] = None
 
   def hundleRequestList(requestList: RequestList) = {
     if (requestList.requests.length > 0) {
       setTimeOutCheck()
       requestList.requests.map {
         request =>
+          replyToActor = Some(request.replyTo)
           jobMetaOpt =request.jobMetaOpt
           log.info(s"{${request.jobMetaOpt}} is started in fsm worker, and will be handled by {${request.tranActor}}")
           log.debug(s"${request.taskMsg} is handled in FSM actor, the task will be start soon")
@@ -115,6 +118,11 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
     case Event(fsmtim: FSMTimeout,_) =>
       log.error("FSM Timeout and reset to uninitialized state..")
       log.error(s"$jobMetaOpt will need be cleaned by user.")
+      val result = JobResult(JobStatus.TimeOut, ProcessResult(JobStatus.Failed, new Exception("timeout")))
+      replyToActor.map{
+        replyTo=>
+          replyTo ! result
+      }
       goto(Idle) using (Uninitialized)
     case Event(resetFsm: ResetFsm, _)=>
       log.info("Reset fsm actor..")
