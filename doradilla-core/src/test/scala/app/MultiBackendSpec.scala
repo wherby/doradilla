@@ -7,6 +7,7 @@ import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.SetDriver
 import doracore.core.msg.Job.{JobMsg, JobRequest}
 import doracore.core.queue.QueueActor.RequestList
+import doracore.util.ProcessService.ProcessResult
 import doracore.util.{ProcessService, ProcessServiceSpec}
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
@@ -43,30 +44,41 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       val timeout = ConstVars.timeout1S *2
       try{
         val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout)
-        println("result")
         println(res)
       }catch {
         case ex:Throwable => println(ex)
       }
       try{
-        val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*2)
-        println("result")
-        println(res)
+        BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*2).map{
+          jobResult=>
+            println(jobResult)
+            if((jobResult.result.asInstanceOf[ProcessResult]).jobStatus.toString == "Failed" ){
+              println("failed....")
+              throw new RuntimeException(jobResult.result.asInstanceOf[ProcessResult].result.asInstanceOf[Exception].getMessage)
+            }
+            println(jobResult)
+            println("cccccaaaaaaaaaa")
+        }
       }catch {
-        case ex:Throwable => println(ex)
+        case ex:Exception =>
+          println("Cdd")
+          println(ex)
       }
+
       try{
         val res = BackendServer.runProcessCommand(processJob2, Some(backendServer2),timeout*3)
         println("result")
         println(res)
       }catch {
-        case ex:Throwable => println(ex)
+        case ex:Exception => println(ex)
+          println(">>>>>>>>>>third call")
       }
       val res2 = BackendServer.runProcessCommand(processJob, Some(backendServer2)).map { result =>
         println(result)
         assert(true)
       }
-      Await.ready(res2, ConstVars.timeout1S * 10)
+      Await.ready(res2, ConstVars.timeout1S * 12)
+      println()
 
     }
 

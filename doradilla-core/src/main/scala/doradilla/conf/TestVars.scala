@@ -25,8 +25,10 @@ object TestVars {
   val processCallMsgTest = ProcessCallMsg("doracore.util.CommandServiceProcessor", "runCommandSync", paras)
   val processJob = JobMsg("SimpleProcess", processCallMsgTest)
 
-  val sleepCommand = List( "sleep","100")
+  val sleepCommand = List(  "sleep"," 100")
   val sleepParas = Array(sleepCommand.asInstanceOf[AnyRef])
   val sleepProcessCallMsgTest = ProcessCallMsg("doracore.util.CommandServiceProcessor", "runCommandSync", sleepParas)
-  val slewpProcessJob = JobMsg("SimpleProcess", sleepProcessCallMsgTest)
+  val sleepProcessJob = JobMsg("SimpleProcess", sleepProcessCallMsgTest)
+
+
 }

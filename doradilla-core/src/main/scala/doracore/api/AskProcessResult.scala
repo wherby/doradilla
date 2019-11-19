@@ -8,6 +8,7 @@ import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
 
 import scala.concurrent.{Await, Future}
 import akka.pattern.ask
+import doracore.util.ProcessService.ProcessResult
 
 trait AskProcessResult {
   this:GetBlockIOExcutor =>
@@ -23,7 +24,7 @@ trait AskProcessResult {
         case ex: Throwable =>
           val tName = Thread.currentThread.getName
           Logger.apply(this.getClass.getName).error(s"$tName=> $jobRequest timeout after $timeout")
-          result = JobResult(JobStatus.TimeOut, ex.toString)
+          result = JobResult(JobStatus.TimeOut, ProcessResult(JobStatus.Failed, ex))
           receiveActor ! ProxyControlMsg(result)
           Thread.sleep(100)
       }
