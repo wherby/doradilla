@@ -38,6 +38,10 @@ class JobApiSpec extends ActorTestClass{
     }
 
     "return result for call processTran api" in{
+      JobApi.actorSystemOpt.map{
+        actorSystem=>actorSystem.actorSystem.terminate()
+      }
+      JobApi.actorSystemOpt=None
       val jobApi = new JobApi()
       val jobList = Seq(ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest)
       val resultFuture = Future.sequence(jobList.map{
