@@ -11,7 +11,7 @@ import doracore.vars.ConstVars
 import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
 import akka.pattern.ask
-import doracore.api.{AskProcessResult, GetBlockIOExcutor}
+import doracore.api.{ActorSystemApi, AskProcessResult, GetBlockIOExcutor}
 import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
@@ -21,15 +21,10 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
   * For io.github.wherby.doradilla.back in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/7/14
   */
-trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor{
+trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with ActorSystemApi{
   this: BackendServer.type =>
-
-  override def getBlockDispatcher(): ExecutionContextExecutor = {
-    val actorSystem:ActorSystem= BackendServer.backendServerMap.head._2.actorSystemOpt.get
-    actorSystem.dispatchers.hasDispatcher(ConstVars.blockDispatcherName) match {
-      case true => actorSystem.dispatchers.lookup(ConstVars.blockDispatcherName)
-      case _ => actorSystem.dispatcher
-    }
+  override def getActorSystem(): ActorSystem = {
+    BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
 
   def runProcessCommand(processJob: JobMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
