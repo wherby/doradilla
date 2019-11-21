@@ -98,7 +98,11 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
 
   when(Active) {
     case Event(jobEnd: JobEnd, task: Task) =>
+      if(jobEnd.requestMsg.jobMetaOpt == jobMetaOpt){
         goto(Idle) using (Uninitialized)
+      }else{
+        stay()
+      }
     case Event(workerInfo: WorkerInfo, _) =>
       childActorOpt = DeployService.tryToInstanceDeployActor(workerInfo, context)
       if (childActorOpt != None && workerInfo.replyTo != None) {
