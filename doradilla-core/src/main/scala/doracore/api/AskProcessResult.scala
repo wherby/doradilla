@@ -14,28 +14,27 @@ trait AskProcessResult {
   this:GetBlockIOExcutor =>
   def getProcessCommandFutureResult(jobRequest: JobRequest, driver:ActorRef, receiveActor: ActorRef, timeout: Timeout ): Future[JobResult] = {
     driver.tell(jobRequest, receiveActor)
-    var result = JobResult(JobStatus.Unknown, "Unkonwn").asInstanceOf[Any]
+    getResult(receiveActor,timeout)
+  }
+  def getResult( receiveActor: ActorRef, timeout: Timeout ):Future[JobResult] = {
     implicit val ex: ExecutionContext = getBlockDispatcher()
-
-    def getResult:Future[JobResult] = {
-      implicit val timeoutValue: Timeout = timeout
-      (receiveActor ? FetchResult()).map{
-        resultT => resultT.asInstanceOf[JobResult]
-      }.recover{
-        case ex: Throwable =>
-          val tName = Thread.currentThread.getName
-          Logger.apply(this.getClass.getName).error(s"$tName=> $jobRequest timeout after $timeout")
-          result = JobResult(JobStatus.TimeOut, ProcessResult(JobStatus.Failed, ex))
-          receiveActor ! ProxyControlMsg(result)
-          Thread.sleep(100)
-          result.asInstanceOf[JobResult]
-      }.map{
-        result=>
+    implicit val timeoutValue: Timeout = timeout
+    var result = JobResult(JobStatus.Unknown, "Unkonwn").asInstanceOf[Any]
+    (receiveActor ? FetchResult()).map{
+      resultT => resultT.asInstanceOf[JobResult]
+    }.recover{
+      case ex: Throwable =>
+        val tName = Thread.currentThread.getName
+        Logger.apply(this.getClass.getName).error(s"$tName=> Job timeout after $timeout")
+        result = JobResult(JobStatus.TimeOut, ProcessResult(JobStatus.Failed, ex))
+        receiveActor ! ProxyControlMsg(result)
+        Thread.sleep(100)
+        result.asInstanceOf[JobResult]
+    }.map{
+      result=>
         receiveActor ! ProxyControlMsg(PoisonPill)
         receiveActor ! PoisonPill
         result
-      }
     }
-    getResult
   }
 }

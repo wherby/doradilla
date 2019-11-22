@@ -1,14 +1,11 @@
 package doracore.api
 
-import akka.actor.PoisonPill
 import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doracore.tool.job.process.ProcessTranActor
 import doracore.tool.receive.ReceiveActor
-import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg}
 import doracore.util.ProcessService.ProcessCallMsg
 
 import scala.concurrent.{ExecutionContext, Future}
-import akka.pattern.ask
 import akka.util.Timeout
 import doracore.util.CNaming
 

@@ -64,18 +64,8 @@ trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with 
       }
   }
 
-  def queryProcessResult(receiveActor: ActorRef, timeout: Timeout = ConstVars.longTimeOut)(implicit ex: ExecutionContext): Future[Option[JobResult]] = {
-    (receiveActor ? QueryResult()) (timeout).map {
-      resultOpt =>
-        resultOpt.asInstanceOf[Option[JobResult]] match {
-          case Some(result) => {
-            receiveActor ! ProxyControlMsg(PoisonPill)
-            receiveActor ! PoisonPill
-            Some(result)
-          }
-          case _ => None
-        }
-    }
+  def queryProcessResult(receiveActor: ActorRef, timeout: Timeout = ConstVars.longTimeOut): Future[JobResult] = {
+    getResult(receiveActor,timeout)
   }
 
   def startProcessBatchCommand(batchRequests: Seq[JobMsg],
