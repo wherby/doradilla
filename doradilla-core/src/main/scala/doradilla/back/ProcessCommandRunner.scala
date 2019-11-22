@@ -1,11 +1,11 @@
 package doradilla.back
 
-import akka.actor.{ActorRef, ActorSystem, PoisonPill}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
 import doracore.core.msg.Job._
 import doracore.tool.receive.ReceiveActor
-import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
+import doracore.tool.receive.ReceiveActor.{FetchResult, QueryResult}
 import doracore.util.CNaming
 import doracore.vars.ConstVars
 import play.api.libs.json.JsError
@@ -15,7 +15,7 @@ import doracore.api.{ActorSystemApi, AskProcessResult, GetBlockIOExcutor}
 import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * For io.github.wherby.doradilla.back in doradilla
