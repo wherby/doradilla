@@ -18,7 +18,7 @@ import com.typesafe.config.Config
   */
 object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
-  lazy val seedPort = DoraConf.config.getInt("clustering.seed-port")
+  lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
   var nextPort = seedPort
 
 
@@ -35,7 +35,7 @@ object BackendServer extends ProcessCommandRunner {
   private def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
     val port = getAvailbleConfigByConf(portConf)
-    val clusterName = DoraConf.config.getString("clustering.cluster.name")
+    val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
     val system = systemConfigOpt match {
       case Some(systemConfig) => ActorSystem(clusterName, systemConfig)
       case _ => ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
@@ -52,6 +52,7 @@ object BackendServer extends ProcessCommandRunner {
       nextPort = nextPort + 1
       nextPort
     }
+
     portConf match {
       case Some(port) =>
         nextPort = port + 1
@@ -62,10 +63,10 @@ object BackendServer extends ProcessCommandRunner {
 
 
   /**
-  * @Description: Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
-  * @Param:
-  * @return:
-  */
+    * @Description: Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
+    * @Param:
+    * @return:
+    */
   private def setupSingletonProxyActor(backendServer: BackendServer, system: ActorSystem) = {
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
@@ -83,9 +84,10 @@ object BackendServer extends ProcessCommandRunner {
 
 
   /**
-   Set singleton proxy
-   * @return the Props of singlenton proxy
-  */
+    * Set singleton proxy
+    *
+    * @return the Props of singlenton proxy
+    */
   def proxyProps(system: ActorSystem, name: String): Props = ClusterSingletonProxy.props(
     settings = ClusterSingletonProxySettings(system).withRole(Const.backendRole),
     singletonManagerPath = s"/user/$name")
