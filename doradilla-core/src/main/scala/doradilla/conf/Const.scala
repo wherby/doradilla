@@ -7,5 +7,6 @@ package doradilla.conf
 object Const {
   val driverServiceName = "driverService"
   val procssTranServiceName = "processTranService"
+  val queryService ="queryService"
   val backendRole = "backend"
 }

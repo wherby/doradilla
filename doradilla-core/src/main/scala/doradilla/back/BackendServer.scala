@@ -11,6 +11,7 @@ import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
 import akka.event.jul.Logger
 import com.typesafe.config.Config
+import doracore.tool.query.QueryActor
 
 /**
   * For io.github.wherby.doradilla.back in Doradilla
@@ -69,6 +70,7 @@ object BackendServer extends ProcessCommandRunner {
   private def setupSingletonProxyActor(backendServer: BackendServer, system: ActorSystem) = {
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
+    setUpClusterSingleton(system, QueryActor.queryActorProps, Const.queryService)
     backendServer.getActorProxy(Const.driverServiceName)
     backendServer.getActorProxy(Const.procssTranServiceName)
   }

@@ -1,11 +1,11 @@
 package doradilla.back
 
-import akka.actor.{ActorRef, ActorSystem, PoisonPill}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
 import doracore.core.msg.Job._
 import doracore.tool.receive.ReceiveActor
-import doracore.tool.receive.ReceiveActor.{FetchResult, ProxyControlMsg, QueryResult}
+import doracore.tool.receive.ReceiveActor.{FetchResult, QueryResult}
 import doracore.util.CNaming
 import doracore.vars.ConstVars
 import play.api.libs.json.JsError
@@ -15,7 +15,7 @@ import doracore.api.{ActorSystemApi, AskProcessResult, GetBlockIOExcutor}
 import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
 import doradilla.conf.Const
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * For io.github.wherby.doradilla.back in doradilla
@@ -64,18 +64,8 @@ trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with 
       }
   }
 
-  def queryProcessResult(receiveActor: ActorRef, timeout: Timeout = ConstVars.longTimeOut)(implicit ex: ExecutionContext): Future[Option[JobResult]] = {
-    (receiveActor ? QueryResult()) (timeout).map {
-      resultOpt =>
-        resultOpt.asInstanceOf[Option[JobResult]] match {
-          case Some(result) => {
-            receiveActor ! ProxyControlMsg(PoisonPill)
-            receiveActor ! PoisonPill
-            Some(result)
-          }
-          case _ => None
-        }
-    }
+  def queryProcessResult(receiveActor: ActorRef, timeout: Timeout = ConstVars.longTimeOut): Future[JobResult] = {
+    getResult(receiveActor,timeout)
   }
 
   def startProcessBatchCommand(batchRequests: Seq[JobMsg],

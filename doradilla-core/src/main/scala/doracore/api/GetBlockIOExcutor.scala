@@ -1,7 +1,6 @@
 package doracore.api
 
 import doracore.vars.ConstVars
-
 import scala.concurrent.ExecutionContextExecutor
 
 trait GetBlockIOExcutor {

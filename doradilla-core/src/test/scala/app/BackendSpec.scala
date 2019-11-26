@@ -1,7 +1,9 @@
 package app
 
 import doracore.ActorTestClass
-import doracore.core.msg.Job.JobMsg
+import doracore.core.msg.Job.{JobMsg, JobStatus}
+import doracore.util.ProcessService.{ProcessResult, noImplementNameToClassOpt}
+import doracore.util.{ProcessService, ProcessServiceSpec}
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
@@ -31,21 +33,35 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
 
     "start the command and qurey result " in {
+      ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val backendServer = BackendServer.startup(Some(1600))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
       val receiveActor = BackendServer.startProcessCommand(processJob).get
-      BackendServer.queryProcessResult(receiveActor).map {
-        resultOpt =>
-          assert(resultOpt == None)
+      val res= BackendServer.queryProcessResult(receiveActor).map {
+        result =>
+          (result.result.asInstanceOf[ProcessResult]).jobStatus shouldBe (JobStatus.Finished)
+          println(result)
       }
-      Thread.sleep(2000)
-      val res = BackendServer.queryProcessResult(receiveActor).map {
-        resultOpt =>
-          assert(resultOpt != None)
+
+      Await.ready(res, ConstVars.timeout1S*4)
+    }
+
+    "start the command and qurey result without implement class reflector " in {
+      ProcessService.nameToClassOpt = noImplementNameToClassOpt
+      val backendServer = BackendServer.startup(Some(1600))
+      backendServer.registFSMActor()
+      val msg = TestVars.processCallMsgTest
+      val processJob = JobMsg("SimpleProcess", msg)
+      val receiveActor = BackendServer.startProcessCommand(processJob).get
+      val res= BackendServer.queryProcessResult(receiveActor).map {
+        result =>
+          (result.result.asInstanceOf[ProcessResult]).jobStatus shouldBe (JobStatus.Failed)
+          println(result)
       }
-      Await.ready(res, ConstVars.timeout1S)
+
+      Await.ready(res, ConstVars.timeout1S*4)
     }
 
     "start and run command without actor  " in {
