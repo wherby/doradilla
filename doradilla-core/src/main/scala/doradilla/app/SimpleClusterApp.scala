@@ -1,6 +1,7 @@
 package doradilla.app
 
 import akka.event.slf4j.Logger
+import doracore.util.ConfigService
 import doradilla.back.BackendServer
 import doradilla.conf.DoraConf
 
@@ -15,7 +16,7 @@ object SimpleClusterApp {
 
   def runWithArgs(args: Array[String]): Seq[BackendServer] = {
     if (args.isEmpty) {
-      lazy val port = DoraConf.config.getInt("clustering.seed-port")
+      lazy val port = ConfigService.getIntOpt( DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
       Seq(startApp(port))
     } else {
       try {
