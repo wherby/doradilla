@@ -34,11 +34,12 @@ The Doradilla library use a queue to keep job requests and FSMActor will pull jo
 
 Is the same way as traditional way?
 
-Yes, but not, because the user will only aware of DriverActor, not aware of the library implementation. The example shows user don't need to know the doradilla's implementation, only call the job api. The Doradilla library will handle the travail work.
+Yes, but not, because the user will not aware of the library implementation. The example shows user call the job api. The Doradilla library will handle the travail work.
 
 #### Why there is need JobTranslator?
 
-For general purpose, ever complex job could be translate to simple job and so on. When you handle the complex job, you could design your JobTranslator to handle that job.
+For general purpose, every complex job could be translate to simple job and so on. When you handle the complex job, you could design your JobTranslator to handle that job.
+The source code contains some examples of how to create JobTranslator.
 
 #### What's if I aready have ActorSystem in my project?
 
@@ -110,3 +111,4 @@ User should defined their implementation of reflection, more information see [Pr
 ### More link about this library
 
 [FSMActor workflow design](https://wherby.github.io/fsmactor-design/)
+

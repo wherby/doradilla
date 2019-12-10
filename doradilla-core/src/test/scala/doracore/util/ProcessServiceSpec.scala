@@ -38,6 +38,12 @@ class ProcessServiceSpec extends FlatSpec with Matchers {
 
 
   val processCallMsg = ProcessCallMsg("doracore.util.TestProcessor","addPar",Array(Par1(2).asInstanceOf[AnyRef],Par2(4).asInstanceOf[AnyRef]))
+  "Process Service" should "return left when use no implement "in {
+    ProcessService.nameToClassOpt = ProcessService.noImplementNameToClassOpt
+    val result = ProcessService.callProcess(processCallMsg)
+    result shouldBe(Left("Class is not found."))
+    ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
+  }
   "Process Service" should "return value "in {
     ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
     val result = ProcessService.callProcess(processCallMsg)
