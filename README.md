@@ -23,6 +23,7 @@ What's the traditional way to solve the issue is create a job queue, and use a w
 
 Is there any universal way to resolve this type of question and makes the implementation easy to use? 
 
+
 Yes, just use the Doradilla library.
 
 #### How the Doradilla library works?
@@ -43,6 +44,7 @@ For general purpose, ever complex job could be translate to simple job and so on
 
 Well, you can only use doradcore library instead of use doradilla.
 
+
 #### Message flow
 ![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
 
@@ -51,6 +53,7 @@ See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
 
 
 ### Doradilla cluster usage
+
 
 Doradilla provides distributed running environment which is based on Akka cluster. With same configuration as Akka cluster, Doradilla-core will running on Akka cluster node.
 
