@@ -22,21 +22,26 @@ For example, an OCR application which will trigger OCR tasks based on requests, 
 What's the traditional way to solve the issue is create a job queue, and use a worker to takes job from the queue.
 
 Is there any universal way to resolve this type of question and makes the implementation easy to use? 
+
 Yes, just use the Doradilla library.
 
 #### How the Doradilla library works?
 
 Simple version: 
+
 The Doradilla library use a queue to keep job requests and FSMActor will pull job request to process.  
 
-The same way as traditional way?
-Yes, but not, because the user will only aware of DriverActor, not aware of the library implementation.
+Is the same way as traditional way?
+
+Yes, but not, because the user will only aware of DriverActor, not aware of the library implementation. The example shows user don't need to know the doradilla's implementation, only call the job api. The Doradilla library will handle the travail work.
 
 #### Why there is need JobTranslator?
 
 For general purpose, ever complex job could be translate to simple job and so on. When you handle the complex job, you could design your JobTranslator to handle that job.
 
+#### What's if I aready have ActorSystem in my project?
 
+Well, you can only use doradcore library instead of use doradilla.
 
 #### Message flow
 ![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
@@ -45,7 +50,7 @@ See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
 
 
 
-### Doradilla 
+### Doradilla cluster usage
 
 Doradilla provides distributed running environment which is based on Akka cluster. With same configuration as Akka cluster, Doradilla-core will running on Akka cluster node.
 
