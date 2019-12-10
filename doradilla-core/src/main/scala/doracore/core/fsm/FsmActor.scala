@@ -56,7 +56,7 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   def setTimeOutCheck()={
     timeoutConf.map{
       timeout => val delay:FiniteDuration = timeout.seconds
-        log.error(s"set timeout ot $timeout with $delay")
+        log.debug(s"set timeout ot $timeout with $delay")
         cancelableSchedulerOpt = Some(context.system.scheduler.scheduleOnce(delay,self,FSMTimeout("FSMtimeout"))(ex))
     }
   }
@@ -99,6 +99,8 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
   when(Active) {
     case Event(jobEnd: JobEnd, task: Task) =>
       if(jobEnd.requestMsg.jobMetaOpt == jobMetaOpt){
+        println(jobEnd.requestMsg.jobMetaOpt)
+        println(jobMetaOpt)
         goto(Idle) using (Uninitialized)
       }else{
         stay()
