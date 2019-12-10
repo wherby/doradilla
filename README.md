@@ -11,11 +11,39 @@ Doradilla is a distributed system which is based on Akka cluster.
 
 Doradilla-core is a job manage system which will handle the job request in reactive way.
 
+### Questions about Doradilla
+
+#### What's the problem the library resolve?
+
+The library provide a reactive way to handle resource consuming(CPU, Memory, DB connection) tasks.
+
+For example, an OCR application which will trigger OCR tasks based on requests, for each OCR task there needs one CPU core occupied. If there is no implementation of job management, the CPUs will be easily taken by OCR jobs. The CPU competition will easily slow down the processing and block other function.
+
+What's the traditional way to solve the issue is create a job queue, and use a worker to takes job from the queue.
+
+Is there any universal way to resolve this type of question and makes the implementation easy to use? 
+Yes, just use the Doradilla library.
+
+#### How the Doradilla library works?
+
+Simple version: 
+The Doradilla library use a queue to keep job requests and FSMActor will pull job request to process.  
+
+The same way as traditional way?
+Yes, but not, because the user will only aware of DriverActor, not aware of the library implementation.
+
+#### Why there is need JobTranslator?
+
+For general purpose, ever complex job could be translate to simple job and so on. When you handle the complex job, you could design your JobTranslator to handle that job.
+
+
 
 #### Message flow
 ![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
 
 See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
+
+
 
 ### Doradilla 
 
@@ -70,3 +98,7 @@ Doradilla provides distributed running environment which is based on Akka cluste
 ### For use defined implementation of reflection. 
 
 User should defined their implementation of reflection, more information see [ProcessService](./docs/doradilla-core/util/ProcessService.md)
+
+### More link about this library
+
+[FSMActor workflow design](https://wherby.github.io/fsmactor-design/)
