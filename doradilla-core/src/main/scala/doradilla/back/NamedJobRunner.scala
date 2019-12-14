@@ -24,7 +24,6 @@ trait NamedJobRunner {
       case Some(jobApi) => jobApi
       case _=> val jobApi: JobApi = new JobApi(Some( getActorSystem()))
         namedJobApiMap +=(jobName ->jobApi)
-        println(s"Start new Job api for $jobName")
         jobApi
     }
   }
