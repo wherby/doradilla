@@ -20,7 +20,6 @@ class NamedJobRunnerSpec  extends ActorTestClass with Matchers {
   val timeout = ConstVars.timeout1S *4
   "Named Job Runner" should{
     "start new driver when name is different" in{
-      val backendServer = BackendServer.startup(Some(1600))
       val job1 = TestVars.sleepProcessJob
 
       BackendServer.runNamedProcessCommand(job1, "job1")
@@ -31,7 +30,6 @@ class NamedJobRunnerSpec  extends ActorTestClass with Matchers {
     }
 
     "use same driver when name same" in{
-      val backendServer = BackendServer.startup(Some(1600))
       val job1 = TestVars.sleepProcessJob
 
       val result1Future = BackendServer.runNamedProcessCommand(job1, "job3")
