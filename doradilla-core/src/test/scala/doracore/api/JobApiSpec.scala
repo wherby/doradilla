@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 class JobApiSpec extends ActorTestClass{
   "JobApi " must{
     "return result " in{
-      val jobApi = new JobApi()
+      val jobApi = new JobApi(Some(system))
       val jobList = Seq(ConstVarTest.command)
       val resultFuture =   Future.sequence(jobList.map{
         job => jobApi.processCommand(job)
@@ -31,8 +31,8 @@ class JobApiSpec extends ActorTestClass{
 
     "return result for call processTran api" in{
 
-      val jobApi = new JobApi()
-      val jobList = Seq(ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest)
+      val jobApi = new JobApi(Some(system))
+      val jobList = Seq(ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest)
       val resultFuture = Future.sequence(jobList.map{
         job => jobApi.runProcessCommand(job)
       })
