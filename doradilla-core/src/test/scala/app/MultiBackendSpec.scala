@@ -25,8 +25,8 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
   "MultiBackend" should {
     "accept and run command " in {
-      val config =Some(DoraConf.config(1600,"backend",Some("doradilla.fsm.timeout=3")))
-      val backendServer = BackendServer.startup(Some(1600),config)
+      val config =Some(DoraConf.config(1644,"backend",Some("doradilla.fsm.timeout=3")))
+      val backendServer = BackendServer.startup(Some(1644),config)
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val backendServer2 = BackendServer.startup()
