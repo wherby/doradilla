@@ -1,13 +1,11 @@
 package doradilla.back
 
-import akka.actor.ActorRef
 import akka.util.Timeout
 import doracore.api.JobApi
 import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doracore.tool.receive.ReceiveActor
 import doracore.util.CNaming
 import doracore.vars.ConstVars
-
 import scala.concurrent.{ExecutionContext, Future}
 
 /**

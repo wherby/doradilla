@@ -1,25 +1,29 @@
 package doracore.util
 
 import akka.event.slf4j.Logger
-import doracore.core.msg.Job.JobStatus
 import doracore.core.msg.Job.JobStatus.JobStatus
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration._
 
 /**
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/22
   */
-object ProcessService {
+object ProcessService extends GetProcessFutureResult with GetProcessResult {
   var classLoaderOpt: Option[ClassLoader] = None
 
-  def noImplementNameToClassOpt(className: String, classLoaderOpt: Option[ClassLoader]): Option[Class[_]] ={
+  def noImplementNameToClassOpt(className: String, classLoaderOpt: Option[ClassLoader]): Option[Class[_]] = {
     Logger.apply(this.getClass.toString).error("Not implement the name to class function")
     None
   }
-  var nameToClassOpt:(String, Option[ClassLoader]) => Option[Class[_]] = noImplementNameToClassOpt
+
+  var nameToClassOpt: (String, Option[ClassLoader]) => Option[Class[_]] = noImplementNameToClassOpt
+
+  def getProcessMethod(processCallMsg: ProcessCallMsg): ProcessCallMsg => Either[AnyRef, AnyRef] = {
+    processCallMsg.instOpt match {
+      case Some(instance) => callMethodForObject
+      case _ => callProcess
+    }
+  }
 
   def callProcess(processCallMsg: ProcessCallMsg) = {
     //Call reflection will takes time
@@ -42,13 +46,9 @@ object ProcessService {
       aOpt match {
         case Some(a) =>
           val instance = a.newInstance()
-          val methodOpt = a.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
-          methodOpt match {
-            case Some(method) =>
-              Right(method.invoke(instance, processCallMsg.paras: _*))
-            case _ => Left(new Throwable("No such method"))
-          }
-        case _=> Left("Class is not found.")
+          val processCallMsgNew = processCallMsg.copy(instOpt = Some(instance))
+          callMethodForObject(processCallMsgNew)
+        case _ => Left("Class is not found.")
       }
 
     } catch {
@@ -58,48 +58,19 @@ object ProcessService {
     }
   }
 
-  def callProcessAwaitFuture(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds) ={
-    callProcess(processCallMsg) match {
-      case Left(e) => Left(e)
-      case Right(resultF) => getFutureResult( resultF,timeOut)
+
+  def callMethodForObject(processCallMsg: ProcessCallMsg): Either[Throwable, AnyRef] = {
+    val instance = processCallMsg.instOpt.get
+    val methodOpt = instance.getClass.getMethods.filter(method => method.getName == processCallMsg.methodName).headOption
+    methodOpt match {
+      case Some(method) =>
+        Right(method.invoke(instance, processCallMsg.paras: _*))
+      case _ => Left(new Throwable("No such method"))
     }
   }
 
-  def getFutureResult(resultF: AnyRef,timeOut: Duration): Either[Throwable, AnyRef] = {
-    try {
-      val futureResult = resultF.asInstanceOf[Future[AnyRef]]
-      val result = Await.result(futureResult, timeOut)
-      Right(result)
-    } catch {
-      case e: Throwable => println(e)
-        Left(e)
-    }
-  }
+  case class ProcessCallMsg(clazzName: String, methodName: String, paras: Array[AnyRef], instOpt: Option[Any] = None)
 
-  def callProcessResult(processCallMsg: ProcessCallMsg)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ProcessResult] = {
-    Future{callProcessResultSync(processCallMsg)}(executor)
-  }
-
-  def callProcessFutureResult(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds)(implicit executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global): Future[ProcessResult] = {
-    Future{callProcessResultFutureSync(processCallMsg,timeOut)}(executor)
-  }
-
-  private def callProcessResultSync(processCallMsg: ProcessCallMsg): ProcessResult = {
-    callProcess(processCallMsg) match {
-      case Right(x) =>
-       ProcessResult(JobStatus.Finished,x)
-      case Left(y) => ProcessResult(JobStatus.Failed,y)
-    }
-  }
-
-  private def callProcessResultFutureSync(processCallMsg: ProcessCallMsg,  timeOut: Duration = 3600 seconds): ProcessResult = {
-    callProcessAwaitFuture(processCallMsg,timeOut) match {
-      case Right(x) =>
-        ProcessResult(JobStatus.Finished,x)
-      case Left(y) => ProcessResult(JobStatus.Failed,y)
-    }
-  }
-
-  case class ProcessCallMsg(clazzName: String, methodName: String, paras: Array[AnyRef])
   case class ProcessResult(jobStatus: JobStatus, result: Any)
+
 }
