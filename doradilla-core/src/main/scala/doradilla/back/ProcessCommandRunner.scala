@@ -12,7 +12,8 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsResult.Exception
 import akka.pattern.ask
 import doracore.api.{ActorSystemApi, AskProcessResult, GetBlockIOExcutor}
-import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob}
+
+import doradilla.back.batch.BatchProcessor
 import doradilla.conf.Const
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,13 +22,16 @@ import scala.concurrent.{ExecutionContext, Future}
   * For io.github.wherby.doradilla.back in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/7/14
   */
-trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with ActorSystemApi{
+trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with ActorSystemApi with BatchProcessor with NamedJobRunner {
   this: BackendServer.type =>
   override def getActorSystem(): ActorSystem = {
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
 
-  def runProcessCommand(processJob: JobMsg, backendServerOpt: Option[BackendServer] = None, timeout: Timeout = ConstVars.longTimeOut, priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+  def runProcessCommand(processJob: JobMsg,
+                        backendServerOpt: Option[BackendServer] = None,
+                        timeout: Timeout = ConstVars.longTimeOut,
+                        priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
     val backendServer = getBackendServerForCommand(backendServerOpt)
     val resultOpt = for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
                          processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
@@ -68,25 +72,5 @@ trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with 
     getResult(receiveActor,timeout)
   }
 
-  def startProcessBatchCommand(batchRequests: Seq[JobMsg],
-                               backendServerOpt: Option[BackendServer] = None,
-                               priority: Option[Int] = None, jobMetaOpt: Option[JobMeta] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
-    val backendServer = getBackendServerForCommand(backendServerOpt)
-    for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
-         processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
-      yield {
-        val actorSystem = backendServer.actorSystemOpt.get
-        val receiveActor = actorSystem.actorOf(BatchProcessActor.batchProcessActorProp(), CNaming.timebasedName("BatchProcessActor"))
-        val batchProcessJobRequest = BatchProcessJob(batchRequests, driverService, processTranService, priority, jobMetaOpt)
-        receiveActor ! batchProcessJobRequest
-        receiveActor
-      }
-  }
 
-  def queryBatchProcessResult(batchProcessActor: ActorRef, timeout: Timeout = ConstVars.timeout1S)(implicit ex: ExecutionContext): Future[BatchJobResult] = {
-    (batchProcessActor ? QueryResult()) (timeout).map {
-      resultOpt =>
-        resultOpt.asInstanceOf[BatchJobResult]
-    }
-  }
 }

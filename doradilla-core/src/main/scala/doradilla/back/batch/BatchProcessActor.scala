@@ -1,18 +1,18 @@
-package doradilla.back
-
+package doradilla.back.batch
 
 import akka.actor.{ActorRef, PoisonPill, Props}
-import doracore.base.BaseActor
-import doracore.core.msg.Job.{JobMeta, JobMsg, JobRequest, JobResult}
-import doracore.tool.receive.ReceiveActor
-import doracore.tool.receive.ReceiveActor.{ProxyControlMsg, QueryResult}
-import doracore.util.CNaming
 import akka.pattern.ask
 import akka.util.Timeout
 import com.datastax.driver.core.utils.UUIDs
+import doracore.base.BaseActor
+import doracore.core.msg.Job.{JobMeta, JobMsg, JobRequest, JobResult}
 import doracore.tool.job.worker.BlockIODispatcher
+import doracore.tool.receive.ReceiveActor
+import doracore.tool.receive.ReceiveActor.{ProxyControlMsg, QueryResult}
+import doracore.util.CNaming
 import doracore.vars.ConstVars
-import doradilla.back.BatchProcessActor.{BatchJobResult, BatchProcessJob, JobInfo}
+import doradilla.back.batch.BatchProcessActor.{BatchJobResult, BatchProcessJob, JobInfo}
+
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 class BatchProcessActor extends BaseActor with BlockIODispatcher {

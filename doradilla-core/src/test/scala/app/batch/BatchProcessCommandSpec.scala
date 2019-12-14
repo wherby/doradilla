@@ -1,6 +1,5 @@
-package app
+package app.batch
 
-import akka.actor.ActorSystem
 import doracore.ActorTestClass
 import doracore.core.msg.Job.{JobMeta, JobMsg}
 import doracore.vars.ConstVars

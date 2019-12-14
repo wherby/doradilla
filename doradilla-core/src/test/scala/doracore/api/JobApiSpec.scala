@@ -15,10 +15,6 @@ import scala.concurrent.{Await, Future}
 class JobApiSpec extends ActorTestClass{
   "JobApi " must{
     "return result " in{
-      JobApi.actorSystemOpt.map{
-        actorSystem=>actorSystem.actorSystem.terminate()
-      }
-      JobApi.actorSystemOpt=None
       val jobApi = new JobApi()
       val jobList = Seq(ConstVarTest.command)
       val resultFuture =   Future.sequence(jobList.map{
@@ -31,17 +27,10 @@ class JobApiSpec extends ActorTestClass{
       val jobSeq =Await.result(resultFuture, ConstVarTest.timeout10S)
       jobSeq(0) shouldBe a [JobResult]
       jobSeq(0).taskStatus should (be (JobStatus.Finished) or be (JobStatus.Failed))
-      JobApi.actorSystemOpt.map{
-        actorSystem=>actorSystem.actorSystem.terminate()
-      }
-      JobApi.actorSystemOpt=None
     }
 
     "return result for call processTran api" in{
-      JobApi.actorSystemOpt.map{
-        actorSystem=>actorSystem.actorSystem.terminate()
-      }
-      JobApi.actorSystemOpt=None
+
       val jobApi = new JobApi()
       val jobList = Seq(ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest,ConstVarTest.processCallMsgTest)
       val resultFuture = Future.sequence(jobList.map{
@@ -53,10 +42,6 @@ class JobApiSpec extends ActorTestClass{
       val jobSeq =Await.result(resultFuture, ConstVarTest.timeout10S)
       jobSeq(0) shouldBe a [JobResult]
       jobSeq(0).taskStatus should (be (JobStatus.Finished) or be (JobStatus.Failed))
-      JobApi.actorSystemOpt.map{
-        actorSystem=>actorSystem.actorSystem.terminate()
-      }
-      JobApi.actorSystemOpt=None
     }
   }
 }
