@@ -11,7 +11,7 @@ import play.api.libs.json.Json
   */
 object TestVars {
   val commandWin = List("cmd.exe", "/c", "ping 127.0.0.1 -n 1")
-  val commandLinux = List("bash", " -c", " ping 127.0.0.1 -c 1")
+  val commandLinux = List("bash", " -c", "ping 127.0.0.1 -c 1")
   val osString = System.getProperty("os.name")
   val command = osString.toLowerCase() match {
     case osStr if osStr.startsWith("win") => commandWin
@@ -26,7 +26,7 @@ object TestVars {
   val processJob = JobMsg("SimpleProcess", processCallMsgTest)
 
   val commandWinSleep = List("cmd.exe", "/c", "ping 127.0.0.1 -n 60 > nul")
-  val commandLinuxSleep = List("bash", " -c", " sleep 100")
+  val commandLinuxSleep = List(  "sleep"," 100")
 
   val sleepCommand = osString.toLowerCase() match {
     case osStr if osStr.startsWith("win") => commandWinSleep
