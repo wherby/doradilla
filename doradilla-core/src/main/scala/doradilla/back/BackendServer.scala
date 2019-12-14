@@ -11,6 +11,7 @@ import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
 import akka.event.jul.Logger
 import com.typesafe.config.Config
+import doracore.api.JobApi
 import doracore.tool.query.QueryActor
 
 /**
@@ -19,6 +20,7 @@ import doracore.tool.query.QueryActor
   */
 object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
+  var namedJobApiMap:Map[String,JobApi] =Map()
   lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
   var nextPort = seedPort
 
