@@ -9,3 +9,5 @@ addSbtPlugin("ch.epfl.scala" % "sbt-release-early" % "2.1.1")
 
 //To display dependencies in project  https://stackoverflow.com/questions/25519926/how-to-see-dependency-tree-in-sbt
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")
+
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.6.8")
