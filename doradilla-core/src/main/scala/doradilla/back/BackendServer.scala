@@ -24,6 +24,12 @@ object BackendServer extends ProcessCommandRunner {
   lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
   var nextPort = seedPort
 
+  override def getActorSystem(): ActorSystem = {
+    if(BackendServer.backendServerMap.headOption ==None){
+      createBackendServer(Some(1600))
+    }
+    BackendServer.backendServerMap.head._2.actorSystemOpt.get
+  }
 
   def startup(portConf: Option[Int] = None, systemConfigOpt: Option[Config] = None): BackendServer = {
     portConf match {

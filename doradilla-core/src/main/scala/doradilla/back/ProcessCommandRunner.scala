@@ -21,9 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with ActorSystemApi with BatchProcessor with NamedJobRunner {
   this: BackendServer.type =>
-  override def getActorSystem(): ActorSystem = {
-    BackendServer.backendServerMap.head._2.actorSystemOpt.get
-  }
+
 
   def runProcessCommand(processJob: JobMsg,
                         backendServerOpt: Option[BackendServer] = None,
