@@ -1,8 +1,10 @@
-lazy val docs = (project in file("docs")).
-  enablePlugins(ParadoxPlugin).
-  settings(
+import Dependencies.commonSettings
+
+lazy val docs = (project in file("docs"))
+  .enablePlugins(ParadoxPlugin)
+  .settings(commonSettings: _*)
+  .settings(
     name := "document for doradilla",
-    version := "1.7.3.1",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxIllegalLinkPath := raw".*\\.md".r,
     paradoxProperties in Compile ++=Map("project.description" -> "Description for doradilla library.",

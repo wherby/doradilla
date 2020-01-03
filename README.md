@@ -108,7 +108,9 @@ Doradilla provides distributed running environment which is based on Akka cluste
 
 User should defined their implementation of reflection, more information see [ProcessService](./docs/doradilla-core/util/ProcessService.md)
 
-### More link about this library
+### More document about this library:
 
-[FSMActor workflow design](https://wherby.github.io/fsmactor-design/)
+[Doradilla](https://wherby.github.io/doradilla/)
+
+
 
