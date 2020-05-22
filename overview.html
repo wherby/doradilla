@@ -31,7 +31,7 @@
 <span class="home-icon">⌂</span>Doradilla
 </a>
 <div class="version-number">
-1.7.3.2
+1.8.0.0
 </div>
 </div>
 <div class="nav-toc">
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>Doradilla
 </a>
 <div class="version-number">
-1.7.3.2
+1.8.0.0
 </div>
 </div>
 <div class="nav-toc">
@@ -146,7 +146,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <dl>
   <dt>run job sync</dt>
   <dd>
-  <pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/scala/runjob.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">&quot;start and run command &quot; in {
+  <pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/scala/runjob.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">&quot;start and run command &quot; in {
   val backendServer = BackendServer.startup(Some(1600))
   backendServer.registFSMActor()
   val msg = TestVars.processCallMsgTest
@@ -160,7 +160,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 }</code></pre></dd>
   <dt>run job async</dt>
   <dd>
-  <pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/scala/asyncrun.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">&quot;start the command and qurey result &quot; in {
+  <pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/scala/asyncrun.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">&quot;start the command and qurey result &quot; in {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
   val backendServer = BackendServer.startup(Some(1600))
   backendServer.registFSMActor()
@@ -176,9 +176,9 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   Await.ready(res, ConstVars.timeout1S*4)
 }</code></pre></dd>
 </dl>
-<p>For more usage see : <a href="https://github.com/wherby/doradilla/tree/v1.7.3.2/doradilla-core/src/test/scala/app/BackendSpec.scala">BackendSpec.scala</a></p>
+<p>For more usage see : <a href="https://github.com/wherby/doradilla/tree/v1.8.0.0/doradilla-core/src/test/scala/app/BackendSpec.scala">BackendSpec.scala</a></p>
 <div class="source-github">
-The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/paradox/overview.md">here</a>.
+The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/overview.md">here</a>.
 </div>
 
 <div class="nav-next">
@@ -265,7 +265,7 @@ The source code for this page can be found <a href="https://github.com/wherby/do
 <script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '1.7.3.2', 'https://github.com/wherby/doradilla')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '1.8.0.0', 'https://github.com/wherby/doradilla')});</script>
 
 
 </html>
