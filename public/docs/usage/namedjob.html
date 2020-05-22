@@ -31,7 +31,7 @@
 <span class="home-icon">⌂</span>Doradilla
 </a>
 <div class="version-number">
-1.7.3.2
+1.8.0.0
 </div>
 </div>
 <div class="nav-toc">
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>Doradilla
 </a>
 <div class="version-number">
-1.7.3.2
+1.8.0.0
 </div>
 </div>
 <div class="nav-toc">
@@ -127,7 +127,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p>When received a named job, the doradilla will create a named JobApi to handled the job.</p>
 <p><img src="pic/namedtask.png" alt="Named job" /></p>
 <p>The code implementation see <a href="https://github.com/wherby/doradilla/blob/master/doradilla-core/src/main/scala/doradilla/back/NamedJobRunner.scala">Named job Runner</a>:</p>
-<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/paradox/usage/code/namedjob.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">private def getNamedJobApi(jobName:String):JobApi={
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/code/namedjob.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">private def getNamedJobApi(jobName:String):JobApi={
   namedJobApiMap.get(jobName) match {
     case Some(jobApi) =&gt; jobApi
     case _=&gt; val jobApi: JobApi = new JobApi(Some( getActorSystem()))
@@ -146,7 +146,7 @@ def runNamedProcessCommand(processJob: JobMsg,
   getProcessCommandFutureResult(processJobRequest, jobApi.defaultDriver, receiveActor,timeout)
 }</code></pre>
 <h2><a href="#usage" name="usage" class="anchor"><span class="anchor-link"></span></a>Usage</h2>
-<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/doradilla-core/src/test/scala/app/NamedJobRunnerSpec.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">package app
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/doradilla-core/src/test/scala/app/NamedJobRunnerSpec.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">package app
 
 import doracore.ActorTestClass
 import doracore.core.msg.Job.JobMsg
@@ -162,43 +162,93 @@ import scala.concurrent.Await
   * For app in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/12/14
   */
-class NamedJobRunnerSpec  extends ActorTestClass with Matchers {
+class NamedJobRunnerSpec extends ActorTestClass with Matchers {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
-  import scala.concurrent.ExecutionContext.Implicits.global
-  val timeout = ConstVars.timeout1S *4
-  &quot;Named Job Runner&quot; should{
-    &quot;start new driver when name is different&quot; in{
-      val job1 = TestVars.sleepProcessJob
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  val timeout = ConstVars.timeout1S * 4
+  &quot;Named Job Runner&quot; should {
+    &quot;start new driver when name is different&quot; in {
+      val job1 = TestVars.sleepProcessJob
       BackendServer.runNamedProcessCommand(job1, &quot;job1&quot;)
       val job2 = TestVars.processJob
-      val resultFuture = BackendServer.runNamedProcessCommand(job2,&quot;job2&quot;)
-      val result = Await.ready(resultFuture,timeout)
+      val resultFuture = BackendServer.runNamedProcessCommand(job2, &quot;job2&quot;)
+      val result = Await.ready(resultFuture, timeout)
       println(result)
     }
 
-    &quot;use same driver when name same&quot; in{
-      val job1 = TestVars.sleepProcessJob
+    &quot;Named Job Runner&quot; should {
+      &quot;start new driver when name is different but will failed without fsm &quot; in {
+        val job1 = TestVars.sleepProcessJob
+        BackendServer.runNamedProcessCommand(job1, &quot;job1&quot;)
+        val job2 = TestVars.processJob
+        BackendServer.changeFSMForNamedJob(&quot;job2&quot;, -1)
+        val resultFuture = BackendServer.runNamedProcessCommand(job2, &quot;job2&quot;)
+        var timeOut = false
+        try {
+          val result = Await.ready(resultFuture, timeout)
+          println(result)
+        } catch {
+          case exception: Exception =&gt;
+            timeOut = true
+            println(exception)
+        }
+        timeOut shouldBe (true)
+      }
+    }
 
+    &quot;use same driver when name same&quot; in {
+      val job1 = TestVars.sleepProcessJob
       val result1Future = BackendServer.runNamedProcessCommand(job1, &quot;job3&quot;)
       val job2 = TestVars.processJob
-      val resultFuture = BackendServer.runNamedProcessCommand(job2,&quot;job3&quot;)
+      val resultFuture = BackendServer.runNamedProcessCommand(job2, &quot;job3&quot;)
       var timeOut = false
 
-      try{
-        val result = Await.ready(resultFuture,timeout)
+      try {
+        val result = Await.ready(resultFuture, timeout)
         println(result)
-      }catch {
-        case exception: Exception=&gt;
+      } catch {
+        case exception: Exception =&gt;
           timeOut = true
           println(exception)
       }
-      timeOut shouldBe(true)
+      timeOut shouldBe (true)
+    }
+
+
+    &quot;use same driver when name same with increased fsm &quot; in {
+      val job1 = TestVars.sleepProcessJob
+      BackendServer.changeFSMForNamedJob(&quot;job4&quot;, 1)
+      val result1Future = BackendServer.runNamedProcessCommand(job1, &quot;job4&quot;)
+      val job2 = TestVars.processJob
+      val resultFuture = BackendServer.runNamedProcessCommand(job2, &quot;job4&quot;)
+      var timeOut = false
+
+      try {
+        val result = Await.ready(resultFuture, timeout)
+        println(result)
+      } catch {
+        case exception: Exception =&gt;
+          timeOut = true
+          println(exception)
+      }
+      timeOut shouldBe (false)
     }
   }
 }</code></pre>
+<h2><a href="#fsmactor-number-control-for-named-jobapi" name="fsmactor-number-control-for-named-jobapi" class="anchor"><span class="anchor-link"></span></a>FSMActor number control for named JobApi</h2>
+<p>For named JobApi, there will create only one FSMActor, you can increase and decrease FSMActor by use api as below:</p>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/code/changefsm.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">def changeFSMForNamedJob(jobName: String, num:Int)={
+  val jobApi = getNamedJobApi(jobName)
+  if(num &gt;0){
+    jobApi.defaultDriver ! FSMIncrease(num)
+  }else{
+    jobApi.defaultDriver ! FSMDecrease(Math.abs(num))
+  }
+}</code></pre>
 <div class="source-github">
-The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/paradox/usage/namedjob.md">here</a>.
+The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/namedjob.md">here</a>.
 </div>
 
 <div class="nav-next">
@@ -215,6 +265,7 @@ The source code for this page can be found <a href="https://github.com/wherby/do
   <ul>
     <li><a href="../usage/namedjob.html#whats-named-job" class="header">What&rsquo;s named job</a></li>
     <li><a href="../usage/namedjob.html#usage" class="header">Usage</a></li>
+    <li><a href="../usage/namedjob.html#fsmactor-number-control-for-named-jobapi" class="header">FSMActor number control for named JobApi</a></li>
   </ul></li>
 </ul>
 </div>
@@ -282,7 +333,7 @@ The source code for this page can be found <a href="https://github.com/wherby/do
 <script type="text/javascript" src="../lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '1.7.3.2', 'https://github.com/wherby/doradilla')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '1.8.0.0', 'https://github.com/wherby/doradilla')});</script>
 
 
 </html>

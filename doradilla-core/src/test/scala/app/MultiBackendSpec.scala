@@ -29,7 +29,8 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       val backendServer = BackendServer.startup(Some(1644), config)
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
-      val backendServer2 = BackendServer.startup()
+      val config2 = Some(DoraConf.config(1646, "backend", Some("doradilla.fsm.timeout=3")))
+      val backendServer2 = BackendServer.startup(Some(1646), config2)
       val processJob = JobMsg("SimpleProcess", msg)
       val res = BackendServer.runProcessCommand(processJob, Some(backendServer2)).map { result =>
         println(result)
@@ -87,6 +88,7 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
       }
       Await.ready(res2, ConstVars.timeout1S * 20)
       println()
+      backendServer2.actorSystemOpt.get.terminate()
       backendServer.actorSystemOpt.get.terminate()
     }
 

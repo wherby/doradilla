@@ -15,3 +15,9 @@ The code implementation see [Named job Runner](https://github.com/wherby/doradil
 ## Usage
 
 @@ snip [named job usage](/doradilla-core/src/test/scala/app/NamedJobRunnerSpec.scala)
+
+## FSMActor number control for named JobApi
+
+For named JobApi, there will create only one FSMActor, you can increase and decrease FSMActor by use api as below:
+
+@@ snip [change fsm actor](code/changefsm.scala)

@@ -4,6 +4,7 @@ import akka.actor.{ActorLogging, ActorRef, Cancellable, FSM, PoisonPill, Props}
 import akka.event.slf4j.Logger
 import doracore.base.BaseActor
 import doracore.base.query.QueryTrait.{ChildInfo, QueryChild}
+import doracore.core.driver.DriverActor.FSMDecrease
 import doracore.core.fsm.FsmActor._
 import doracore.core.msg.Job._
 import doracore.core.msg.JobControlMsg.ResetFsm
@@ -136,6 +137,12 @@ class FsmActor extends FSM[State, Data] with BaseActor with ActorLogging {
     case Event(queryChild: QueryChild, _) => val childInfo = ChildInfo(context.self.path.toString, getChildren(), System.currentTimeMillis() / 1000)
       queryChild.actorRef ! childInfo
       stay()
+    case Event(fsmDecrease: FSMDecrease, _) =>{
+      log.info(s" Receive decrease msg : $fsmDecrease from : $sender(). This FSMActor will be killed.")
+      driverActor = null
+      self ! PoisonPill
+      stay()
+    }
     case Event(QueryState(), data) =>
       sender() ! data
       log.info(s"QueryState: $data")

@@ -2,10 +2,13 @@ package doradilla.back
 
 import akka.util.Timeout
 import doracore.api.JobApi
+import doracore.core.driver.DriverActor.{FSMDecrease, FSMIncrease}
 import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doracore.tool.receive.ReceiveActor
 import doracore.util.CNaming
 import doracore.vars.ConstVars
+import javax.print.attribute.standard.JobName
+
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -34,5 +37,14 @@ trait NamedJobRunner {
     val receiveActor = jobApi.actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
     val processJobRequest = JobRequest(processJob, receiveActor, jobApi.processTranActor, priority)
     getProcessCommandFutureResult(processJobRequest, jobApi.defaultDriver, receiveActor,timeout)
+  }
+
+  def changeFSMForNamedJob(jobName: String, num:Int)={
+    val jobApi = getNamedJobApi(jobName)
+    if(num >0){
+      jobApi.defaultDriver ! FSMIncrease(num)
+    }else{
+      jobApi.defaultDriver ! FSMDecrease(Math.abs(num))
+    }
   }
 }
