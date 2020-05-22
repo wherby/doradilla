@@ -47,7 +47,7 @@ Well, you can only use doradcore library instead of use doradilla.
 
 
 #### Message flow
-![msgflow](./docs/doradilla-core/pics/msgflow.jpg)
+![msgflow](https://wherby.github.io/doradilla/introduction/msgflow.jpg)
 
 See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
 
@@ -58,7 +58,7 @@ See detail: [doradilla-core](/docs/doradilla-core/doradilla-core.md)
 
 Doradilla provides distributed running environment which is based on Akka cluster. With same configuration as Akka cluster, Doradilla-core will running on Akka cluster node.
 
-![Doradilla-cluster](./docs/doradilla-core/pics/dora-cluster.png)
+![Doradilla-cluster](https://wherby.github.io/doradilla/introduction/cluster.png)
 
 
 ### How to use

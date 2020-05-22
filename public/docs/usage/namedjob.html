@@ -44,6 +44,7 @@
   </ul></li>
   <li><a href="../usage/index.html" class="page">Usage</a>
   <ul>
+    <li><a href="../usage/jobapi.html" class="page">JobApi</a></li>
     <li><a href="../usage/namedjob.html" class="active page">Named job</a></li>
   </ul></li>
   <li><a href="../configuration.html" class="page">Configuration</a></li>
@@ -91,6 +92,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   </ul></li>
   <li><a href="../usage/index.html" class="page">Usage</a>
   <ul>
+    <li><a href="../usage/jobapi.html" class="page">JobApi</a></li>
     <li><a href="../usage/namedjob.html" class="active page">Named job</a></li>
   </ul></li>
   <li><a href="../configuration.html" class="page">Configuration</a></li>
@@ -120,7 +122,81 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <div class="page-content row">
 <div class="small-12 large-9 column" id="docs">
 <h1><a href="#named-job" name="named-job" class="anchor"><span class="anchor-link"></span></a>Named job</h1>
-<p>see <a href="https://github.com/wherby/doradilla/tree/v1.7.3.2/doradilla-core/src/test/scala/app/NamedJobRunnerSpec.scala">named job</a></p>
+<h2><a href="#whats-named-job" name="whats-named-job" class="anchor"><span class="anchor-link"></span></a>What&rsquo;s named job</h2>
+<p>By default doradilla will create a cluster based JobApi to process anonymous job at initialization stage.</p>
+<p>When received a named job, the doradilla will create a named JobApi to handled the job.</p>
+<p><img src="pic/namedtask.png" alt="Named job" /></p>
+<p>The code implementation see <a href="https://github.com/wherby/doradilla/blob/master/doradilla-core/src/main/scala/doradilla/back/NamedJobRunner.scala">Named job Runner</a>:</p>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/paradox/usage/code/namedjob.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">private def getNamedJobApi(jobName:String):JobApi={
+  namedJobApiMap.get(jobName) match {
+    case Some(jobApi) =&gt; jobApi
+    case _=&gt; val jobApi: JobApi = new JobApi(Some( getActorSystem()))
+      namedJobApiMap +=(jobName -&gt;jobApi)
+      jobApi
+  }
+}
+
+def runNamedProcessCommand(processJob: JobMsg,
+                           jobName:String,
+                           timeout: Timeout = ConstVars.longTimeOut,
+                           priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+  val jobApi = getNamedJobApi(jobName)
+  val receiveActor = jobApi.actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName(&quot;Receive&quot;))
+  val processJobRequest = JobRequest(processJob, receiveActor, jobApi.processTranActor, priority)
+  getProcessCommandFutureResult(processJobRequest, jobApi.defaultDriver, receiveActor,timeout)
+}</code></pre>
+<h2><a href="#usage" name="usage" class="anchor"><span class="anchor-link"></span></a>Usage</h2>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.7.3.2/doradilla-core/src/test/scala/app/NamedJobRunnerSpec.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">package app
+
+import doracore.ActorTestClass
+import doracore.core.msg.Job.JobMsg
+import doracore.util.{ProcessService, ProcessServiceSpec}
+import doracore.vars.ConstVars
+import doradilla.back.BackendServer
+import doradilla.conf.TestVars
+import org.scalatest.Matchers
+
+import scala.concurrent.Await
+
+/**
+  * For app in doradilla
+  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/12/14
+  */
+class NamedJobRunnerSpec  extends ActorTestClass with Matchers {
+  ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
+  import scala.concurrent.ExecutionContext.Implicits.global
+  val timeout = ConstVars.timeout1S *4
+  &quot;Named Job Runner&quot; should{
+    &quot;start new driver when name is different&quot; in{
+      val job1 = TestVars.sleepProcessJob
+
+      BackendServer.runNamedProcessCommand(job1, &quot;job1&quot;)
+      val job2 = TestVars.processJob
+      val resultFuture = BackendServer.runNamedProcessCommand(job2,&quot;job2&quot;)
+      val result = Await.ready(resultFuture,timeout)
+      println(result)
+    }
+
+    &quot;use same driver when name same&quot; in{
+      val job1 = TestVars.sleepProcessJob
+
+      val result1Future = BackendServer.runNamedProcessCommand(job1, &quot;job3&quot;)
+      val job2 = TestVars.processJob
+      val resultFuture = BackendServer.runNamedProcessCommand(job2,&quot;job3&quot;)
+      var timeOut = false
+
+      try{
+        val result = Await.ready(resultFuture,timeout)
+        println(result)
+      }catch {
+        case exception: Exception=&gt;
+          timeOut = true
+          println(exception)
+      }
+      timeOut shouldBe(true)
+    }
+  }
+}</code></pre>
 <div class="source-github">
 The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.7.3.2/docs/src/main/paradox/usage/namedjob.md">here</a>.
 </div>
@@ -130,6 +206,20 @@ The source code for this page can be found <a href="https://github.com/wherby/do
 </div>
 </div>
 <div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../usage/namedjob.html#named-job" class="header">Named job</a>
+  <ul>
+    <li><a href="../usage/namedjob.html#whats-named-job" class="header">What&rsquo;s named job</a></li>
+    <li><a href="../usage/namedjob.html#usage" class="header">Usage</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
 </div>
 </div>
 
