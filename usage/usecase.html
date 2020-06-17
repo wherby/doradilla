@@ -132,7 +132,8 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p><img src="./pic/p1.png" alt="CPU use" /></p>
 <h2><a href="#named-job-usage" name="named-job-usage" class="anchor"><span class="anchor-link"></span></a>Named job usage</h2>
 <p>For the same document processing project, the &ldquo;OCR processor&rdquo; is provided by 3rd-party vendor. So the &ldquo;OCR processor&rdquo; will not running on the same host with other processor.</p>
-<p>If all processors use same JobAPi, when one worker is taking &ldquo;OCR processor&rdquo; job, then one CPU on host will be not well utilized.</p>
+<p><img src="pic/service.png" alt="Services" /></p>
+<p>If all processors use same JobAPi, when one worker is taking &ldquo;OCR processor&rdquo; job, then one CPU on the host will be not well utilized.</p>
 <p>So the &ldquo;OCR processor&rdquo; could be assigned to another driver use the named job feature:</p>
 <pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/code/namedprocessor.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">def runProcess(paras : List[AnyRef], clazzName:String, methodName:String, prioritySet: Option[Int] = None) ={
     ....
