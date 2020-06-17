@@ -8,4 +8,6 @@
 
  * [Named Job](namedjob.md)
 
+ * [Use cases](usecase.md)
+
 @@@
