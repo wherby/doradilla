@@ -2,11 +2,11 @@
 <html class="no-js" lang="en">
 
 <head>
-<title>Usage · Doradilla</title>
+<title>Use case · Doradilla</title>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='Description for doradilla library.'/>
-<link rel="canonical" href="https://github.com/wherby/doradillausage/index.html"/>
+<link rel="canonical" href="https://github.com/wherby/doradillausage/usecase.html"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="../js/page.js"></script>
@@ -42,11 +42,11 @@
     <li><a href="../introduction/messageflow.html" class="page">Message flow</a></li>
     <li><a href="../introduction/cluster.html" class="page">Cluster setup</a></li>
   </ul></li>
-  <li><a href="../usage/index.html" class="active page">Usage</a>
+  <li><a href="../usage/index.html" class="page">Usage</a>
   <ul>
     <li><a href="../usage/jobapi.html" class="page">JobApi</a></li>
     <li><a href="../usage/namedjob.html" class="page">Named job</a></li>
-    <li><a href="../usage/usecase.html" class="page">Use case</a></li>
+    <li><a href="../usage/usecase.html" class="active page">Use case</a></li>
   </ul></li>
   <li><a href="../configuration.html" class="page">Configuration</a></li>
 </ul>
@@ -91,11 +91,11 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
     <li><a href="../introduction/messageflow.html" class="page">Message flow</a></li>
     <li><a href="../introduction/cluster.html" class="page">Cluster setup</a></li>
   </ul></li>
-  <li><a href="../usage/index.html" class="active page">Usage</a>
+  <li><a href="../usage/index.html" class="page">Usage</a>
   <ul>
     <li><a href="../usage/jobapi.html" class="page">JobApi</a></li>
     <li><a href="../usage/namedjob.html" class="page">Named job</a></li>
-    <li><a href="../usage/usecase.html" class="page">Use case</a></li>
+    <li><a href="../usage/usecase.html" class="active page">Use case</a></li>
   </ul></li>
   <li><a href="../configuration.html" class="page">Configuration</a></li>
 </ul>
@@ -114,7 +114,8 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <div class="nav-breadcrumbs">
 <ul>
   <li><a href="../index.html">Doradilla</a></li>
-  <li>Usage</li>
+  <li><a href="../usage/index.html">Usage</a></li>
+  <li>Use case</li>
 </ul>
 </div>
 </div>
@@ -122,35 +123,53 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 
 <div class="page-content row">
 <div class="small-12 large-9 column" id="docs">
-<h1><a href="#usage" name="usage" class="anchor"><span class="anchor-link"></span></a>Usage</h1>
-<div class="toc ">
+<h1><a href="#use-case" name="use-case" class="anchor"><span class="anchor-link"></span></a>Use case</h1>
+<h2><a href="#jobapi-for-processor-control" name="jobapi-for-processor-control" class="anchor"><span class="anchor-link"></span></a>JobApi for processor control</h2>
+<p>For document extraction project, the document will go through these processors as below:</p>
+<p><img src="./pic/processing.png" alt="processor" /></p>
+<p>And each processor will occupy one CPU core. If the host machine has only 4 CPU cores, if you start 5 document procession at a time, the processors need at least 5 CPU cores.</p>
+<p>Use JobApi to set the workers number for driver will control the concurrent jobs as below:</p>
+<p><img src="./pic/p1.png" alt="CPU use" /></p>
+<h2><a href="#named-job-usage" name="named-job-usage" class="anchor"><span class="anchor-link"></span></a>Named job usage</h2>
+<p>For the same document processing project, the &ldquo;OCR processor&rdquo; is provided by 3rd-party vendor. So the &ldquo;OCR processor&rdquo; will not running on the same host with other processor.</p>
+<p>If all processors use same JobAPi, when one worker is taking &ldquo;OCR processor&rdquo; job, then one CPU on host will be not well utilized.</p>
+<p>So the &ldquo;OCR processor&rdquo; could be assigned to another driver use the named job feature:</p>
+<pre class="prettyprint"><a class="icon go-to-source" href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/code/namedprocessor.scala" target="_blank" title="Go to snippet source"></a><code class="language-scala">def runProcess(paras : List[AnyRef], clazzName:String, methodName:String, prioritySet: Option[Int] = None) ={
+    ....
+    val namedSevice = Seq(&quot;com.pwc.ds.cidr.project.creditreview.processors.OcrPlusProcessor&quot;)
+    if(namedSevice.contains(clazzName)){
+      BackendServer.runNamedProcessCommand(jobMsg,OCRJOBStr, priority = prioritySet,timeout = setTimeOut).map{
+        ....
+    }else{
+      BackendServer.runProcessCommand(jobMsg,priority = prioritySet,timeout = setTimeOut).map{
+        ...
+    }
+  }</code></pre>
+<p>and the processor as below:</p>
+<p><img src="./pic/p2.png" alt="named processor" /></p>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/usecase.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../configuration.html">Configuration</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
 <ul>
-  <li><a href="../usage/jobapi.html" class="page">JobApi</a>
-  <ul>
-    <li><a href="../usage/jobapi.html#whats-jobapi" class="header">What&rsquo;s JobApi</a></li>
-  </ul></li>
-  <li><a href="../usage/namedjob.html" class="page">Named job</a>
-  <ul>
-    <li><a href="../usage/namedjob.html#whats-named-job" class="header">What&rsquo;s named job</a></li>
-    <li><a href="../usage/namedjob.html#usage" class="header">Usage</a></li>
-    <li><a href="../usage/namedjob.html#fsmactor-number-control-for-named-jobapi" class="header">FSMActor number control for named JobApi</a></li>
-  </ul></li>
-  <li><a href="../usage/usecase.html" class="page">Use case</a>
+  <li><a href="../usage/usecase.html#use-case" class="header">Use case</a>
   <ul>
     <li><a href="../usage/usecase.html#jobapi-for-processor-control" class="header">JobApi for processor control</a></li>
     <li><a href="../usage/usecase.html#named-job-usage" class="header">Named job usage</a></li>
   </ul></li>
 </ul>
 </div>
-<div class="source-github">
-The source code for this page can be found <a href="https://github.com/wherby/doradilla/tree/v1.8.0.0/docs/src/main/paradox/usage/index.md">here</a>.
 </div>
-
-<div class="nav-next">
-<p><strong>Next:</strong> <a href="../usage/jobapi.html">JobApi</a></p>
-</div>
-</div>
-<div class="large-3 show-for-large column" data-sticky-container>
+</nav>
 </div>
 </div>
 
