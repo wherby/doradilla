@@ -21,7 +21,9 @@ below:
 For the same document processing project, the "OCR processor" is provided by 3rd-party vendor.
 So the "OCR processor" will not running on the same host with other processor.
 
-If all processors use same JobAPi, when one worker is taking "OCR processor" job, then one CPU on host will 
+![Services](pic/service.png)
+
+If all processors use same JobAPi, when one worker is taking "OCR processor" job, then one CPU on the host will 
 be not well utilized.
 
 So the "OCR processor" could be assigned to another driver use the named job feature:
