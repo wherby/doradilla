@@ -23,9 +23,9 @@ class NamedJobRunnerSpec extends ActorTestClass with Matchers {
   "Named Job Runner" should {
     "start new driver when name is different" in {
       val job1 = TestVars.sleepProcessJob
-      BackendServer.runNamedProcessCommand(job1, "job1")
+      BackendServer.runNamedProcessCommand(job1, "job11")
       val job2 = TestVars.processJob
-      val resultFuture = BackendServer.runNamedProcessCommand(job2, "job2")
+      val resultFuture = BackendServer.runNamedProcessCommand(job2, "job12")
       val result = Await.ready(resultFuture, timeout)
       println(result)
     }
