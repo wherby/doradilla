@@ -20,7 +20,7 @@ class BackendSpec extends ActorTestClass with Matchers {
   "Backend server " must {
 
     "start and run command " in {
-      val backendServer = BackendServer.startup(Some(1600))
+      val backendServer = BackendServer.startup(Some(1900))
       backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
@@ -30,6 +30,7 @@ class BackendSpec extends ActorTestClass with Matchers {
           assert(true)
       }
       Await.ready(res, ConstVars.timeout1S * 10)
+      backendServer.actorSystemOpt.get.terminate()
     }
 
     "start the command and qurey result " in {
