@@ -3,7 +3,7 @@ scala:
 - 2.12.7
 - 2.13.1
 script:
-- sbt  ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
+- sbt  ++2.13.1 clean coverage test coverageReport
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then sbt ++$TRAVIS_SCALA_VERSION releaseEarly;
