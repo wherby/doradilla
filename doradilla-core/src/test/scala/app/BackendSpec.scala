@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * For app in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/6/23
   */
+/*
 class BackendSpec extends ActorTestClass with Matchers {
   "Backend server " must {
 
@@ -79,3 +80,4 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
   }
 }
+*/

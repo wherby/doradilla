@@ -14,6 +14,7 @@ import scala.concurrent.Await
   * For app in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/12/14
   */
+/*
 class NamedJobRunnerSpec extends ActorTestClass with Matchers {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
 
@@ -88,4 +89,4 @@ class NamedJobRunnerSpec extends ActorTestClass with Matchers {
       timeOut shouldBe (false)
     }
   }
-}
+}*/
