@@ -30,7 +30,7 @@ class BackendSpec extends ActorTestClass with Matchers {
           assert(true)
       }
       Await.ready(res, ConstVars.timeout1S * 10)
-      backendServer.actorSystemOpt.get.terminate()
+      //backendServer.actorSystemOpt.get.terminate()
     }
 
     "start the command and qurey result " in {
