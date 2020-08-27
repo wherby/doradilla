@@ -15,7 +15,7 @@ import doracore.util.ProcessService.ProcessResult
 import doracore.util.{ConfigService, DeployService}
 
 import scala.concurrent.duration._
-
+import scala.language.postfixOps
 /**
   * For doradilla.fsm in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/24

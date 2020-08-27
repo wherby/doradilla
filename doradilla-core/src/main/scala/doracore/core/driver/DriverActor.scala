@@ -3,7 +3,6 @@ package doracore.core.driver
 import akka.actor.{ActorRef, Props}
 import doracore.base.BaseActor
 import akka.event.LoggingReceive
-import com.datastax.driver.core.utils.UUIDs
 import doracore.core.driver.DriverActor._
 import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.{FetchJob, RegistToDriver, SetDriver}
@@ -11,7 +10,7 @@ import doracore.core.msg.Job.{JobMeta, JobRequest}
 import doracore.core.proxy.ProxyActor
 import doracore.core.queue.QueueActor
 import doracore.core.queue.QueueActor.{FetchTask, RequestListResponse}
-import doracore.util.CNaming
+import doracore.util.{CNaming, MyUUID}
 
 /**
   * For doradilla.driver in doradilla
@@ -41,7 +40,7 @@ class DriverActor(queue: Option[ActorRef] = None, setDefaultFsmActor: Option[Boo
   def handleRequest(jobRequestOrg: JobRequest) = {
     val jobRequest = jobRequestOrg.jobMetaOpt match {
       case Some(_) => jobRequestOrg
-      case _ => jobRequestOrg.copy(jobMetaOpt = Some(JobMeta(UUIDs.timeBased().toString)))
+      case _ => jobRequestOrg.copy(jobMetaOpt = Some(JobMeta(MyUUID.getUUIDString())))
     }
     val proxyActor = createProxy(CNaming.timebasedName(jobRequest.taskMsg.operation))
     log.info(s"{${jobRequest.jobMetaOpt}} is handled by proxy $proxyActor")

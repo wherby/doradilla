@@ -14,6 +14,8 @@ import com.typesafe.config.Config
 import doracore.api.JobApi
 import doracore.tool.query.QueryActor
 
+import scala.util.Random
+
 /**
   * For io.github.wherby.doradilla.back in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
@@ -26,7 +28,12 @@ object BackendServer extends ProcessCommandRunner {
 
   override def getActorSystem(): ActorSystem = {
     if(BackendServer.backendServerMap.headOption ==None){
-      createBackendServer(Some(1600))
+      try{
+        createBackendServer(Some(1600))
+      }catch {
+        case _=> createBackendServer(Some(16000 + Random.nextInt(10000)))
+      }
+
     }
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
@@ -35,13 +42,18 @@ object BackendServer extends ProcessCommandRunner {
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
-        case _ => createBackendServer(Some(port), systemConfigOpt)
+        case _ =>
+          try{
+            createBackendServer(Some(port), systemConfigOpt)
+          }catch {
+            case _=>createBackendServer(Some(port + Random.nextInt(10000)), systemConfigOpt)
+          }
       }
       case _ => createBackendServer(portConf)
     }
   }
 
-  private def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
+  def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
     val port = getAvailbleConfigByConf(portConf)
     val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")

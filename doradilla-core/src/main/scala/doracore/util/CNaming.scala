@@ -1,6 +1,5 @@
 package doracore.util
 
-import com.datastax.driver.core.utils.UUIDs
 
 /**
   * For io.github.wherby.doradilla.conf in Doradilla
@@ -8,6 +7,6 @@ import com.datastax.driver.core.utils.UUIDs
   */
 object CNaming {
   def timebasedName(actorname:String):String={
-    actorname + UUIDs.timeBased().toString
+    actorname + MyUUID.getUUIDString()
   }
 }

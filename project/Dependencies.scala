@@ -8,7 +8,7 @@ import sbt.{url, _}
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/3/31
   */
 object Dependencies {
-  lazy val akka = "2.5.22"
+  lazy val akka = "2.5.31"
   /* dependencies */
   val commonDependencies = Seq (
     // -- Logging --
@@ -20,18 +20,18 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-cluster-tools" % akka,
     "com.typesafe.akka" %% "akka-testkit" % akka,
     // https://mvnrepository.com/artifact/org.scalatest/scalatest
-    "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test,
+    "org.scalatest" %% "scalatest" % "3.1.0" % Test,
     // https://mvnrepository.com/artifact/com.typesafe.play/play-json
-    "com.typesafe.play" %% "play-json" % "2.6.13",
+    "com.typesafe.play" %% "play-json" % "2.7.4",
     // https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core
-    "com.datastax.cassandra" % "cassandra-driver-core" % "3.7.1",
+    "com.datastax.cassandra" % "cassandra-driver-core" % "4.0.0",
     "io.netty" % "netty-handler" % "4.1.42.Final"
   )
   
 
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
-    scalaVersion := "2.12.7",
+    scalaVersion := "2.13.1",
     version := "1.8.0.0",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
@@ -62,7 +62,7 @@ object Dependencies {
         Some("snapshots" at nexus + "content/repositories/snapshots")
       else
         Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
+    }
   )
 
   lazy val settings = Seq(
@@ -74,6 +74,6 @@ object Dependencies {
       "-unchecked",
       "-encoding", "UTF-8",
       "-Xlint",
-    ),
+    )
   )
 }

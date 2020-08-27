@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/6/23
   */
 class BackendSpec extends ActorTestClass with Matchers {
-  "Baeckend server " must {
+  "Backend server " must {
 
     "start and run command " in {
       val backendServer = BackendServer.startup(Some(1600))

@@ -4,7 +4,6 @@ import Dependencies._
 
 
 
-
 publishMavenStyle := true
 releaseEarlyWith in Global := SonatypePublisher
 

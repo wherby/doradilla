@@ -1,6 +1,7 @@
 package doracore.vars
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * For doradilla.vars in Doradilla

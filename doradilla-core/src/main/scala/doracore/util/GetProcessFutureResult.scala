@@ -5,6 +5,7 @@ import doracore.util.ProcessService.{ProcessCallMsg, ProcessResult, callProcess}
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * For doracore.util in doradilla

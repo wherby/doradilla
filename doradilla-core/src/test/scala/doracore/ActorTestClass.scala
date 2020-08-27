@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
 import doracore.util.{Par1, Par2, ProcessService}
 import doracore.util.ProcessService.ProcessCallMsg
+import doradilla.back.BackendServer
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -14,8 +15,11 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
   */
 class ActorTestClass (_system: ActorSystem = ActorSystemTest.getActorSystem()) extends  TestKit(_system) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
-  val processCallMsg = ProcessCallMsg("doracore.util.TestProcessor", "addPar", Array(Par1(2).asInstanceOf[AnyRef], Par2(4).asInstanceOf[AnyRef]))
-  ProcessService.callProcess(processCallMsg)
+
+  override protected def beforeAll(): Unit = {
+    /*val system = BackendServer.createBackendServer(Some(1600))
+    BackendServer.backendServerMap +=(1600->system)*/
+  }
   override def afterAll: Unit = {
     Thread.sleep(2000)
     ActorSystemTest.shutdowmSystem()

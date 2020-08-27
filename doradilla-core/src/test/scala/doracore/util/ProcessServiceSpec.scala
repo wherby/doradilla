@@ -9,7 +9,7 @@ import vars.ConstVarTest
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration._
-
+import scala.language.postfixOps
 /**
   * For doradilla.util in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/4/23
