@@ -3,6 +3,7 @@ import Dependencies._
 
 
 
+//ThisBuild / scalaVersion := scala213
 
 publishMavenStyle := true
 releaseEarlyWith in Global := SonatypePublisher
