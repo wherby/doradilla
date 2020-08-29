@@ -45,14 +45,16 @@ object BackendServer extends ProcessCommandRunner {
   }
 
   def startup(portConf: Option[Int] = None, systemConfigOpt: Option[Config] = None): BackendServer = {
-    AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
         case _ =>
+          AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
           createBackendServer(Some(port), systemConfigOpt)
       }
-      case _ => createBackendServer(portConf)
+      case _ =>
+        AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
+        createBackendServer(portConf)
     }
   }
 
