@@ -61,7 +61,9 @@ object BackendServer extends ProcessCommandRunner {
   def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) :BackendServer = {
     backendServerOpt match {
       case Some(backendServer) => backendServer
-      case _=>val backendServer = new BackendServer()
+      case _=>
+        AppDebugger.logInfo("create",Some("createBackendServer"))
+        val backendServer = new BackendServer()
         val port = portConf.getOrElse(ConstVars.DoraPort)
         val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
         val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
