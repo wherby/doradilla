@@ -17,8 +17,7 @@ class ActorTestClass (_system: ActorSystem = ActorSystemTest.getActorSystem()) e
   with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
-    /*val system = BackendServer.createBackendServer(Some(1600))
-    BackendServer.backendServerMap +=(1600->system)*/
+    ActorSystemTest.getActorSystem()
   }
   override def afterAll: Unit = {
     Thread.sleep(2000)

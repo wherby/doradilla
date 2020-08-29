@@ -24,16 +24,16 @@ class QueryActorSpec extends  ActorTestClass  {
       queryActor.tell(GetRoot(None),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get(s"akka://AkkaQuickstartSpec/user/$driverName") shouldBe a [Some[_]]
+          rootResult.rootMap.get(driver.path.toString) shouldBe a [Some[_]]
       }
     }
     "return queried root actor when GetRoot with path " in {
       queryActor ! QueryRoot(driver)
       Thread.sleep(100)
-      queryActor.tell(GetRoot(Some(s"akka://AkkaQuickstartSpec/user/$driverName")),probe.ref)
+      queryActor.tell(GetRoot(Some(driver.path.toString)),probe.ref)
       probe.expectMsgPF(){
         case rootResult: RootResult => println(rootResult)
-          rootResult.rootMap.get(s"akka://AkkaQuickstartSpec/user/$driverName") shouldBe a [Some[_]]
+          rootResult.rootMap.get(s"akka://${system.name}/user/$driverName") shouldBe a [Some[_]]
       }
     }
 

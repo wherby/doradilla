@@ -16,13 +16,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * For app in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/6/23
   */
-/*
 class BackendSpec extends ActorTestClass with Matchers {
+  override protected def beforeAll(): Unit = {
+    super.beforeAll()
+
+  }
   "Backend server " must {
 
     "start and run command " in {
-      val backendServer = BackendServer.startup(Some(1900))
-      backendServer.registFSMActor()
+      //val backendServer = BackendServer.startup(Some(1900))
+      //backendServer.registFSMActor()
+      ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
       val res = BackendServer.runProcessCommand(processJob).map {
@@ -35,9 +39,9 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
 
     "start the command and qurey result " in {
+      //val backendServer = BackendServer.startup(Some(1600))
+      //backendServer.registFSMActor()
       ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
-      val backendServer = BackendServer.startup(Some(1600))
-      backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
       val receiveActor = BackendServer.startProcessCommand(processJob).get
@@ -52,8 +56,8 @@ class BackendSpec extends ActorTestClass with Matchers {
 
     "start the command and qurey result without implement class reflector " in {
       ProcessService.nameToClassOpt = noImplementNameToClassOpt
-      val backendServer = BackendServer.startup(Some(1600))
-      backendServer.registFSMActor()
+      //val backendServer = BackendServer.startup(Some(1600))
+      //backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
       val receiveActor = BackendServer.startProcessCommand(processJob).get
@@ -66,18 +70,5 @@ class BackendSpec extends ActorTestClass with Matchers {
       Await.ready(res, ConstVars.timeout1S*4)
     }
 
-    "start and run command without actor  " in {
-      val backendServer = BackendServer.startup(Some(1600))
-      backendServer.registFSMActor()
-      backendServer.actorMap = Map()
-      val msg = TestVars.processCallMsgTest
-      val processJob = JobMsg("SimpleProcess", msg)
-      val res = BackendServer.runProcessCommand(processJob).map {
-        res =>
-          println(res)
-      }
-      Await.ready(res, ConstVars.timeout1S * 10)
-    }
   }
 }
-*/

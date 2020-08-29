@@ -9,7 +9,7 @@ import doradilla.conf.DoraConf
   * For io.github.wherby.doradilla.app in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/18
   */
-object SimpleClusterApp {
+/*object SimpleClusterApp {
   def main(args: Array[String]): Unit = {
     runWithArgs(args)
   }
@@ -35,4 +35,4 @@ object SimpleClusterApp {
     backendServer.registFSMActor()
     backendServer
   }
-}
+}*/

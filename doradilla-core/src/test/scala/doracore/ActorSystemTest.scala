@@ -1,5 +1,6 @@
 package doracore
 import akka.actor.ActorSystem
+import doradilla.back.BackendServer
 import doradilla.conf.DoraConf
 
 /**
@@ -9,14 +10,18 @@ import doradilla.conf.DoraConf
   * Create a "Singleton" io.github.wherby.doradilla.test system. while io.github.wherby.doradilla.test start in sequence, then the isolation of the resource will be OK.
   */
  object ActorSystemTest {
-  var actorSystem:Option[ActorSystem] = None
+  var actorSystemOpt:Option[ActorSystem] = None
   var count = 0
   def  getActorSystem()={
     count = count +1
-    actorSystem match {
-      case None => actorSystem = Some(ActorSystem("AkkaQuickstartSpec"));
-        actorSystem.get
-      case _=> actorSystem.get
+    actorSystemOpt match {
+      case None =>
+        val system = BackendServer.createBackendServer(Some(1600))
+        BackendServer.backendServerMap +=(1600->system)
+        system.registFSMActor()
+        actorSystemOpt =system.actorSystemOpt
+        actorSystemOpt.get
+      case _=> actorSystemOpt.get
     }
   }
 

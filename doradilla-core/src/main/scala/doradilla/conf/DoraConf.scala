@@ -13,7 +13,7 @@ object DoraConf {
   def config(port: Int, role: String, testConfOption: Option[String] = None): Config = {
     val cfgTemp = ConfigFactory.parseString(
       s"""
-      dora.akka.remote.netty.tcp.port=$port
+      dora.akka.remote.artery.canonical.port=$port
       dora.akka.cluster.roles=[$role]
     """).withFallback(ConfigFactory.load()).getConfig("dora")
     val cfg = testConfOption match {

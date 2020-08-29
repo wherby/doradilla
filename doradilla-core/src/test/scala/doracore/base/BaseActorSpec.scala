@@ -20,7 +20,7 @@ class BaseActorSpec extends  ActorTestClass  {
       val testActor = system.actorOf(TestActor.testActorProps,name )
       testActor ! QueryChild(proxy.ref)
       proxy.expectMsgPF(){
-        case ChildInfo(root,child,_)=> root should be (s"akka://AkkaQuickstartSpec/user/$name")
+        case ChildInfo(root,child,_)=> root should endWith  (s"/user/$name")
       }
       proxy.send(testActor,"io.github.wherby.doradilla.test")
       proxy.expectMsgPF(){

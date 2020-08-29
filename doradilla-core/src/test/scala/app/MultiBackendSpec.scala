@@ -21,6 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * For app in Doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/6/23
   */
+/*
 class MultiBackendSpec extends ActorTestClass with Matchers {
   ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
   "MultiBackend" should {
@@ -114,3 +115,4 @@ class MultiBackendSpec extends ActorTestClass with Matchers {
     }
   }
 }
+*/

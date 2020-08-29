@@ -14,9 +14,12 @@ import scala.concurrent.Await
   * For app in doradilla
   * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/12/14
   */
-/*
 class NamedJobRunnerSpec extends ActorTestClass with Matchers {
-  ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
+  override protected def beforeAll(): Unit = {
+    super.beforeAll()
+    ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
+  }
+
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -89,4 +92,4 @@ class NamedJobRunnerSpec extends ActorTestClass with Matchers {
       timeOut shouldBe (false)
     }
   }
-}*/
+}

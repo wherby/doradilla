@@ -48,7 +48,8 @@ object ProcessService extends GetProcessFutureResult with GetProcessResult {
           val instance = a.newInstance()
           val processCallMsgNew = processCallMsg.copy(instOpt = Some(instance))
           callMethodForObject(processCallMsgNew)
-        case _ => Left("Class is not found.")
+        case _ =>
+          Left("Class is not found.")
       }
 
     } catch {
