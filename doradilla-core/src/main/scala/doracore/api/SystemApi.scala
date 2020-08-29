@@ -17,7 +17,7 @@ class SystemApi(systemOpt: Option[ActorSystem] = None) extends GetBlockIOExcutor
   lazy val doradillaConfig = DoraCoreConfig.getConfig()
 
   def createDoradillaSystem: ActorSystem = {
-    val actorSystemName = ConfigService.getStringOpt(doradillaConfig, "doradillaSystem").getOrElse(CNaming.timebasedName( "diradilla"))
+    val actorSystemName = ConfigService.getStringOpt(doradillaConfig, "doradillaSystem").getOrElse(CNaming.timebasedName( "doradilla"))
     ActorSystem(actorSystemName, doradillaConfig)
   }
 
