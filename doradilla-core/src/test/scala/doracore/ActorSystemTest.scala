@@ -11,20 +11,14 @@ import doradilla.conf.DoraConf
   * Create a "Singleton" io.github.wherby.doradilla.test system. while io.github.wherby.doradilla.test start in sequence, then the isolation of the resource will be OK.
   */
  object ActorSystemTest {
-  var actorSystemOpt:Option[ActorSystem] = None
+  lazy val  actorSystemOpt:ActorSystem = getActorSystem
   var count = 0
   def  getActorSystem()={
-    count = count +1
-    actorSystemOpt match {
-      case None =>
         val system = BackendServer.createBackendServer(Some(ConstVars.DoraPort))
         BackendServer.backendServerMap +=(ConstVars.DoraPort->system)
         system.registFSMActor()
-        actorSystemOpt =system.actorSystemOpt
-        actorSystemOpt.get
-      case _=> actorSystemOpt.get
-    }
-  }
+        system.actorSystemOpt.get
+}
 
   def shutdowmSystem()={
     count = count -1

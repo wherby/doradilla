@@ -13,11 +13,11 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
   *
   * Design for io.github.wherby.doradilla.test actor system
   */
-class ActorTestClass (_system: ActorSystem = ActorSystemTest.getActorSystem()) extends  TestKit(_system) with ImplicitSender
+class ActorTestClass (_system: ActorSystem = ActorSystemTest.actorSystemOpt) extends  TestKit(_system) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
-   // ActorSystemTest.getActorSystem()
+    //ActorSystemTest.getActorSystem()
   }
   override def afterAll: Unit = {
     Thread.sleep(2000)
