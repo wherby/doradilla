@@ -21,14 +21,14 @@ import doracore.vars.ConstVars
  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
  */
 object BackendServer extends ProcessCommandRunner {
-  var backendServerOpt :Option[BackendServer] =None
+  lazy val backendServerOpt: BackendServer = getBackendServer
   var backendServerMap: Map[Int, BackendServer] = Map()
   var namedJobApiMap: Map[String, JobApi] = Map()
   lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(ConstVars.DoraPort)
   var nextPort = seedPort
 
 
-  def getBackendServer()={
+  def getBackendServer() = {
     BackendServer.backendServerMap.headOption.map(_._2) match {
       case Some(backendServer) => backendServer
       case _ =>
@@ -49,31 +49,25 @@ object BackendServer extends ProcessCommandRunner {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
         case _ =>
-          AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
+          AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
           createBackendServer(Some(port), systemConfigOpt)
       }
       case _ =>
-        AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
+        AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
         createBackendServer(portConf)
     }
   }
 
-  def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) :BackendServer = {
-    backendServerOpt match {
-      case Some(backendServer) => backendServer
-      case _=>
-        AppDebugger.logInfo("create",Some("createBackendServer"))
-        val backendServer = new BackendServer()
-        val port = portConf.getOrElse(ConstVars.DoraPort)
-        val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
-        val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
-        val system =  ActorSystem(clusterName, systemConfig)
-        backendServer.actorSystemOpt = Some(system)
-        backendServerMap += (port -> backendServer)
-
-        setupSingletonProxyActor(backendServer, system)
-        backendServer
-    }
+  def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None): BackendServer = {
+    val backendServer = new BackendServer()
+    val port = portConf.getOrElse(ConstVars.DoraPort)
+    val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
+    val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
+    val system = ActorSystem(clusterName, systemConfig)
+    backendServer.actorSystemOpt = Some(system)
+    backendServerMap += (port -> backendServer)
+    setupSingletonProxyActor(backendServer, system)
+    backendServer
   }
 
 
