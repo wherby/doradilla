@@ -52,8 +52,5 @@ class BatchProcessCommandSpec extends ActorTestClass  {
       BackendServer.queryBatchProcessResult(batchActor)
       Await.ready(res, ConstVars.timeout1S * 10)
     }
-
-
-
   }
 }

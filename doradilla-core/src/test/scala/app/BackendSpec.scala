@@ -37,8 +37,6 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
 
     "start the command and qurey result " in {
-      BackendServer.startup(Some(1600))
-      BackendServer.getBackendServer()
       ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
@@ -48,7 +46,6 @@ class BackendSpec extends ActorTestClass with Matchers {
           (result.result.asInstanceOf[ProcessResult]).jobStatus shouldBe (JobStatus.Finished)
           println(result)
       }
-
       Await.ready(res, ConstVars.timeout1S*4)
     }
 

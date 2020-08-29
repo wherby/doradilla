@@ -13,8 +13,8 @@ import akka.event.slf4j.Logger
 import com.typesafe.config.Config
 import doracore.api.JobApi
 import doracore.tool.query.QueryActor
+import doracore.vars.ConstVars
 
-import scala.util.Random
 
 /**
  * For io.github.wherby.doradilla.back in Doradilla
@@ -23,7 +23,7 @@ import scala.util.Random
 object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
   var namedJobApiMap: Map[String, JobApi] = Map()
-  lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
+  lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(ConstVars.DoraPort)
   var nextPort = seedPort
 
 
@@ -31,13 +31,13 @@ object BackendServer extends ProcessCommandRunner {
     BackendServer.backendServerMap.headOption.map(_._2) match {
       case Some(backendServer) => backendServer
       case _ =>
-        startup(Some(1600))
+        startup(Some(ConstVars.DoraPort))
     }
   }
 
   override def getActorSystem(): ActorSystem = {
     if (BackendServer.backendServerMap.headOption == None) {
-      createBackendServer(Some(1600))
+      createBackendServer(Some(ConstVars.DoraPort))
     }
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
@@ -55,7 +55,7 @@ object BackendServer extends ProcessCommandRunner {
 
   def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
-    val port = portConf.getOrElse(1600)
+    val port = portConf.getOrElse(ConstVars.DoraPort)
     val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
     val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
     val system =  ActorSystem(clusterName, systemConfig)

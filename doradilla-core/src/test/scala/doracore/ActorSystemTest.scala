@@ -1,5 +1,6 @@
 package doracore
 import akka.actor.ActorSystem
+import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.DoraConf
 
@@ -16,8 +17,8 @@ import doradilla.conf.DoraConf
     count = count +1
     actorSystemOpt match {
       case None =>
-        val system = BackendServer.createBackendServer(Some(1600))
-        BackendServer.backendServerMap +=(1600->system)
+        val system = BackendServer.createBackendServer(Some(ConstVars.DoraPort))
+        BackendServer.backendServerMap +=(ConstVars.DoraPort->system)
         system.registFSMActor()
         actorSystemOpt =system.actorSystemOpt
         actorSystemOpt.get
