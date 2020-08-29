@@ -21,13 +21,11 @@ import scala.concurrent.{ExecutionContext, Future}
   */
 trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with ActorSystemApi with BatchProcessor with NamedJobRunner {
   this: BackendServer.type =>
-
-
   def runProcessCommand(processJob: JobMsg,
                         backendServerOpt: Option[BackendServer] = None,
                         timeout: Timeout = ConstVars.longTimeOut,
                         priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
-    val backendServer = getBackendServerForCommand(backendServerOpt)
+    val backendServer = getBackendServer()
     val resultOpt = for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
                          processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
       yield {
@@ -39,18 +37,10 @@ trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with 
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
   }
 
-  def getBackendServerForCommand(backendServerOpt: Option[BackendServer]) = {
-    BackendServer.backendServerMap.headOption.map(_._2) match {
-      case Some(backendServer) => backendServer
-      case _ =>
-        val seedPortForNew = seedPort + 10000
-        Logger.apply(this.getClass.getName).error(s"No backend server, start new  on port ${seedPortForNew}")
-        startup(Some(seedPortForNew))
-    }
-  }
+
 
   def startProcessCommand(processJob: JobMsg, backendServerOpt: Option[BackendServer] = None, priority: Option[Int] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
-    val backendServer = getBackendServerForCommand(backendServerOpt)
+    val backendServer = getBackendServer()
     for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
          processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
       yield {

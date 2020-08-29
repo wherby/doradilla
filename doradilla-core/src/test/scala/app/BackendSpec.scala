@@ -39,7 +39,8 @@ class BackendSpec extends ActorTestClass with Matchers {
     }
 
     "start the command and qurey result " in {
-      //val backendServer = BackendServer.startup(Some(1600))
+      BackendServer.startup(Some(1600))
+      BackendServer.getBackendServer()
       //backendServer.registFSMActor()
       ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val msg = TestVars.processCallMsgTest

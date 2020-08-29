@@ -19,9 +19,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait BatchProcessor {
   this: BackendServer.type =>
   def startProcessBatchCommand(batchRequests: Seq[JobMsg],
-                               backendServerOpt: Option[BackendServer] = None,
                                priority: Option[Int] = None, jobMetaOpt: Option[JobMeta] = None)(implicit ex: ExecutionContext): Option[ActorRef] = {
-    val backendServer = getBackendServerForCommand(backendServerOpt)
+    val backendServer = getBackendServer()
     for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
          processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
       yield {

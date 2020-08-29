@@ -9,7 +9,7 @@ import doracore.core.fsm.FsmActor.RegistToDriver
 import doracore.util.{CNaming, ConfigService}
 import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
-import akka.event.jul.Logger
+import akka.event.slf4j.Logger
 import com.typesafe.config.Config
 import doracore.api.JobApi
 import doracore.tool.query.QueryActor
@@ -17,23 +17,27 @@ import doracore.tool.query.QueryActor
 import scala.util.Random
 
 /**
-  * For io.github.wherby.doradilla.back in Doradilla
-  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
-  */
+ * For io.github.wherby.doradilla.back in Doradilla
+ * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
+ */
 object BackendServer extends ProcessCommandRunner {
   var backendServerMap: Map[Int, BackendServer] = Map()
-  var namedJobApiMap:Map[String,JobApi] =Map()
+  var namedJobApiMap: Map[String, JobApi] = Map()
   lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(1600)
   var nextPort = seedPort
 
-  override def getActorSystem(): ActorSystem = {
-    if(BackendServer.backendServerMap.headOption ==None){
-      try{
-        createBackendServer(Some(1600))
-      }catch {
-        case _=> createBackendServer(Some(16000 + Random.nextInt(10000)))
-      }
 
+  def getBackendServer()={
+    BackendServer.backendServerMap.headOption.map(_._2) match {
+      case Some(backendServer) => backendServer
+      case _ =>
+        startup(Some(1600))
+    }
+  }
+
+  override def getActorSystem(): ActorSystem = {
+    if (BackendServer.backendServerMap.headOption == None) {
+      createBackendServer(Some(1600))
     }
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
@@ -43,11 +47,7 @@ object BackendServer extends ProcessCommandRunner {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
         case _ =>
-          try{
-            createBackendServer(Some(port), systemConfigOpt)
-          }catch {
-            case _=>createBackendServer(Some(port + Random.nextInt(10000)), systemConfigOpt)
-          }
+          createBackendServer(Some(port), systemConfigOpt)
       }
       case _ => createBackendServer(portConf)
     }
@@ -55,12 +55,10 @@ object BackendServer extends ProcessCommandRunner {
 
   def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
     val backendServer = new BackendServer()
-    val port = getAvailbleConfigByConf(portConf)
+    val port = portConf.getOrElse(1600)
     val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
-    val system = systemConfigOpt match {
-      case Some(systemConfig) => ActorSystem(clusterName, systemConfig)
-      case _ => ActorSystem(clusterName, DoraConf.config(port, Const.backendRole))
-    }
+    val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
+    val system =  ActorSystem(clusterName, systemConfig)
     backendServer.actorSystemOpt = Some(system)
     backendServerMap += (port -> backendServer)
 
@@ -68,26 +66,12 @@ object BackendServer extends ProcessCommandRunner {
     backendServer
   }
 
-  private def getAvailbleConfigByConf(portConf: Option[Int]) = {
-    def getAvailablePort() = {
-      nextPort = nextPort + 1
-      nextPort
-    }
-
-    portConf match {
-      case Some(port) =>
-        nextPort = port + 1
-        port
-      case _ => getAvailablePort()
-    }
-  }
-
 
   /**
-    * @Description: Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
-    * @Param:
-    * @return:
-    */
+   * @Description: Setup singleton actor for cluster, and set singleton proxy in the system  and register to actorMap for later use.
+   * @Param:
+   * @return:
+   */
   private def setupSingletonProxyActor(backendServer: BackendServer, system: ActorSystem) = {
     setUpClusterSingleton(system, DriverActor.driverActorPropsWithoutFSM(), Const.driverServiceName)
     setUpClusterSingleton(system, ProcessTranActor.processTranActorProps, Const.procssTranServiceName)
@@ -106,10 +90,10 @@ object BackendServer extends ProcessCommandRunner {
 
 
   /**
-    * Set singleton proxy
-    *
-    * @return the Props of singlenton proxy
-    */
+   * Set singleton proxy
+   *
+   * @return the Props of singlenton proxy
+   */
   def proxyProps(system: ActorSystem, name: String): Props = ClusterSingletonProxy.props(
     settings = ClusterSingletonProxySettings(system).withRole(Const.backendRole),
     singletonManagerPath = s"/user/$name")
