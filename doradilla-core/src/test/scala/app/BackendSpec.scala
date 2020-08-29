@@ -24,8 +24,6 @@ class BackendSpec extends ActorTestClass with Matchers {
   "Backend server " must {
 
     "start and run command " in {
-      //val backendServer = BackendServer.startup(Some(1900))
-      //backendServer.registFSMActor()
       ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
@@ -41,7 +39,6 @@ class BackendSpec extends ActorTestClass with Matchers {
     "start the command and qurey result " in {
       BackendServer.startup(Some(1600))
       BackendServer.getBackendServer()
-      //backendServer.registFSMActor()
       ProcessService.nameToClassOpt = ProcessServiceSpec.safeProcessServiceNameToClassOpt
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
@@ -57,8 +54,6 @@ class BackendSpec extends ActorTestClass with Matchers {
 
     "start the command and qurey result without implement class reflector " in {
       ProcessService.nameToClassOpt = noImplementNameToClassOpt
-      //val backendServer = BackendServer.startup(Some(1600))
-      //backendServer.registFSMActor()
       val msg = TestVars.processCallMsgTest
       val processJob = JobMsg("SimpleProcess", msg)
       val receiveActor = BackendServer.startProcessCommand(processJob).get

@@ -17,7 +17,7 @@ class ActorTestClass (_system: ActorSystem = ActorSystemTest.getActorSystem()) e
   with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
-    ActorSystemTest.getActorSystem()
+   // ActorSystemTest.getActorSystem()
   }
   override def afterAll: Unit = {
     Thread.sleep(2000)
