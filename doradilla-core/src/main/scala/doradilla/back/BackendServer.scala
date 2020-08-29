@@ -6,7 +6,7 @@ import doracore.core.driver.DriverActor
 import doracore.tool.job.process.ProcessTranActor
 import doracore.core.fsm.FsmActor
 import doracore.core.fsm.FsmActor.RegistToDriver
-import doracore.util.{CNaming, ConfigService}
+import doracore.util.{AppDebugger, CNaming, ConfigService}
 import doradilla.conf.{Const, DoraConf}
 import BackendServer.proxyProps
 import akka.event.slf4j.Logger
@@ -38,12 +38,14 @@ object BackendServer extends ProcessCommandRunner {
 
   override def getActorSystem(): ActorSystem = {
     if (BackendServer.backendServerMap.headOption == None) {
+      AppDebugger.logInfo("create new server ", Some("getActorSystem"))
       createBackendServer(Some(ConstVars.DoraPort))
     }
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
   }
 
   def startup(portConf: Option[Int] = None, systemConfigOpt: Option[Config] = None): BackendServer = {
+    AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt" , Some("start up"))
     portConf match {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
