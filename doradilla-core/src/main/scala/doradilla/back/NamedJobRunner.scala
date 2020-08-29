@@ -5,7 +5,7 @@ import doracore.api.JobApi
 import doracore.core.driver.DriverActor.{FSMDecrease, FSMIncrease}
 import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult}
 import doracore.tool.receive.ReceiveActor
-import doracore.util.CNaming
+import doracore.util.{AppDebugger, CNaming}
 import doracore.vars.ConstVars
 import javax.print.attribute.standard.JobName
 
@@ -23,7 +23,9 @@ trait NamedJobRunner {
   private def getNamedJobApi(jobName:String):JobApi={
     namedJobApiMap.get(jobName) match {
       case Some(jobApi) => jobApi
-      case _=> val jobApi: JobApi = new JobApi(Some( getActorSystem()))
+      case _=>
+        AppDebugger.log(s"Start new JobApi for $jobName",Some("getNamedJobApi"))
+        val jobApi: JobApi = new JobApi(Some( getActorSystem()))
         namedJobApiMap +=(jobName ->jobApi)
         jobApi
     }

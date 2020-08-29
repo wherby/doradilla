@@ -38,7 +38,7 @@ object BackendServer extends ProcessCommandRunner {
 
   override def getActorSystem(): ActorSystem = {
     if (BackendServer.backendServerMap.headOption == None) {
-      AppDebugger.logInfo("create new server ", Some("getActorSystem"))
+      AppDebugger.log("create new server ", Some("getActorSystem"))
       createBackendServer(Some(ConstVars.DoraPort))
     }
     BackendServer.backendServerMap.head._2.actorSystemOpt.get
@@ -49,11 +49,11 @@ object BackendServer extends ProcessCommandRunner {
       case Some(port) => backendServerMap.get(port) match {
         case Some(backendServer) => backendServer
         case _ =>
-          AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
+          AppDebugger.log(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
           createBackendServer(Some(port), systemConfigOpt)
       }
       case _ =>
-        AppDebugger.logInfo(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
+        AppDebugger.log(s"Start new server $portConf , $systemConfigOpt", Some("start up"))
         createBackendServer(portConf)
     }
   }
