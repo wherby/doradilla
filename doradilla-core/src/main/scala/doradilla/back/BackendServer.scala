@@ -21,6 +21,7 @@ import doracore.vars.ConstVars
  * Created by whereby[Tao Zhou](187225577@qq.com) on 2019/5/11
  */
 object BackendServer extends ProcessCommandRunner {
+  var backendServerOpt :Option[BackendServer] =None
   var backendServerMap: Map[Int, BackendServer] = Map()
   var namedJobApiMap: Map[String, JobApi] = Map()
   lazy val seedPort = ConfigService.getIntOpt(DoraConf.config, "cluster-setting.seed-port").getOrElse(ConstVars.DoraPort)
@@ -53,17 +54,20 @@ object BackendServer extends ProcessCommandRunner {
     }
   }
 
-  def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) = {
-    val backendServer = new BackendServer()
-    val port = portConf.getOrElse(ConstVars.DoraPort)
-    val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
-    val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
-    val system =  ActorSystem(clusterName, systemConfig)
-    backendServer.actorSystemOpt = Some(system)
-    backendServerMap += (port -> backendServer)
+  def createBackendServer(portConf: Option[Int], systemConfigOpt: Option[Config] = None) :BackendServer = {
+    backendServerOpt match {
+      case Some(backendServer) => backendServer
+      case _=>val backendServer = new BackendServer()
+        val port = portConf.getOrElse(ConstVars.DoraPort)
+        val clusterName = ConfigService.getStringOpt(DoraConf.config, "cluster-setting.cluster-name").getOrElse("clustering-cluster")
+        val systemConfig = systemConfigOpt.getOrElse(DoraConf.config(port, Const.backendRole))
+        val system =  ActorSystem(clusterName, systemConfig)
+        backendServer.actorSystemOpt = Some(system)
+        backendServerMap += (port -> backendServer)
 
-    setupSingletonProxyActor(backendServer, system)
-    backendServer
+        setupSingletonProxyActor(backendServer, system)
+        backendServer
+    }
   }
 
 
