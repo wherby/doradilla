@@ -12,7 +12,7 @@ class SystemApiSpec extends ActorTestClass{
   "SystemApi" must{
     "Return a new actorSytem with doradillaSystem prefix " in {
       val system = new SystemApi()
-      system.actorSystem.name should startWith ("diradilla")
+      system.actorSystem.name should startWith ("doradilla")
     }
     "Return a existed actorSystem when system pass in " in {
       val system = ActorSystem(CNaming.timebasedName( "SystemApiSpecTest"))
