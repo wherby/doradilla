@@ -1,8 +1,15 @@
 language: scala
 scala:
 - 2.13.1
+install:
+- export SBT_LAUNCHER=1.3.0
+- export SBT_OPTS="-Dfile.encoding=UTF-8"
+- curl -L --silent "https://github.com/sbt/sbt/releases/download/v$SBT_LAUNCHER/sbt-$SBT_LAUNCHER.tgz" > $HOME/sbt.tgz
+- tar zxf $HOME/sbt.tgz -C $HOME
+- sudo rm /usr/local/bin/sbt
+
 script:
-- sbt  ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
+- sbt   clean coverage test coverageReport
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then sbt ++2.13.1 releaseEarly;sbt ++2.12.7 releaseEarly;
