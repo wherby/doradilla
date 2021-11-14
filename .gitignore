@@ -18,3 +18,5 @@ local.*
 
 ## VScode
 **/*.DS_Store
+.metals/*
+.vscode/*

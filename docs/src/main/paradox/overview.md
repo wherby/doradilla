@@ -43,10 +43,10 @@ Yes, but not, because the user will not aware of the library implementation. The
 To use doradilla library to handle request see:
 
 run job sync
-: @@snip [runjob.scala](/docs/src/main/scala/runjob.scala)
+: @@snip [runjob.scala](/docs/src/main/scala/runjob.md)
 
 run job async
-: @@snip [asyncrun.scala](/docs/src/main/scala/asyncrun.scala)
+: @@snip [asyncrun.scala](/docs/src/main/scala/asyncrun.md)
 
 
 For more usage see : 
