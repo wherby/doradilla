@@ -1,5 +1,5 @@
 import com.typesafe.sbt.SbtNativePackager.autoImport.maintainer
-import com.typesafe.sbt.SbtPgp.autoImportImpl.useGpg
+
 import sbt.Keys._
 import sbt.{url, _}
 
