@@ -26,8 +26,8 @@ lazy val root = (project in file("."))
     name := "doradilla",
     publishArtifact := false,
     mainClass  := Some("io.github.wherby.doradilla.app.SimpleClusterApp"),//object with,
-  ).aggregate(doradillaCore)
-  .dependsOn(doradillaCore)
+  ).aggregate(doradillaCore,docs)
+  .dependsOn(doradillaCore,docs)
 
 // Define a special test task which does not fail when any test fails,
 // so sequential tasks (like SonarQube analysis) will be performed no matter the test result.
