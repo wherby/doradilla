@@ -3,9 +3,6 @@ import Dependencies._
 
 
 
-//ThisBuild / scalaVersion := scala213
-
-
 lazy val doradillaCore = (project in file("doradilla-core"))
   .settings(commonSettings: _*)
   .enablePlugins(JavaAppPackaging)
