@@ -36,7 +36,6 @@ object Dependencies {
   lazy val commonSettings = Seq(
     organization := "io.github.wherby",
     crossScalaVersions := supportedScalaVersion,
-    version := "1.8.0.4",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots")
