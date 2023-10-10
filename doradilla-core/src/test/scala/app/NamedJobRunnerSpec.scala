@@ -1,14 +1,14 @@
 package app
 
 import doracore.ActorTestClass
-import doracore.core.msg.Job.JobMsg
+import doracore.core.msg.Job.{JobMeta, JobMsg}
 import doracore.util.{ProcessService, ProcessServiceSpec}
 import doracore.vars.ConstVars
 import doradilla.back.BackendServer
 import doradilla.conf.TestVars
 import org.scalatest.Matchers
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 /**
   * For app in doradilla
@@ -51,6 +51,26 @@ class NamedJobRunnerSpec extends ActorTestClass with Matchers {
             println(exception)
         }
         timeOut shouldBe (true)
+      }
+    }
+
+    "Name Job with Meta" must{
+      "run job in sequece the sleep operation will block following operation and time out will go" in{
+        val job1 = TestVars.sleepProcessJob
+        BackendServer.runNamedProcessCommand(job1, "job13",metaOpt = Some(JobMeta("NewNameJob1")))
+        val job2         = TestVars.processJob
+        val resultFuture = BackendServer.runNamedProcessCommand(job2, "job13",metaOpt = Some(JobMeta("NewNameJob2")))
+        val result       =
+          try{
+            Await.ready(resultFuture, timeout)
+          }catch {
+            case _:Throwable =>Future("TimeOutError")
+          }
+        result.map{
+          a =>
+            a shouldBe("TimeOutError")
+            println(a)
+        }
       }
     }
 

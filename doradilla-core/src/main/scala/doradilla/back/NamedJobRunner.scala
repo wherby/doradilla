@@ -3,12 +3,12 @@ package doradilla.back
 import akka.util.Timeout
 import doracore.api.JobApi
 import doracore.core.driver.DriverActor.{FSMDecrease, FSMIncrease}
-import doracore.core.msg.Job.{JobMsg, JobRequest, JobResult}
+import doracore.core.msg.Job.{JobMeta, JobMsg, JobRequest, JobResult}
 import doracore.tool.receive.ReceiveActor
 import doracore.util.{AppDebugger, CNaming}
 import doracore.vars.ConstVars
-import javax.print.attribute.standard.JobName
 
+import javax.print.attribute.standard.JobName
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -34,10 +34,11 @@ trait NamedJobRunner {
   def runNamedProcessCommand(processJob: JobMsg,
                              jobName:String,
                              timeout: Timeout = ConstVars.longTimeOut,
-                             priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+                             priority: Option[Int] = None,
+                             metaOpt:Option[JobMeta] =None)(implicit ex: ExecutionContext): Future[JobResult] = {
     val jobApi = getNamedJobApi(jobName)
     val receiveActor = jobApi.actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
-    val processJobRequest = JobRequest(processJob, receiveActor, jobApi.processTranActor, priority)
+    val processJobRequest = JobRequest(processJob, receiveActor, jobApi.processTranActor, priority,metaOpt)
     getProcessCommandFutureResult(processJobRequest, jobApi.defaultDriver, receiveActor,timeout)
   }
 

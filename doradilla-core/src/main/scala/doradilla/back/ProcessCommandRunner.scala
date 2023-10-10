@@ -24,14 +24,15 @@ trait ProcessCommandRunner extends AskProcessResult with GetBlockIOExcutor with 
   def runProcessCommand(processJob: JobMsg,
                         backendServerOpt: Option[BackendServer] = None,
                         timeout: Timeout = ConstVars.longTimeOut,
-                        priority: Option[Int] = None)(implicit ex: ExecutionContext): Future[JobResult] = {
+                        priority: Option[Int] = None,
+                        metaOpt:Option[JobMeta] =None)(implicit ex: ExecutionContext): Future[JobResult] = {
     val backendServer = getBackendServer()
     val resultOpt = for (driverService <- backendServer.getActorProxy(Const.driverServiceName);
                          processTranService <- backendServer.getActorProxy(Const.procssTranServiceName))
       yield {
         val actorSystem = backendServer.actorSystemOpt.get
         val receiveActor = actorSystem.actorOf(ReceiveActor.receiveActorProps, CNaming.timebasedName("Receive"))
-        val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority)
+        val processJobRequest = JobRequest(processJob, receiveActor, processTranService, priority,metaOpt)
         getProcessCommandFutureResult(processJobRequest, driverService, receiveActor,timeout)
       }
     resultOpt.getOrElse(Future(JobResult(JobStatus.Failed, new Exception(JsError("Can't get service")))))
