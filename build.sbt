@@ -48,7 +48,8 @@ ThisBuild / githubWorkflowPublish := Seq(
 inThisBuild(List(
   organization := "org.doradilla",
   homepage := Some(url("https://github.com/wherby/doradilla")),
-  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  licenses := List( "AGPL-V3" -> url("https://www.gnu.org/licenses/agpl-3.0.txt"),
+    "Commercial-License"->url("https://github.com/wherby/dora/tree/master/docs/license/CommercialLicense.md")),
   developers := List(
     Developer(
       "wherby",
